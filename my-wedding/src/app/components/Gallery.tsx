@@ -19,12 +19,12 @@ export default function Gallery({ items }: Props) {
 
   return (
     <>
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-4 grid grid-cols-3 gap-3">
         {items.map((it, idx) => (
           <button
             key={`${it.src}-${idx}`}
             type="button"
-            className="relative h-24 rounded overflow-hidden bg-gray-100"
+            className="relative h-24 rounded-xl overflow-hidden bg-gray-100 shadow-sm ring-1 ring-[#f2e6e9] transition-transform hover:scale-[1.02]"
             onClick={() => setOpenIndex(idx)}
           >
             <Image src={it.src} alt={it.alt ?? ""} fill className="object-contain" />

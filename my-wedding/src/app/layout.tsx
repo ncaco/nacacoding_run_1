@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const notoSans = Noto_Sans_KR({
+  variable: "--font-sans-kr",
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const notoSerif = Noto_Serif_KR({
+  variable: "--font-serif-kr",
+  weight: ["400", "600", "700"],
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -55,8 +59,13 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${notoSans.variable} ${notoSerif.variable} antialiased`}
       >
+        {/* SVG 스프라이트 프리로드 */}
+        <div style={{position:"absolute", width:0, height:0, overflow:"hidden"}} aria-hidden>
+          {/* @ts-expect-error */}
+          <img src="/icons.svg" alt="" />
+        </div>
         {children}
       </body>
     </html>
