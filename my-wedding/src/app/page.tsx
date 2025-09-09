@@ -3,6 +3,7 @@ import MapActions from "./components/MapActions";
 import Gallery from "./components/Gallery";
 import ShareActions from "./components/ShareActions";
 import HeroImage from "./components/HeroImage";
+import WeddingCalendar from "./components/WeddingCalendar";
 
 export default function Home() {
   return (
@@ -10,12 +11,12 @@ export default function Home() {
       <main>
         {/* Hero */}
         <section className="px-6 pt-8 pb-4 text-center">
-          <div className="mx-auto max-w-2xl card px-6 py-6">
+          <div className="mx-auto max-w-4xl card px-6 py-6">
             <p className="text-sm text-gray-600">2025. 11. 15 토요일 오후 1시</p>
             <h1 className="section-title mt-2 text-4xl font-semibold">신랑 홍길동 · 신부 김영희</h1>
             <p className="mt-3 text-gray-700">함께하는 이 순간을 초대합니다</p>
           </div>
-          <div className="mx-auto max-w-3xl card p-2 overflow-hidden mt-4">
+          <div className="mx-auto max-w-4xl card p-2 overflow-hidden mt-4">
             {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
             <HeroImage src="/hero-sample.jpg" alt="웨딩 사진" />
           </div>
@@ -23,19 +24,18 @@ export default function Home() {
 
         {/* 일정 */}
         <section className="px-6 py-10">
-          <div className="mx-auto max-w-2xl card px-6 py-8">
+          <div className="mx-auto max-w-4xl card px-6 py-8">
             <h2 className="section-title text-2xl">일정</h2>
-            <div className="mt-4 text-gray-700 space-y-1">
-              <div>하객 입장 및 포토 · 12:00</div>
-              <div>예식 · 13:00</div>
-              <div>피로연 · 14:00</div>
+            <div className="mt-4">
+              {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
+              <WeddingCalendar />
             </div>
           </div>
         </section>
 
         {/* 장소 */}
         <section className="px-6 py-10">
-          <div className="mx-auto max-w-2xl card px-6 py-8">
+          <div className="mx-auto max-w-4xl card px-6 py-8">
             <h2 className="section-title text-2xl">장소</h2>
             <p className="mt-2 text-gray-700">
               서울 강남구 테헤란로 123, 스카이컨벤션 3층 그랜드홀 (샘플)
@@ -53,7 +53,7 @@ export default function Home() {
 
         {/* 갤러리 */}
         <section className="px-6 py-10">
-          <div className="mx-auto max-w-2xl card px-6 py-8">
+          <div className="mx-auto max-w-4xl card px-6 py-8">
             <h2 className="section-title text-2xl">갤러리</h2>
             {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
             <Gallery
@@ -70,7 +70,7 @@ export default function Home() {
 
         {/* 축의금 안내 (샘플 계좌) */}
         <section className="px-6 py-10">
-          <div className="mx-auto max-w-2xl card px-6 py-8">
+          <div className="mx-auto max-w-4xl card px-6 py-8">
             <h2 className="section-title text-2xl">축의금 안내 (샘플 계좌)</h2>
             <div className="mt-4 space-y-3">
               {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
