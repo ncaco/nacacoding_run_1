@@ -10,23 +10,23 @@ export default function Home() {
     <div className="font-sans min-h-screen">
       <main>
         {/* Hero */}
-        <section className="px-6 pt-8 pb-4 text-center">
-          <div className="mx-auto max-w-4xl card px-6 py-6">
-            <p className="text-sm text-gray-600">2025. 11. 15 토요일 오후 1시</p>
-            <h1 className="section-title mt-2 text-4xl font-semibold">신랑 홍길동 · 신부 김영희</h1>
-            <p className="mt-3 text-gray-700">함께하는 이 순간을 초대합니다</p>
+        <section className="px-4 sm:px-6 pt-6 sm:pt-8 pb-4 text-center">
+          <div className="mx-auto max-w-4xl card px-4 sm:px-6 py-4 sm:py-6">
+            <p className="text-xs sm:text-sm text-gray-600">2025. 11. 15 토요일 오후 1시</p>
+            <h1 className="section-title mt-2 text-2xl sm:text-3xl md:text-4xl font-semibold">신랑 홍길동 · 신부 김영희</h1>
+            <p className="mt-3 text-sm sm:text-base text-gray-700">함께하는 이 순간을 초대합니다</p>
           </div>
-          <div className="mx-auto max-w-4xl card p-2 overflow-hidden mt-4">
+          <div className="mx-auto max-w-4xl card p-1 sm:p-2 overflow-hidden mt-3 sm:mt-4">
             {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
             <HeroImage src="/hero-sample.jpg" alt="웨딩 사진" />
           </div>
         </section>
 
         {/* 일정 */}
-        <section className="px-6 py-10">
-          <div className="mx-auto max-w-4xl card px-6 py-8">
-            <h2 className="section-title text-2xl">일정</h2>
-            <div className="mt-4">
+        <section className="px-4 sm:px-6 py-6 sm:py-10">
+          <div className="mx-auto max-w-4xl card px-4 sm:px-6 py-6 sm:py-8">
+            <h2 className="section-title text-xl sm:text-2xl">일정</h2>
+            <div className="mt-3 sm:mt-4">
               {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
               <WeddingCalendar />
             </div>
@@ -34,13 +34,13 @@ export default function Home() {
         </section>
 
         {/* 장소 */}
-        <section className="px-6 py-10">
-          <div className="mx-auto max-w-4xl card px-6 py-8">
-            <h2 className="section-title text-2xl">장소</h2>
-            <p className="mt-2 text-gray-700">
+        <section className="px-4 sm:px-6 py-6 sm:py-10">
+          <div className="mx-auto max-w-4xl card px-4 sm:px-6 py-6 sm:py-8">
+            <h2 className="section-title text-xl sm:text-2xl">장소</h2>
+            <p className="mt-2 text-sm sm:text-base text-gray-700">
               서울 강남구 테헤란로 123, 스카이컨벤션 3층 그랜드홀 (샘플)
             </p>
-            <div className="mt-4 aspect-video w-full rounded-xl grid place-items-center text-gray-500 border border-[#f5d7df] bg-[#fff2f6]">
+            <div className="mt-3 sm:mt-4 aspect-video w-full rounded-xl grid place-items-center text-gray-500 border border-[#f5d7df] bg-[#fff2f6] text-xs sm:text-sm">
               지도 영역(카카오/네이버 임베드 예정)
             </div>
             {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
@@ -52,9 +52,9 @@ export default function Home() {
         </section>
 
         {/* 갤러리 */}
-        <section className="px-6 py-10">
-          <div className="mx-auto max-w-4xl card px-6 py-8">
-            <h2 className="section-title text-2xl">갤러리</h2>
+        <section className="px-4 sm:px-6 py-6 sm:py-10">
+          <div className="mx-auto max-w-4xl card px-4 sm:px-6 py-6 sm:py-8">
+            <h2 className="section-title text-xl sm:text-2xl">갤러리</h2>
             {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
             <Gallery
               items={[
@@ -69,10 +69,10 @@ export default function Home() {
         {/* RSVP 섹션 제거 (요청에 따라 숨김) */}
 
         {/* 축의금 안내 (샘플 계좌) */}
-        <section className="px-6 py-10">
-          <div className="mx-auto max-w-4xl card px-6 py-8">
-            <h2 className="section-title text-2xl">축의금 안내 (샘플 계좌)</h2>
-            <div className="mt-4 space-y-3">
+        <section className="px-4 sm:px-6 py-6 sm:py-10">
+          <div className="mx-auto max-w-4xl card px-4 sm:px-6 py-6 sm:py-8">
+            <h2 className="section-title text-xl sm:text-2xl">축의금 안내 (샘플 계좌)</h2>
+            <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
               {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
               <AccountList
                 title="신랑측"
@@ -95,8 +95,8 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="px-6 py-12 text-center text-sm text-gray-600">
-        <div className="mb-4 flex justify-center">
+      <footer className="px-4 sm:px-6 py-8 sm:py-12 text-center text-xs sm:text-sm text-gray-600">
+        <div className="mb-3 sm:mb-4 flex justify-center">
           {/* @ts-expect-error Server Component importing Client - allowed for simple props */}
           <ShareActions title="우리의 결혼식 초대장" text="함께 축하해 주세요" />
         </div>

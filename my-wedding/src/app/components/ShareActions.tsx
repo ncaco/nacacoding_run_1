@@ -33,19 +33,19 @@ export default function ShareActions({ title, text, url }: Props) {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col sm:flex-row gap-2">
       <Modal open={modal.open} message={modal.message} onClose={() => setModal((m) => ({ ...m, open: false }))} />
       <button
         type="button"
         onClick={handleWebShare}
-        className="h-10 px-4 rounded-full bg-black text-white text-sm"
+        className="h-9 sm:h-10 px-3 sm:px-4 rounded-full bg-black text-white text-xs sm:text-sm"
       >
         공유하기
       </button>
       <button
         type="button"
         onClick={handleCopy}
-        className="h-10 px-4 rounded-full bg-gray-200 text-black text-sm"
+        className="h-9 sm:h-10 px-3 sm:px-4 rounded-full bg-gray-200 text-black text-xs sm:text-sm"
       >
         링크복사
       </button>

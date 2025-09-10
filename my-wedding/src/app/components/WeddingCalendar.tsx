@@ -38,7 +38,7 @@ const events: Event[] = [
 
 export default function WeddingCalendar() {
   return (
-    <div className="h-[400px] rounded-xl overflow-hidden shadow-sm">
+    <div className="h-[300px] sm:h-[350px] md:h-[400px] rounded-xl overflow-hidden shadow-sm">
       <style jsx global>{`
         .rbc-calendar {
           font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
