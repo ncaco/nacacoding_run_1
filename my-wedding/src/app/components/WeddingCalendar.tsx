@@ -46,9 +46,10 @@ export default function WeddingCalendar() {
           overflow: hidden;
           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        .rbc-toolbar, .rbc-toolbar button { color: #2b2222; }
         .rbc-header {
-          background: linear-gradient(135deg, #f3b7c5, #ffd9e1);
-          color: #5a3b43;
+          background: linear-gradient(135deg, #ffe3ec, #ffd9e1);
+          color: #6a4a52;
           font-weight: 600;
           padding: 12px 8px;
           border: none;
@@ -66,31 +67,31 @@ export default function WeddingCalendar() {
           background: #fafafa;
         }
         .rbc-today {
-          background: rgba(243, 183, 197, 0.1);
+          background: rgba(255, 143, 179, 0.1);
         }
         .rbc-current-time-indicator {
           background: #f3b7c5;
         }
         .rbc-event {
-          background: linear-gradient(135deg, #f3b7c5, #ffb3c6);
+          background: linear-gradient(135deg, #ff8fb3, #ffc1d4);
           border: none;
           border-radius: 8px;
           color: white;
           font-weight: 500;
           font-size: 12px;
           padding: 2px 6px;
-          box-shadow: 0 2px 4px rgba(243, 183, 197, 0.3);
+          box-shadow: 0 2px 4px rgba(255, 143, 179, 0.3);
         }
         .rbc-event:hover {
-          background: linear-gradient(135deg, #ffb3c6, #f3b7c5);
+          background: linear-gradient(135deg, #ffc1d4, #ff8fb3);
           transform: translateY(-1px);
-          box-shadow: 0 4px 8px rgba(243, 183, 197, 0.4);
+          box-shadow: 0 4px 8px rgba(255, 143, 179, 0.4);
         }
         .rbc-day-bg {
-          border: 1px solid #f2e6e9;
+          border: 1px solid #f7e9ee;
         }
         .rbc-day-bg:hover {
-          background: rgba(243, 183, 197, 0.05);
+          background: rgba(255, 143, 179, 0.06);
         }
       `}</style>
       <Calendar

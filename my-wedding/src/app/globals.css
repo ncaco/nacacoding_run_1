@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff9fb; /* 아주 연한 핑크 베이스 */
-  --foreground: #271a1a; /* 브라운 톤 텍스트 */
-  --accent: #f3b7c5; /* 로즈 핑크 */
-  --accent-2: #ffd9e1; /* 밝은 핑크 */
-  --muted: #8b6f6f; /* 브라운 그레이 */
+  --background: #fffefe; /* 더 밝은 베이스 */
+  --foreground: #2b2222; /* 선명한 다크 브라운(가독성↑) */
+  --accent: #ff8fb3; /* 밝은 로즈 핑크 */
+  --accent-2: #ffe7ef; /* 더 밝은 파스텔 */
+  --muted: #6f5555; /* 대비 강화 */
 }
 
 @theme inline {
@@ -23,7 +23,7 @@
   :root {
     --background: #1f1516;
     --foreground: #f6eaed;
-    --accent: #f3b7c5;
+    --accent: #ff8fb3;
     --accent-2: #5a3b43;
     --muted: #d3c3c3;
   }
@@ -31,10 +31,11 @@
 
 body {
   background:
+    linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
     url('/bg-floral.svg') center/cover no-repeat fixed,
-    radial-gradient(1200px 800px at 50% -100px, rgba(255, 238, 243, 0.65), transparent 70%),
-    radial-gradient(800px 600px at 0% 10%, rgba(255, 246, 234, 0.5), transparent 60%),
-    radial-gradient(900px 700px at 100% 0%, rgba(233, 247, 255, 0.45), transparent 60%),
+    radial-gradient(1200px 800px at 50% -100px, rgba(255, 238, 243, 0.55), transparent 70%),
+    radial-gradient(800px 600px at 0% 10%, rgba(255, 246, 234, 0.45), transparent 60%),
+    radial-gradient(900px 700px at 100% 0%, rgba(233, 247, 255, 0.4), transparent 60%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
@@ -49,7 +50,7 @@ body::-webkit-scrollbar {
 }
 
 .card {
-  @apply rounded-2xl bg-white/80 backdrop-blur shadow-sm border border-[#f2e6e9];
+  @apply rounded-2xl bg-white/90 backdrop-blur shadow-sm border border-[#f7e9ee];
 }
 
 .section-title {

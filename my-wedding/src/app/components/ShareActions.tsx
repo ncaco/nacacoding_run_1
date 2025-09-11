@@ -38,7 +38,7 @@ export default function ShareActions({ title, text, url }: Props) {
       <button
         type="button"
         onClick={handleWebShare}
-        className="h-9 sm:h-10 px-3 sm:px-4 rounded-full bg-black text-white text-xs sm:text-sm"
+        className="h-9 sm:h-10 px-3 sm:px-4 rounded-full bg-[var(--accent)] text-white text-xs sm:text-sm"
       >
         공유하기
       </button>

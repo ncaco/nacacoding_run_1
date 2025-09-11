@@ -99,8 +99,8 @@ export default function AccountList({ title, accounts }: Props) {
           {accounts.map((a) => (
             <li key={`${a.label}-${a.number}`} className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <div className="text-gray-800">{a.label}</div>
-                <div className="text-sm text-gray-500 truncate">{a.bank} {a.number}</div>
+                <div className="text-gray-900">{a.label}</div>
+                <div className="text-sm text-gray-700 truncate">{a.bank} {a.number}</div>
               </div>
               <button
                 type="button"
