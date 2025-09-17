@@ -1,15 +1,27 @@
-import { PropsWithChildren } from "react";
+import * as React from "react";
 
-export function Card({ children, className = "" }: PropsWithChildren<{ className?: string }>) {
-  return <div className={`bg-white rounded-2xl shadow p-6 ${className}`}>{children}</div>;
+type CardProps = React.HTMLAttributes<HTMLDivElement> & {
+  muted?: boolean;
+};
+
+export function Card({ className, children, muted = false, ...props }: CardProps) {
+  const base = "rounded-xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-black/30 backdrop-blur p-5";
+  const tone = muted ? "opacity-90" : "";
+  return (
+    <div className={[base, tone, className].join(" ")} {...props}>
+      {children}
+    </div>
+  );
 }
 
-export function CardTitle({ children, className = "" }: PropsWithChildren<{ className?: string }>) {
-  return <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>;
+export function CardTitle({ children }: { children: React.ReactNode }) {
+  return <h3 className="text-base font-semibold tracking-tight">{children}</h3>;
 }
 
-export function CardMuted({ children, className = "" }: PropsWithChildren<{ className?: string }>) {
-  return <p className={`text-sm text-neutral-600 ${className}`}>{children}</p>;
+export function CardContent({ children }: { children: React.ReactNode }) {
+  return <div className="mt-3 text-sm leading-6">{children}</div>;
 }
+
+export default Card;
 
 

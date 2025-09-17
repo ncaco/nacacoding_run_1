@@ -1,29 +1,34 @@
-import Link from "next/link";
-import { ComponentPropsWithoutRef, ReactNode } from "react";
+import * as React from "react";
 
-type ButtonProps = Omit<ComponentPropsWithoutRef<"button">, "color"> & {
-  href?: string;
-  variant?: "primary" | "ghost" | "outline";
-  size?: "sm" | "md" | "lg";
-  children?: ReactNode;
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "secondary" | "ghost";
+  fullWidth?: boolean;
 };
 
-export default function Button({ href, variant = "primary", size = "md", className = "", children, ...rest }: ButtonProps) {
-  const base = "inline-flex items-center justify-center rounded-full transition-colors duration-200";
-  const sizes = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-5 py-2.5 text-sm",
-    lg: "px-6 py-3 text-base",
-  } as const;
-  const variants = {
-    primary: "bg-[#2b2a2a] text-[#f7f1ea] hover:opacity-90",
-    ghost: "bg-transparent text-neutral-900 hover:bg-black/5",
-    outline: "border border-[#e8d8c8] text-neutral-900 hover:bg-[#f7f1ea]",
-  } as const;
-  const cls = `${base} ${sizes[size]} ${variants[variant]} ${className}`;
+export function Button({
+  className,
+  variant = "primary",
+  fullWidth = false,
+  ...props
+}: ButtonProps) {
+  const base =
+    "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none h-11 px-4";
+  const styles: Record<string, string> = {
+    primary:
+      "bg-foreground text-background hover:opacity-90 focus-visible:ring-foreground",
+    secondary:
+      "bg-black/5 dark:bg-white/10 text-foreground hover:bg-black/10 dark:hover:bg-white/15 focus-visible:ring-foreground",
+    ghost:
+      "bg-transparent text-foreground hover:bg-black/5 dark:hover:bg-white/10 focus-visible:ring-foreground",
+  };
 
-  if (href) return <Link href={href} className={cls}>{children}</Link>;
-  return <button className={cls} {...rest}>{children}</button>;
+  const width = fullWidth ? "w-full" : "";
+
+  return (
+    <button className={[base, styles[variant], width, className].join(" ")} {...props} />
+  );
 }
+
+export default Button;
 
 

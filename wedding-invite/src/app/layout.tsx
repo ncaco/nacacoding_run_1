@@ -1,24 +1,28 @@
 import type { Metadata } from "next";
-import { Noto_Serif_KR, Noto_Sans_KR } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const sans = Noto_Sans_KR({
-  variable: "--font-sans-kr",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
-  display: "swap",
 });
 
-const serif = Noto_Serif_KR({
-  variable: "--font-serif-kr",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
-  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "The Urban - 모바일 청첩장",
-  description: "따뜻한 감성의 결혼식 모바일 청첩장",
+  title: "우리 결혼합니다 | 김OO ❤ 박OO",
+  description: "김OO ❤ 박OO 결혼식 초대장입니다. 함께해 주시면 감사하겠습니다.",
+  openGraph: {
+    title: "우리 결혼합니다 | 김OO ❤ 박OO",
+    description:
+      "김OO ❤ 박OO 결혼식 초대장입니다. 일시: 2025-10-18(토) 오후 1시, 장소: 서울시 OO구 OO홀.",
+    url: "https://example.com",
+    type: "website",
+  },
+  metadataBase: new URL("https://example.com"),
 };
 
 export default function RootLayout({
@@ -28,7 +32,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${sans.variable} ${serif.variable} antialiased bg-[#f7f1ea] text-[#2b2a2a]`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
       </body>
     </html>
