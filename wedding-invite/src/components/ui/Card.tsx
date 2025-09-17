@@ -5,7 +5,7 @@ type CardProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 export function Card({ className, children, muted = false, ...props }: CardProps) {
-  const base = "rounded-xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-black/30 backdrop-blur p-5";
+  const base = "rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-black/30 backdrop-blur p-6 shadow-[0_1px_0_0_rgba(0,0,0,0.02),0_12px_32px_-12px_rgba(0,0,0,0.25)]";
   const tone = muted ? "opacity-90" : "";
   return (
     <div className={[base, tone, className].join(" ")} {...props}>

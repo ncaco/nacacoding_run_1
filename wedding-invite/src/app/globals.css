@@ -10,6 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,4 +26,58 @@ body {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
     Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* Reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+.reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Gradient title utility */
+.title-gradient {
+  background: linear-gradient(90deg, #111 0%, #666 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@media (prefers-color-scheme: dark) {
+  .title-gradient {
+    background: linear-gradient(90deg, #fff 0%, #9ca3af 100%);
+  }
+}
+
+/* Hide scrollbars by default (keep scrolling enabled) */
+html, body {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+  width: 0;
+  height: 0;
+}
+
+/* Focus ring for keyboard users */
+.focus-ring:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Image zoom utility with reduced-motion support */
+.image-zoom {
+  transition: transform 300ms ease-out;
+}
+.image-zoom:hover {
+  transform: scale(1.03);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { transition: none; transform: none; }
+  .image-zoom { transition: none; }
+  .image-zoom:hover { transform: none; }
 }
