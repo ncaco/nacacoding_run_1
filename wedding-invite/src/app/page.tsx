@@ -9,6 +9,7 @@ import { Hero } from "@/components/Hero";
 import { Gallery } from "@/components/Gallery";
 // import { Accounts } from "@/components/Accounts"; // no longer used: 부모님 계좌는 각 측 카드 내부로 이동
 import { CalendarIcon, MapPinIcon, PhoneIcon } from "@/components/ui/icons";
+import { AccountCard } from "@/components/AccountCard";
 import { Timeline } from "@/components/Timeline";
 
 export default function Home() {
@@ -33,8 +34,8 @@ export default function Home() {
   ];
   const phoneSelf = { groom: "010-1111-2222", bride: "010-3333-4444" } as const;
   const phoneParents = {
-    groom: { "아버님": "010-1234-5678", "어머님": "" },
-    bride: { "아버님": "", "어머님": "010-9876-5432" },
+    groom: { "아버님": "010-1234-5678", "어머님": "010-8765-4321" },
+    bride: { "아버님": "010-2222-3333", "어머님": "010-9876-5432" },
   } as const;
   const accountsParents = {
     groom: [
@@ -59,7 +60,7 @@ export default function Home() {
 
   return (
     <div className="min-h-dvh bg-[radial-gradient(115%_95%_at_50%_-10%,#f1f5ff_0%,#ffffff_40%),linear-gradient(180deg,#ffffff_0%,#f9fafb_100%)] dark:bg-[radial-gradient(115%_95%_at_50%_-10%,#0b1220_0%,#0a0a0a_40%),linear-gradient(180deg,#0a0a0a_0%,#111111_100%)]">
-      <main className="mx-auto max-w-xl px-6 py-12">
+      <main className="mx-auto max-w-xl px-6 py-10">
         <section className="text-center pb-8">
           <span className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/10 px-3 py-1 text-xs font-medium tracking-wide">Invitation</span>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>김하준 & 박서연</h1>
@@ -132,95 +133,34 @@ export default function Home() {
 
         <Section title="마음 전하실 곳" subtitle="축하의 뜻을 전해 주시는 분들을 위해 안내드립니다">
           <div className="space-y-4">
-            <Card>
-              <CardContent>
-                <div className="mb-2 text-[11px] uppercase tracking-wide text-foreground/60">신랑측</div>
-                <CopyField label="신랑측 계좌" value={account} />
-                <div className="mt-1 flex items-center justify-end text-xs text-foreground/70">
-                  <a className="inline-flex items-center gap-1 underline" href={`tel:${phoneSelf.groom}`}>
-                    <PhoneIcon size={14} />
-                    {phoneSelf.groom}
-                  </a>
-                </div>
-                <div className="mt-4">
-                  <div className="mb-2 text-xs text-foreground/60">혼주</div>
-                  <div className="space-y-2">
-                    {accountsParents.groom[0].accounts.map((acc, i) => {
-                      const nameMatch = acc.value.match(/\(([^)]+)\)\s*$/);
-                      const name = nameMatch ? nameMatch[1] : undefined;
-                      const phone = phoneParents.groom[acc.label as keyof typeof phoneParents.groom];
-                      return (
-                        <div key={`groom-parent-${i}`}>
-                          <div className="mb-1 flex items-center justify-between text-xs text-foreground/70">
-                            <span>{acc.label}{name ? ` · ${name}` : ""}</span>
-                            {phone ? (
-                              <a className="inline-flex items-center gap-1 underline" href={`tel:${phone}`}>
-                                <PhoneIcon size={14} />
-                                {phone}
-                              </a>
-                            ) : null}
-                          </div>
-                          <CopyField label={acc.label} value={acc.value} />
-                          {phone ? (
-                            <div className="mt-1 flex items-center justify-end text-xs text-foreground/70">
-                              <a className="inline-flex items-center gap-1 underline" href={`tel:${phone}`}>
-                                <PhoneIcon size={14} />
-                                {phone}
-                              </a>
-                            </div>
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <div className="mb-2 text-[11px] uppercase tracking-wide text-foreground/60">신부측</div>
-                <CopyField label="신부측 계좌" value={brideAccount} />
-                <div className="mt-1 flex items-center justify-end text-xs text-foreground/70">
-                  <a className="inline-flex items-center gap-1 underline" href={`tel:${phoneSelf.bride}`}>
-                    <PhoneIcon size={14} />
-                    {phoneSelf.bride}
-                  </a>
-                </div>
-                <div className="mt-4">
-                  <div className="mb-2 text-xs text-foreground/60">혼주</div>
-                  <div className="space-y-2">
-                    {accountsParents.bride[0].accounts.map((acc, i) => {
-                      const nameMatch = acc.value.match(/\(([^)]+)\)\s*$/);
-                      const name = nameMatch ? nameMatch[1] : undefined;
-                      const phone = phoneParents.bride[acc.label as keyof typeof phoneParents.bride];
-                      return (
-                        <div key={`bride-parent-${i}`}>
-                          <div className="mb-1 flex items-center justify-between text-xs text-foreground/70">
-                            <span>{acc.label}{name ? ` · ${name}` : ""}</span>
-                            {phone ? (
-                              <a className="inline-flex items-center gap-1 underline" href={`tel:${phone}`}>
-                                <PhoneIcon size={14} />
-                                {phone}
-                              </a>
-                            ) : null}
-                          </div>
-                          <CopyField label={acc.label} value={acc.value} />
-                          {phone ? (
-                            <div className="mt-1 flex items-center justify-end text-xs text-foreground/70">
-                              <a className="inline-flex items-center gap-1 underline" href={`tel:${phone}`}>
-                                <PhoneIcon size={14} />
-                                {phone}
-                              </a>
-                            </div>
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            {/* 부모님 계좌는 각 측 카드 하단으로 이동 */}
+            <AccountCard
+              sideLabel="신랑측"
+              primaryLabel="신랑측 계좌"
+              primaryAccount={account}
+              primaryPhone={phoneSelf.groom}
+              parents={accountsParents.groom[0].accounts.map((acc) => {
+                const name = (acc.value.match(/\(([^)]+)\)\s*$/) || [])[1];
+                return {
+                  roleLabel: `${acc.label}${name ? ` · ${name}` : ""}`,
+                  accountValue: acc.value,
+                  phone: phoneParents.groom[acc.label as keyof typeof phoneParents.groom],
+                };
+              })}
+            />
+            <AccountCard
+              sideLabel="신부측"
+              primaryLabel="신부측 계좌"
+              primaryAccount={brideAccount}
+              primaryPhone={phoneSelf.bride}
+              parents={accountsParents.bride[0].accounts.map((acc) => {
+                const name = (acc.value.match(/\(([^)]+)\)\s*$/) || [])[1];
+                return {
+                  roleLabel: `${acc.label}${name ? ` · ${name}` : ""}`,
+                  accountValue: acc.value,
+                  phone: phoneParents.bride[acc.label as keyof typeof phoneParents.bride],
+                };
+              })}
+            />
           </div>
         </Section>
 

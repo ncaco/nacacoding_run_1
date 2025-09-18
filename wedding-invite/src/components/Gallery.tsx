@@ -22,7 +22,7 @@ export function Gallery({ items }: GalleryProps) {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-3">
         {items.map((it, idx) => (
           <button key={idx} onClick={() => openAt(idx)} className="relative overflow-hidden rounded-xl aspect-square bg-black/5 dark:bg-white/5 focus-ring">
             <img src={it.src} alt={it.alt ?? "사진"} className="h-full w-full object-cover image-zoom" loading="lazy" decoding="async" />

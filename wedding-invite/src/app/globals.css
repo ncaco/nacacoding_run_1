@@ -1,8 +1,16 @@
+/* Subtle field alignment helpers */
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --accent: #0ea5e9; /* sky-500 */
 }
 
 @theme inline {
@@ -11,12 +19,14 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-display);
+  --color-accent: var(--accent);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --accent: #38bdf8; /* sky-400 */
   }
 }
 
@@ -41,14 +51,14 @@ body {
 
 /* Gradient title utility */
 .title-gradient {
-  background: linear-gradient(90deg, #111 0%, #666 100%);
+  background: linear-gradient(90deg, #111 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 @media (prefers-color-scheme: dark) {
   .title-gradient {
-    background: linear-gradient(90deg, #fff 0%, #9ca3af 100%);
+    background: linear-gradient(90deg, #fff 0%, var(--accent) 100%);
   }
 }
 
@@ -80,4 +90,28 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   .reveal { transition: none; transform: none; }
   .image-zoom { transition: none; }
   .image-zoom:hover { transform: none; }
+}
+
+/* Chip styles */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(0,0,0,.05);
+}
+.chip-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0,0,0,.12);
+}
+@media (prefers-color-scheme: dark) {
+  .chip { background: rgba(255,255,255,.08); }
+  .chip-outline { border-color: rgba(255,255,255,.16); }
 }

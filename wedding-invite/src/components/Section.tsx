@@ -11,10 +11,10 @@ type SectionProps = {
 
 export function Section({ title, subtitle, className, children, fullBleed = false }: SectionProps) {
   return (
-    <section className={["mt-10 sm:mt-16 first:mt-0", className].join(" ") }>
+    <section className={["mt-8 sm:mt-12 first:mt-0", className].join(" ") }>
       <Reveal>
         {title ? (
-          <div className="mb-4">
+          <div className="mb-3">
             <h2 className="title-gradient text-[22px] sm:text-2xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>{title}</h2>
             {subtitle ? <p className="text-[13px] sm:text-sm text-foreground/70 mt-1.5">{subtitle}</p> : null}
           </div>
