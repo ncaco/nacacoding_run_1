@@ -1,0 +1,25 @@
+:root {
+    --background-color: #000000;  /* 배경색 설정 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: var(--background-color);
+}
+
+canvas {
+    display: block;
+    cursor: grab;
+    background: var(--background-color);
+}
+
+canvas:active {
+    cursor: grabbing;
+}
+
