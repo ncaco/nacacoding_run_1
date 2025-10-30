@@ -1,5 +1,5 @@
 :root {
-    --background-color: #000000;  /* 배경색 설정 */
+    --background-color: transparent;  /* 배경색 설정 */
 }
 
 * {
@@ -15,11 +15,9 @@ body {
 
 canvas {
     display: block;
-    cursor: grab;
+    cursor: default;
     background: var(--background-color);
-}
-
-canvas:active {
-    cursor: grabbing;
+    width: 1920px;
+    height: 1080px;
 }
 

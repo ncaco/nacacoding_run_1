@@ -1,97 +1,34 @@
-import { Hexagon } from './hexagon';
+import { Layout } from './layout';
+
+// 캔버스 설정
+class CanvasConfig {
+    static readonly WIDTH = 1920;
+    static readonly HEIGHT = 1080;
+}
 
 // 캔버스 초기화
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
-// CSS에서 배경색 가져오기
-const backgroundColor = getComputedStyle(document.documentElement)
-    .getPropertyValue('--background-color').trim();
+// 레이아웃 생성 (자동으로 중앙 배치, 헥사곤도 자동 생성)
+const layout = new Layout(CanvasConfig.WIDTH, CanvasConfig.HEIGHT);
 
 // 캔버스 크기 설정
 function resizeCanvas(): void {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    hexagon.setCenter(canvas.width / 2, canvas.height / 2);
+    canvas.width = CanvasConfig.WIDTH;
+    canvas.height = CanvasConfig.HEIGHT;
 }
 
-// 정육각형 생성 (도형 설정은 Hexagon.CONFIG에서 관리)
-const hexagon = new Hexagon(
-    window.innerWidth / 2,
-    window.innerHeight / 2
-);
-
-// 드래그 상태
-let isDragging = false;
-let lastMouseX = 0;
-let lastMouseY = 0;
-
-// 마우스 이벤트
-canvas.addEventListener('mousedown', (e: MouseEvent) => {
-    isDragging = true;
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
-});
-
-canvas.addEventListener('mousemove', (e: MouseEvent) => {
-    if (!isDragging) return;
-    
-    const deltaX = e.clientX - lastMouseX;
-    const deltaY = e.clientY - lastMouseY;
-    
-    hexagon.setRotation(hexagon.getRotation() + (deltaX + deltaY) * 0.5);
-    
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
-});
-
-canvas.addEventListener('mouseup', () => {
-    isDragging = false;
-});
-
-canvas.addEventListener('mouseleave', () => {
-    isDragging = false;
-});
-
-// 터치 이벤트 (모바일 지원)
-canvas.addEventListener('touchstart', (e: TouchEvent) => {
-    e.preventDefault();
-    if (e.touches.length > 0) {
-        isDragging = true;
-        lastMouseX = e.touches[0].clientX;
-        lastMouseY = e.touches[0].clientY;
-    }
-});
-
-canvas.addEventListener('touchmove', (e: TouchEvent) => {
-    e.preventDefault();
-    if (!isDragging || e.touches.length === 0) return;
-    
-    const deltaX = e.touches[0].clientX - lastMouseX;
-    const deltaY = e.touches[0].clientY - lastMouseY;
-    
-    hexagon.setRotation(hexagon.getRotation() + (deltaX + deltaY) * 0.5);
-    
-    lastMouseX = e.touches[0].clientX;
-    lastMouseY = e.touches[0].clientY;
-});
-
-canvas.addEventListener('touchend', () => {
-    isDragging = false;
-});
+// 레이아웃에 이벤트 연결
+layout.attachEvents(canvas);
 
 // 리사이즈 이벤트
 window.addEventListener('resize', resizeCanvas);
 
 // 애니메이션 루프
 function animate(): void {
-    // 배경 그리기 (CSS에서 정의된 색상 사용)
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 정육각형 그리기
-    hexagon.draw(ctx);
-    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    layout.draw(ctx, false);
     requestAnimationFrame(animate);
 }
 
