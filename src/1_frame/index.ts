@@ -1,16 +1,5 @@
 import { debugStrokeRect, FrameConfig } from '../0_config/index';
 
-// 캔버스 설정
-class CanvasConfig {
-    static readonly WIDTH = 1920;
-    static readonly HEIGHT = 1080;
-}
-
-// 뷰포트 기준 모바일 판단
-function isMobileViewport(): boolean {
-	return window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
 export type Scene = {
     render: (ctx: CanvasRenderingContext2D, width: number, height: number) => void;
     onClick?: (x: number, y: number) => void;
@@ -23,13 +12,13 @@ let frameWidth = 0;
 let frameHeight = 0;
 let frameOffsetX = 0;
 let frameOffsetY = 0;
+let frameClip: Path2D | null = null;
 
 export function setScene(scene: Scene): void {
     currentScene = scene;
 }
 
 export function initFrame(): void {
-    // 캔버스 초기화
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d')!;
 
@@ -42,7 +31,6 @@ export function initFrame(): void {
     canvas.style.width = '100%';
     canvas.style.height = '100%';
 
-    // 캔버스 크기 설정
     function resizeCanvas(): void {
     	const devicePixelRatio = window.devicePixelRatio || 1;
 
@@ -62,14 +50,22 @@ export function initFrame(): void {
 		frameOffsetX = Math.floor((viewportWidth - frameWidth) / 2);
 		frameOffsetY = 0;
 
+		// 프레임 클리핑 경로 준비 (리사이즈 시 1회 생성)
+		frameClip = new Path2D();
+		frameClip.rect(0, 0, frameWidth, frameHeight);
+
 		// 씬에 리사이즈 통지 (프레임 크기 기준)
 		currentScene?.onResize?.(frameWidth, frameHeight);
     }
 
-    // 리사이즈 이벤트
-    window.addEventListener('resize', resizeCanvas);
+    // 리사이즈 디바운스 (rAF)
+    let resizeScheduled = false;
+    window.addEventListener('resize', () => {
+        if (resizeScheduled) return;
+        resizeScheduled = true;
+        requestAnimationFrame(() => { resizeScheduled = false; resizeCanvas(); });
+    });
 
-    // 입력 이벤트를 씬에 위임 (캔버스 좌표로 변환)
     canvas.addEventListener('click', (ev) => {
         if (!currentScene) return;
         const rect = canvas.getBoundingClientRect();
@@ -85,39 +81,33 @@ export function initFrame(): void {
         currentScene?.onKeyDown?.(e);
     });
 
-    // 애니메이션 루프
     function animate(): void {
-        // DPR 스케일 적용 상태에서 전체 클리어
         const w = canvas.width;
         const h = canvas.height;
         ctx.save();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, w, h);
         ctx.restore();
-        // 현재 씬 렌더링 (프레임 기준 크기 전달)
         if (currentScene) {
             ctx.save();
-            // 프레임 영역으로 이동 및 클리핑
             ctx.translate(frameOffsetX, frameOffsetY);
-            ctx.beginPath();
-            ctx.rect(0, 0, frameWidth, frameHeight);
-            ctx.clip();
+            if (frameClip) {
+                ctx.clip(frameClip);
+            } else {
+                ctx.beginPath();
+                ctx.rect(0, 0, frameWidth, frameHeight);
+                ctx.clip();
+            }
             currentScene.render(ctx, frameWidth, frameHeight);
             ctx.restore();
         }
-        // 개발용 프레임 테두리 (전역 좌표)
         debugStrokeRect(ctx, frameOffsetX, frameOffsetY, frameWidth, frameHeight);
         
         requestAnimationFrame(animate);
     }
 
-    // DOM 씬 컨테이너는 사용하지 않음 (Canvas 2D 전면 사용)
-
-    // 초기화 및 시작
     resizeCanvas();
     animate();
-
-    // 프레임 초기화 로그는 개발 유틸로 이동하거나 생략
 }
 
 
