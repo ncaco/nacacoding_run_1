@@ -1,5 +1,7 @@
-import { initFrame, setScene } from './1_frame/';
-import { createStartScene } from './2_scene/0_startScene';
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-initFrame();
-setScene(createStartScene());
+ctx.fillStyle = 'red';
+ctx.fillRect(0, 0, 100, 100);
+
+console.log(ctx);
