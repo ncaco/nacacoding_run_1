@@ -1,0 +1,47 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.0-SNAPSHOT'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo project for Spring Boot'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url = 'https://repo.spring.io/snapshot' }
+}
+
+dependencies {
+	// Spring Boot 기본 스타터
+	implementation 'org.springframework.boot:spring-boot-starter'
+	
+	// RESTful API를 위한 Web 스타터 (필수)
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	
+	// 요청 검증을 위한 Validation 스타터
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	
+	// JSON 날짜/시간 처리 개선 (JSR310 지원)
+	// spring-boot-starter-web에 Jackson이 포함되어 있지만, 
+	// LocalDateTime 등 JSR310 타입을 위한 추가 설정
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	
+	// Hot Reload를 위한 DevTools
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	
+	// 테스트 의존성
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
