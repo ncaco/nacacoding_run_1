@@ -26,13 +26,18 @@ dependencies {
 	// RESTful API를 위한 Web 스타터 (필수)
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	
+	// Security & JWT
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// jjwt-api 0.12.x는 api/impl/jackson 세 모듈을 함께 선언해야 동작
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+	
 	// 요청 검증을 위한 Validation 스타터
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	
-	// JSON 날짜/시간 처리 개선 (JSR310 지원)
-	// spring-boot-starter-web에 Jackson이 포함되어 있지만, 
-	// LocalDateTime 등 JSR310 타입을 위한 추가 설정
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	// JSON 날짜/시간 처리 개선 (Spring Boot 4의 Jackson 3은 자동 설정 사용 권장)
+	// 필요 시 코드 구성으로 JavaTimeModule 추가 (JacksonConfig)
 	
 	// Hot Reload를 위한 DevTools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
