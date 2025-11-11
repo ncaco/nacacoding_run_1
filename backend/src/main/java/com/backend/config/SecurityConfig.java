@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -30,19 +31,8 @@ public class SecurityConfig {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		// 평문 비밀번호 비교를 위한 PasswordEncoder
-		// 주의: 프로덕션 환경에서는 BCryptPasswordEncoder 사용 권장
-		return new PasswordEncoder() {
-			@Override
-			public String encode(CharSequence rawPassword) {
-				return rawPassword.toString();
-			}
-
-			@Override
-			public boolean matches(CharSequence rawPassword, String encodedPassword) {
-				return rawPassword.toString().equals(encodedPassword);
-			}
-		};
+		// BCrypt 해시를 사용해 비밀번호를 안전하게 저장/검증
+		return new BCryptPasswordEncoder();
 	}
 
 	@Bean

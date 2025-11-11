@@ -10,6 +10,7 @@ import com.backend.common.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,17 +26,19 @@ public class AuthController {
 	private final UserService userService;
 	private final JwtUtil jwtUtil;
 	private final TokenBlacklistService tokenBlacklistService;
+	private final PasswordEncoder passwordEncoder;
 
-	public AuthController(UserService userService, JwtUtil jwtUtil, TokenBlacklistService tokenBlacklistService) {
+	public AuthController(UserService userService, JwtUtil jwtUtil, TokenBlacklistService tokenBlacklistService, PasswordEncoder passwordEncoder) {
 		this.userService = userService;
 		this.jwtUtil = jwtUtil;
 		this.tokenBlacklistService = tokenBlacklistService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest req) {
 		User user = userService.findByUsername(req.getUsername())
-				.filter(u -> u.getPassword().equals(req.getPassword()))
+				.filter(u -> passwordEncoder.matches(req.getPassword(), u.getPassword()))
 				.orElseThrow(() -> new IllegalArgumentException("invalid credentials"));
 		String token = jwtUtil.generateToken(user.getUsername(), Map.of("role", user.getRole().name()));
 		return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(token)));
