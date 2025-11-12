@@ -36,6 +36,9 @@ dependencies {
 	// 요청 검증을 위한 Validation 스타터
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	
+	// API 문서화 (Swagger/OpenAPI)
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+	
 	// JSON 날짜/시간 처리 개선 (Spring Boot 4의 Jackson 3은 자동 설정 사용 권장)
 	// 필요 시 코드 구성으로 JavaTimeModule 추가 (JacksonConfig)
 	

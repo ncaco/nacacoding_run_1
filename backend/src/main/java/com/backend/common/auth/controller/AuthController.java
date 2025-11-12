@@ -7,6 +7,10 @@ import com.backend.common.auth.security.TokenBlacklistService;
 import com.backend.core.dto.ApiResponse;
 import com.backend.common.user.model.User;
 import com.backend.common.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "인증", description = "로그인/로그아웃 API")
 public class AuthController {
 	private final UserService userService;
 	private final JwtUtil jwtUtil;
@@ -35,6 +40,11 @@ public class AuthController {
 		this.passwordEncoder = passwordEncoder;
 	}
 
+	@Operation(summary = "로그인", description = "사용자명과 비밀번호로 로그인하여 JWT 토큰을 발급받습니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그인 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 인증 정보")
+	})
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest req) {
 		User user = userService.findByUsername(req.getUsername())
@@ -44,6 +54,12 @@ public class AuthController {
 		return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(token)));
 	}
 
+	@Operation(summary = "로그아웃", description = "현재 사용자의 JWT 토큰을 무효화합니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+	})
+	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/logout")
 	public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
 	                                                 Authentication authentication) {

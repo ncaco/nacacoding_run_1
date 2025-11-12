@@ -49,7 +49,15 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-					.requestMatchers("/api/v1/auth/**", "/actuator/health").permitAll()
+					.requestMatchers(
+						"/api/v1/auth/**",
+						"/actuator/health",
+						"/swagger-ui/**",
+						"/swagger-ui.html",
+						"/v3/api-docs/**",
+						"/swagger-resources/**",
+						"/webjars/**"
+					).permitAll()
 					.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 					.anyRequest().authenticated()
 			)
