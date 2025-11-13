@@ -7,8 +7,11 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.tags.Tag;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -28,6 +31,13 @@ public class OpenApiConfig {
 						.license(new License()
 								.name("Apache 2.0")
 								.url("https://www.apache.org/licenses/LICENSE-2.0.html")))
+				.tags(List.of(
+						new Tag().name("인증").description("로그인/로그아웃 API"),
+						new Tag().name("관리자").description("관리자(USER) 전용 API"),
+						new Tag().name("사용자").description("사용자(MEMBER) 관리 API"),
+						new Tag().name("파일").description("파일 업로드/다운로드 API"),
+						new Tag().name("로그").description("로그 관리 API")
+				))
 				.addSecurityItem(new SecurityRequirement()
 						.addList(securitySchemeName))
 				.components(new Components()

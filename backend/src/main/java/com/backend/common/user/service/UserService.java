@@ -1,39 +1,65 @@
 package com.backend.common.user.service;
 
+import com.backend.common.user.entity.UserEntity;
 import com.backend.common.user.model.Role;
 import com.backend.common.user.model.User;
+import com.backend.common.user.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService {
-	private final Map<String, User> usersByUsername = new ConcurrentHashMap<>();
+	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
-	public UserService(PasswordEncoder passwordEncoder) {
+	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
-		// 초기 계정 생성 시 암호화 적용
-		createUser("admin", "admin123", Role.ADMIN);
-		createUser("user", "user123", Role.USER);
+	}
+
+	@PostConstruct
+	public void init() {
+		// 초기 계정 생성 (이미 존재하면 생성하지 않음)
+		if (!userRepository.existsByUsername("admin")) {
+			createUser("admin", "admin123", Role.USER); // 관리자
+		}
+		if (!userRepository.existsByUsername("member")) {
+			createUser("member", "member123", Role.MEMBER); // 사용자
+		}
 	}
 
 	public Optional<User> findByUsername(String username) {
-		return Optional.ofNullable(usersByUsername.get(username));
+		return userRepository.findByUsername(username)
+				.map(this::toUser);
 	}
 
 	public User createUser(String username, String password, Role role) {
+		if (userRepository.existsByUsername(username)) {
+			throw new IllegalArgumentException("Username already exists: " + username);
+		}
 		String encoded = passwordEncoder.encode(password);
-		User user = new User(UUID.randomUUID().toString(), username, encoded, role);
-		usersByUsername.put(username, user);
-		return user;
+		UserEntity entity = new UserEntity(username, encoded, role);
+		UserEntity saved = userRepository.save(entity);
+		return toUser(saved);
 	}
 
 	public List<User> listUsers() {
-		return usersByUsername.values().stream().collect(Collectors.toList());
+		// 관리자(USER 역할)만 조회
+		return userRepository.findAll().stream()
+				.filter(u -> u.getRole() == Role.USER)
+				.map(this::toUser)
+				.collect(Collectors.toList());
+	}
+
+	private User toUser(UserEntity entity) {
+		return new User(entity.getId(), entity.getUsername(), entity.getPassword(), entity.getRole());
 	}
 }
 

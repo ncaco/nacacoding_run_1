@@ -1,8 +1,8 @@
 package com.backend.common.user.model;
 
 public enum Role {
-	USER,
-	ADMIN
+	USER,    // 관리자
+	MEMBER   // 사용자
 }
 
 
