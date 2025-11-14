@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("/api/v1/logs")
-@Tag(name = "로그", description = "로그 관리 API")
+@Tag(name = "04_로그", description = "로그 관리 API")
 public class LogController {
 	private final List<Map<String, Object>> logs = new CopyOnWriteArrayList<>();
 

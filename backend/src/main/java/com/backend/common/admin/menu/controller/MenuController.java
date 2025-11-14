@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/menu")
-@Tag(name = "메뉴 관리", description = "메뉴 CRUD 관리 API")
+@Tag(name = "07_메뉴", description = "메뉴 CRUD 관리 API")
 public class MenuController {
 	private final MenuService menuService;
 

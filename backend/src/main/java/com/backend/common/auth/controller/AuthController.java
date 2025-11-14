@@ -26,7 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@Tag(name = "인증", description = "로그인/로그아웃 API")
+@Tag(name = "01_인증", description = "로그인/로그아웃 API")
 public class AuthController {
 	private final UserService userService;
 	private final JwtUtil jwtUtil;

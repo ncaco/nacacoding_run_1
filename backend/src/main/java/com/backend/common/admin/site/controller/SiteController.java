@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/site")
-@Tag(name = "사이트 관리", description = "사이트 CRUD 관리 API")
+@Tag(name = "06_사이트", description = "사이트 CRUD 관리 API")
 public class SiteController {
 	private final SiteService siteService;
 

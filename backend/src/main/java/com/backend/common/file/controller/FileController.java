@@ -23,7 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/files")
-@Tag(name = "파일", description = "파일 업로드/다운로드 API")
+@Tag(name = "05_파일", description = "파일 업로드/다운로드 API")
 public class FileController {
 	private final Path storageDir = Path.of(System.getProperty("java.io.tmpdir"), "uploads");
 

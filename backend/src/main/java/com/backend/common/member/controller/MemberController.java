@@ -18,7 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/members")
-@Tag(name = "사용자", description = "사용자(MEMBER) 관리 API")
+@Tag(name = "03_사용자", description = "사용자(MEMBER) 관리 API")
 public class MemberController {
 	private final MemberService memberService;
 
