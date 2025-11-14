@@ -64,7 +64,8 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
+    # tags-sorter를 제거하면 OpenApiConfig에서 정의한 순서대로 표시됩니다
+    # tags-sorter: alpha  # 알파벳 순 정렬 (주석 처리 시 OpenAPI에서 정의한 순서 사용)
+    operations-sorter: method  # HTTP 메서드 순서대로 표시 (GET, POST, PUT, DELETE 순)
     try-it-out-enabled: true
 

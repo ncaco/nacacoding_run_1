@@ -35,6 +35,8 @@ public class OpenApiConfig {
 						new Tag().name("인증").description("로그인/로그아웃 API"),
 						new Tag().name("관리자").description("관리자(USER) 전용 API"),
 						new Tag().name("사용자").description("사용자(MEMBER) 관리 API"),
+						new Tag().name("사이트 관리").description("사이트 CRUD 관리 API"),
+						new Tag().name("메뉴 관리").description("메뉴 CRUD 관리 API"),
 						new Tag().name("파일").description("파일 업로드/다운로드 API"),
 						new Tag().name("로그").description("로그 관리 API")
 				))

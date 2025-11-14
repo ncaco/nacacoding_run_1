@@ -7,6 +7,9 @@
 - **프론트엔드**: Next.js 16.0.1 (React 19.2.0, TypeScript)
 - **데이터베이스**: H2 (인메모리)
 - **인증**: JWT 기반 인증 시스템
+- **사이트 구성**:
+  - **통합관리사이트 (ADMIN)**: 시스템 관리 및 통계 조회를 위한 관리자 사이트
+  - **메인포털사이트 (PORTAL)**: 일반 사용자를 위한 메인 포털 사이트
 
 ## 프로젝트 구조
 
@@ -40,6 +43,14 @@ nacacoding_run_1/
 - [x] 로그 목록 조회
 - [x] 로그 추가
 
+### 사이트 관리
+- [x] 사이트 CRUD (생성, 조회, 수정, 삭제)
+
+### 메뉴 관리
+- [x] 메뉴 CRUD (생성, 조회, 수정, 삭제)
+- [x] 사이트별 메뉴 조회
+- [x] 계층 구조 메뉴 지원 (부모/하위 메뉴)
+
 ## API 엔드포인트
 
 ### 인증
@@ -64,6 +75,23 @@ nacacoding_run_1/
 - `GET /api/v1/logs` - 로그 목록 조회
 - `POST /api/v1/logs` - 로그 추가
 
+### 사이트 관리
+- `GET /api/v1/site` - 사이트 목록 조회 (관리자 권한 필요)
+- `GET /api/v1/site/{id}` - 사이트 조회 (관리자 권한 필요)
+- `GET /api/v1/site/type/{siteType}` - 사이트 타입으로 조회 (관리자 권한 필요)
+- `POST /api/v1/site` - 사이트 생성 (관리자 권한 필요)
+- `PUT /api/v1/site/{id}` - 사이트 수정 (관리자 권한 필요)
+- `DELETE /api/v1/site/{id}` - 사이트 삭제 (관리자 권한 필요)
+
+### 메뉴 관리
+- `GET /api/v1/menu` - 메뉴 목록 조회 (관리자 권한 필요)
+- `GET /api/v1/menu/{id}` - 메뉴 조회 (관리자 권한 필요)
+- `GET /api/v1/menu/site/{siteId}` - 사이트별 메뉴 목록 조회 (관리자 권한 필요)
+- `GET /api/v1/menu/site/{siteId}/enabled` - 사이트별 활성화된 메뉴 목록 조회 (관리자 권한 필요)
+- `POST /api/v1/menu` - 메뉴 생성 (관리자 권한 필요)
+- `PUT /api/v1/menu/{id}` - 메뉴 수정 (관리자 권한 필요)
+- `DELETE /api/v1/menu/{id}` - 메뉴 삭제 (관리자 권한 필요)
+
 ## 작업 현황
 
 ### 완료된 작업
@@ -77,6 +105,8 @@ nacacoding_run_1/
 - [x] 초기 계정 생성 로직 개선 (@PostConstruct → ApplicationReadyEvent)
 - [x] 사용자/관리자 로그인 엔드포인트 분리
 - [x] 사용자/관리자 로그아웃 엔드포인트 분리
+- [x] 사이트 관리 CRUD API 구현
+- [x] 메뉴 관리 CRUD API 구현
 
 ### 진행 중인 작업
 - [ ] 프론트엔드 API 연동

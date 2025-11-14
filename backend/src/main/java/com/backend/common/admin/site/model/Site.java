@@ -1,0 +1,39 @@
+package com.backend.common.admin.site.model;
+
+import jakarta.validation.constraints.NotBlank;
+
+public class Site {
+	private String id;
+	private SiteType siteType;
+	@NotBlank
+	private String siteName;
+	private String description;
+	@NotBlank
+	private String version;
+	private Boolean enabled;
+	
+	public Site() {}
+	
+	public Site(String id, SiteType siteType, String siteName, String description, String version, Boolean enabled) {
+		this.id = id;
+		this.siteType = siteType;
+		this.siteName = siteName;
+		this.description = description;
+		this.version = version;
+		this.enabled = enabled;
+	}
+	
+	public String getId() { return id; }
+	public void setId(String id) { this.id = id; }
+	public SiteType getSiteType() { return siteType; }
+	public void setSiteType(SiteType siteType) { this.siteType = siteType; }
+	public String getSiteName() { return siteName; }
+	public void setSiteName(String siteName) { this.siteName = siteName; }
+	public String getDescription() { return description; }
+	public void setDescription(String description) { this.description = description; }
+	public String getVersion() { return version; }
+	public void setVersion(String version) { this.version = version; }
+	public Boolean getEnabled() { return enabled; }
+	public void setEnabled(Boolean enabled) { this.enabled = enabled; }
+}
+

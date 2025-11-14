@@ -62,6 +62,8 @@ public class SecurityConfig {
 						"/webjars/**"
 					).permitAll()
 					.requestMatchers("/api/v1/users/**").hasRole("USER")
+					.requestMatchers("/api/v1/site/**").hasRole("USER")
+					.requestMatchers("/api/v1/menu/**").hasRole("USER")
 					.anyRequest().authenticated()
 			)
 			.exceptionHandling(exceptions -> exceptions
