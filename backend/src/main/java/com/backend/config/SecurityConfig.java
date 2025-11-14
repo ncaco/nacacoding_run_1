@@ -7,7 +7,6 @@ import com.backend.common.auth.security.TokenBlacklistService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,7 +38,9 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtUtil jwtUtil, 
 	                                               CustomUserDetailsService userDetailsService,
 	                                               PasswordEncoder passwordEncoder,
-	                                               TokenBlacklistService tokenBlacklistService) throws Exception {
+	                                               TokenBlacklistService tokenBlacklistService,
+	                                               CustomAuthenticationEntryPoint authenticationEntryPoint,
+	                                               CustomAccessDeniedHandler accessDeniedHandler) throws Exception {
 		AuthenticationManagerBuilder authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 		authManagerBuilder
 			.userDetailsService(userDetailsService)
@@ -63,7 +64,10 @@ public class SecurityConfig {
 					.requestMatchers("/api/v1/users/**").hasRole("USER")
 					.anyRequest().authenticated()
 			)
-			.httpBasic(Customizer.withDefaults());
+			.exceptionHandling(exceptions -> exceptions
+					.authenticationEntryPoint(authenticationEntryPoint)
+					.accessDeniedHandler(accessDeniedHandler)
+			);
 
 		http.addFilterBefore(new JwtAuthFilter(jwtUtil, tokenBlacklistService), UsernamePasswordAuthenticationFilter.class);
 		return http.build();

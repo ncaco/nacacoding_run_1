@@ -14,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -24,19 +23,6 @@ public class UserController {
 
 	public UserController(UserService userService) {
 		this.userService = userService;
-	}
-
-	@Operation(summary = "관리자 대시보드", description = "관리자 대시보드 정보를 조회합니다. USER(관리자) 권한이 필요합니다.")
-	@ApiResponses(value = {
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "권한 부족 (USER 권한 필요)")
-	})
-	@SecurityRequirement(name = "bearerAuth")
-	@PreAuthorize("hasRole('USER')")
-	@GetMapping("/dashboard")
-	public ResponseEntity<ApiResponse<Map<String, Object>>> dashboard() {
-		return ResponseEntity.ok(ApiResponse.ok(Map.of("status", "admin ok")));
 	}
 
 	@Operation(summary = "관리자 목록 조회", description = "전체 관리자(USER) 목록을 조회합니다. USER 권한이 필요합니다.")

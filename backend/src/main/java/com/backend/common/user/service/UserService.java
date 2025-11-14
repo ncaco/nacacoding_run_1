@@ -4,7 +4,8 @@ import com.backend.common.user.entity.UserEntity;
 import com.backend.common.user.model.Role;
 import com.backend.common.user.model.User;
 import com.backend.common.user.repository.UserRepository;
-import jakarta.annotation.PostConstruct;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +25,10 @@ public class UserService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	@PostConstruct
+	@EventListener(ApplicationReadyEvent.class)
 	public void init() {
 		// 초기 계정 생성 (이미 존재하면 생성하지 않음)
+		// ApplicationReadyEvent를 사용하여 모든 빈이 준비된 후 실행
 		if (!userRepository.existsByUsername("admin")) {
 			createUser("admin", "admin123", Role.USER); // 관리자
 		}

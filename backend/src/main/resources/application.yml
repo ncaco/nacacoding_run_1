@@ -6,8 +6,17 @@ spring:
   devtools:
     restart:
       enabled: true
+      # 변경 감지 제외 경로 (성능 향상)
+      exclude: "static/**,public/**,templates/**,META-INF/maven/**,META-INF/resources/**"
+      # 추가 감시 경로
+      additional-paths: "src/main/java,src/main/resources"
+      # 폴링 간격 (밀리초) - Windows에서 더 안정적
+      poll-interval: 1000
+      # 쿼터 간격 (밀리초)
+      quiet-period: 400
     livereload:
       enabled: true
+      port: 35729
   
   # JSON 타임존 설정
   jackson:
