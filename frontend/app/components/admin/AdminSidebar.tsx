@@ -105,13 +105,21 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
 
+  const handleLinkClick = () => {
+    // 모바일에서 링크 클릭 시 사이드바 닫기
+    if (window.innerWidth < 1024) {
+      onClose();
+    }
+  };
+
   return (
     <>
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 transition-opacity duration-300 lg:hidden"
+          className="fixed inset-0 z-30 bg-black/50 transition-opacity duration-300 ease-in-out lg:hidden"
           onClick={onClose}
+          aria-hidden="true"
         />
       )}
 
@@ -119,7 +127,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       <aside
         className={`fixed left-0 top-0 z-40 h-screen w-64 transform border-r border-gray-200 bg-white transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0`}
+        }`}
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
@@ -131,13 +139,14 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </div>
 
           {/* Menu Items */}
-          <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+          <nav className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 py-4 scrollbar-hide">
             {menuItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={handleLinkClick}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
@@ -157,6 +166,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           <div className="border-t border-gray-200 p-4 dark:border-gray-800">
             <Link
               href="/"
+              onClick={handleLinkClick}
               className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

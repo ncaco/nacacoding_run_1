@@ -85,33 +85,56 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
+/* Hide scrollbar but keep functionality */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Scrollbar hide utility class */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Optional: Show scrollbar on hover for better UX (uncomment if needed) */
+/*
+*:hover::-webkit-scrollbar {
+  display: block;
   width: 8px;
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
+*:hover::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
-.dark ::-webkit-scrollbar-track {
+.dark *:hover::-webkit-scrollbar-track {
   background: #1f1f1f;
 }
 
-::-webkit-scrollbar-thumb {
+*:hover::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
+.dark *:hover::-webkit-scrollbar-thumb {
   background: #555;
 }
 
-::-webkit-scrollbar-thumb:hover {
+*:hover::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
+.dark *:hover::-webkit-scrollbar-thumb:hover {
   background: #777;
 }
+*/
