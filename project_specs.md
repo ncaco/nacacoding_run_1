@@ -101,16 +101,35 @@ nacacoding_run_1/
 - [x] 파일 업로드/다운로드 기능
 - [x] 로그 관리 기능
 - [x] Swagger/OpenAPI 문서화
+- [x] Swagger 태그 순서 설정 (01_인증, 02_관리자, 03_사용자, 04_로그, 05_파일, 06_사이트, 07_메뉴)
 - [x] 예외 처리 (GlobalExceptionHandler)
+- [x] 인증 실패 시 JSON 응답 처리 (CustomAuthenticationEntryPoint, CustomAccessDeniedHandler)
 - [x] 초기 계정 생성 로직 개선 (@PostConstruct → ApplicationReadyEvent)
 - [x] 사용자/관리자 로그인 엔드포인트 분리
 - [x] 사용자/관리자 로그아웃 엔드포인트 분리
 - [x] 사이트 관리 CRUD API 구현
 - [x] 메뉴 관리 CRUD API 구현
+- [x] 데이터베이스 스키마 문서화 (db_structure.md)
 
 ### 진행 중인 작업
 - [ ] 프론트엔드 API 연동
-- [ ] 데이터베이스 스키마 문서화
+  - [x] 포털 사이트 기본 디자인 구현 (Supabase 스타일)
+  - [x] 헤더/네비게이션 컴포넌트
+  - [x] 히어로 섹션
+  - [x] 기능 소개 섹션
+  - [x] 푸터
+  - [x] 로그인/회원가입 페이지 UI
+  - [x] 관리자 페이지 레이아웃 (헤더 + 사이드바)
+  - [x] 사이드바 슬라이드 기능
+  - [x] 탭 기반 콘텐츠 영역
+  - [x] 관리자 대시보드 페이지
+  - [x] 사이트 관리 페이지
+  - [x] 메뉴 관리 페이지
+  - [x] 사용자 관리 페이지
+  - [x] 파일 관리 페이지
+  - [x] 로그 관리 페이지
+  - [x] 다크모드 지원 (next-themes)
+  - [ ] API 연동 (인증, 데이터 조회 등)
 
 ### 예정된 작업
 - [ ] 단위 테스트 작성
