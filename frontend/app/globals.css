@@ -80,6 +80,11 @@ html.dark div.dark\:bg-gray-900 {
   border-color: rgba(17 24 39 / 0.5) !important; /* gray-900 with 50% opacity */
 }
 
+/* 모바일 사이드바 헤더 다크모드 배경색 강제 적용 */
+html.dark div.bg-gradient-to-r.dark\:from-gray-900.dark\:to-gray-950 {
+  background: linear-gradient(to right, rgb(17 24 39), rgb(3 7 18)) !important; /* gray-900 to gray-950 */
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
