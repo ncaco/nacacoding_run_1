@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -11,6 +11,22 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isChecking, setIsChecking] = useState(true);
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkAuth = () => {
+      const adminToken = localStorage.getItem('adminToken');
+      if (adminToken) {
+        // 이미 로그인되어 있으면 대시보드로 리다이렉트
+        router.push('/admin');
+      } else {
+        setIsChecking(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +70,38 @@ export default function AdminLoginPage() {
     }
   };
 
+  // 로그인 상태 확인 중일 때는 로딩 표시
+  if (isChecking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 px-4 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <svg
+            className="mx-auto h-8 w-8 animate-spin text-green-600"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">확인 중...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 dark:from-gray-900 dark:to-gray-950 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 px-4 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-white p-8 shadow-2xl dark:bg-gray-800 dark:shadow-gray-900/50">
           {/* Logo and Title */}
