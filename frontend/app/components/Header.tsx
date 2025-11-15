@@ -21,16 +21,16 @@ export default function Header() {
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-8 md:flex">
           <Link href="/features" className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-            Features
+            기능
           </Link>
           <Link href="/docs" className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-            Docs
+            문서
           </Link>
           <Link href="/pricing" className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-            Pricing
+            가격
           </Link>
           <Link href="/blog" className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-            Blog
+            블로그
           </Link>
         </div>
 
@@ -41,13 +41,13 @@ export default function Header() {
             href="/login"
             className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
           >
-            Sign in
+            로그인
           </Link>
           <Link
             href="/signup"
             className="rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-2 text-sm font-medium text-white transition-all hover:from-green-500 hover:to-green-700"
           >
-            Get started
+            시작하기
           </Link>
         </div>
 
@@ -84,28 +84,28 @@ export default function Header() {
               className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
               onClick={() => setIsMenuOpen(false)}
             >
-              Features
+              기능
             </Link>
             <Link
               href="/docs"
               className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
               onClick={() => setIsMenuOpen(false)}
             >
-              Docs
+              문서
             </Link>
             <Link
               href="/pricing"
               className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
               onClick={() => setIsMenuOpen(false)}
             >
-              Pricing
+              가격
             </Link>
             <Link
               href="/blog"
               className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
               onClick={() => setIsMenuOpen(false)}
             >
-              Blog
+              블로그
             </Link>
             <div className="flex flex-col gap-2 border-t border-gray-200 pt-4 dark:border-gray-800">
               <div className="flex items-center justify-between">
@@ -117,14 +117,14 @@ export default function Header() {
                 className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Sign in
+                로그인
               </Link>
               <Link
                 href="/signup"
                 className="rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-2 text-center text-sm font-medium text-white transition-all hover:from-green-500 hover:to-green-700"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Get started
+                시작하기
               </Link>
             </div>
           </div>

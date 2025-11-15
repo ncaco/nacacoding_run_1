@@ -2,19 +2,19 @@ import Link from 'next/link';
 
 const footerLinks = {
   product: [
-    { name: 'Features', href: '/features' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'Security', href: '/security' },
+    { name: '기능', href: '/features' },
+    { name: '가격', href: '/pricing' },
+    { name: '보안', href: '/security' },
   ],
   resources: [
-    { name: 'Documentation', href: '/docs' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Support', href: '/support' },
+    { name: '문서', href: '/docs' },
+    { name: '블로그', href: '/blog' },
+    { name: '지원', href: '/support' },
   ],
   company: [
-    { name: 'About', href: '/about' },
-    { name: 'Careers', href: '/careers' },
-    { name: 'Contact', href: '/contact' },
+    { name: '회사 소개', href: '/about' },
+    { name: '채용', href: '/careers' },
+    { name: '문의', href: '/contact' },
   ],
 };
 
@@ -31,14 +31,14 @@ export default function Footer() {
               </div>
               <span className="text-xl font-semibold text-gray-900">Portal</span>
             </Link>
-            <p className="mt-4 text-sm text-gray-600">
-              Build in a weekend, scale to millions.
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              주말에 구축하고, 수백만으로 확장하세요.
             </p>
           </div>
 
           {/* Product */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Product</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">제품</h3>
             <ul className="mt-4 space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
@@ -55,7 +55,7 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Resources</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">리소스</h3>
             <ul className="mt-4 space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
@@ -72,7 +72,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Company</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">회사</h3>
             <ul className="mt-4 space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -91,7 +91,7 @@ export default function Footer() {
         <div className="mt-12 border-t border-gray-200 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © {new Date().getFullYear()} Portal. All rights reserved.
+              © {new Date().getFullYear()} 포털. 모든 권리 보유.
             </p>
             <div className="flex gap-6">
               <a

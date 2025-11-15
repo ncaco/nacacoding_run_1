@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Portal - Build in a weekend, Scale to millions',
-  description: 'Portal is the modern platform for building applications. Start your project with authentication, APIs, file storage, and more.',
+  title: '포털 - 주말에 구축하고, 수백만으로 확장하세요',
+  description: '포털은 애플리케이션을 구축하기 위한 현대적인 플랫폼입니다. 인증, API, 파일 저장소 등을 포함하여 프로젝트를 시작하세요.',
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

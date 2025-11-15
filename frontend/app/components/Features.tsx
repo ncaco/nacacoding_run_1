@@ -1,7 +1,7 @@
 const features = [
   {
-    title: 'Authentication',
-    description: 'Add user sign-ups and logins, securing your data with role-based access control.',
+    title: '인증',
+    description: '사용자 회원가입과 로그인을 추가하고, 역할 기반 접근 제어로 데이터를 보호하세요.',
     icon: (
       <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -14,8 +14,8 @@ const features = [
     ),
   },
   {
-    title: 'File Storage',
-    description: 'Store any file type, from documents to media files with secure access control.',
+    title: '파일 저장소',
+    description: '문서부터 미디어 파일까지 모든 파일 유형을 안전한 접근 제어와 함께 저장하세요.',
     icon: (
       <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -28,8 +28,8 @@ const features = [
     ),
   },
   {
-    title: 'RESTful APIs',
-    description: 'Instantly turn your database into a RESTful API with automatic CRUD operations.',
+    title: 'RESTful API',
+    description: '데이터베이스를 자동 CRUD 작업이 포함된 RESTful API로 즉시 변환하세요.',
     icon: (
       <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -42,8 +42,8 @@ const features = [
     ),
   },
   {
-    title: 'Site Management',
-    description: 'Manage multiple sites with different configurations and settings.',
+    title: '사이트 관리',
+    description: '다양한 구성과 설정으로 여러 사이트를 관리하세요.',
     icon: (
       <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -56,8 +56,8 @@ const features = [
     ),
   },
   {
-    title: 'Menu Management',
-    description: 'Create hierarchical menus with parent-child relationships for your sites.',
+    title: '메뉴 관리',
+    description: '사이트를 위한 부모-자식 관계를 가진 계층적 메뉴를 생성하세요.',
     icon: (
       <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -70,8 +70,8 @@ const features = [
     ),
   },
   {
-    title: 'Logging',
-    description: 'Track and monitor application events with comprehensive logging system.',
+    title: '로깅',
+    description: '포괄적인 로깅 시스템으로 애플리케이션 이벤트를 추적하고 모니터링하세요.',
     icon: (
       <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -91,10 +91,10 @@ export default function Features() {
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            Everything you need to build
+            구축에 필요한 모든 것
           </h2>
           <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-            Use one or all. Best of breed products. Integrated as a platform.
+            하나 또는 모두 사용하세요. 최고의 제품들. 플랫폼으로 통합되었습니다.
           </p>
         </div>
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
