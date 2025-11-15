@@ -30,22 +30,71 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    // localStorage에서 사용자 정보 가져오기
-    const adminUsername = localStorage.getItem('adminUsername');
-    const userRole = localStorage.getItem('userRole');
-    
-    if (adminUsername) {
-      setUsername(adminUsername);
-      setProfileData({
-        username: adminUsername,
-        email: `${adminUsername}@admin.com`,
-        name: adminUsername,
-      });
-    }
-    
-    if (userRole) {
-      setRole(userRole === 'USER' ? '관리자' : userRole);
-    }
+    // API에서 프로필 정보 가져오기
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success && data.data) {
+          const user = data.data;
+          setUsername(user.username || '');
+          setRole(user.role === 'USER' ? '관리자' : user.role);
+          setProfileData({
+            username: user.username || '',
+            email: user.email || '',
+            name: user.name || user.username || '',
+          });
+        } else {
+          // API 실패 시 localStorage에서 가져오기
+          const adminUsername = localStorage.getItem('adminUsername');
+          const userRole = localStorage.getItem('userRole');
+          
+          if (adminUsername) {
+            setUsername(adminUsername);
+            setProfileData({
+              username: adminUsername,
+              email: `${adminUsername}@admin.com`,
+              name: adminUsername,
+            });
+          }
+          
+          if (userRole) {
+            setRole(userRole === 'USER' ? '관리자' : userRole);
+          }
+        }
+      } catch (error) {
+        console.error('프로필 조회 실패:', error);
+        // 에러 발생 시 localStorage에서 가져오기
+        const adminUsername = localStorage.getItem('adminUsername');
+        const userRole = localStorage.getItem('userRole');
+        
+        if (adminUsername) {
+          setUsername(adminUsername);
+          setProfileData({
+            username: adminUsername,
+            email: `${adminUsername}@admin.com`,
+            name: adminUsername,
+          });
+        }
+        
+        if (userRole) {
+          setRole(userRole === 'USER' ? '관리자' : userRole);
+        }
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -55,17 +104,38 @@ export default function ProfilePage() {
     setErrorMessage('');
 
     try {
-      // TODO: 실제 API 호출로 변경
       const token = localStorage.getItem('adminToken');
-      
-      // 시뮬레이션: 실제로는 API 호출
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // localStorage 업데이트
-      if (profileData.username) {
-        localStorage.setItem('adminUsername', profileData.username);
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
       }
-      
+
+      const response = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: profileData.name,
+          email: profileData.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '프로필 업데이트에 실패했습니다.');
+      }
+
+      // 업데이트된 정보로 상태 업데이트
+      if (data.data) {
+        setProfileData({
+          username: data.data.username || profileData.username,
+          email: data.data.email || profileData.email,
+          name: data.data.name || profileData.name,
+        });
+      }
+
       setSuccessMessage('프로필이 성공적으로 업데이트되었습니다.');
       
       // 3초 후 메시지 제거
@@ -73,7 +143,11 @@ export default function ProfilePage() {
         setSuccessMessage('');
       }, 3000);
     } catch (error) {
-      setErrorMessage('프로필 업데이트에 실패했습니다. 다시 시도해주세요.');
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('프로필 업데이트에 실패했습니다. 다시 시도해주세요.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -100,12 +174,29 @@ export default function ProfilePage() {
     }
 
     try {
-      // TODO: 실제 API 호출로 변경
       const token = localStorage.getItem('adminToken');
-      
-      // 시뮬레이션: 실제로는 API 호출
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      const response = await fetch('http://localhost:8080/api/v1/auth/password/admin', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '비밀번호 변경에 실패했습니다.');
+      }
+
       setSuccessMessage('비밀번호가 성공적으로 변경되었습니다.');
       
       // 폼 초기화
@@ -120,7 +211,11 @@ export default function ProfilePage() {
         setSuccessMessage('');
       }, 3000);
     } catch (error) {
-      setErrorMessage('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -179,14 +274,25 @@ export default function ProfilePage() {
               </div>
             </div>
 
+            {/* 아이디 (읽기 전용) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                아이디
+              </label>
+              <div className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+                {profileData.username || '-'}
+              </div>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">아이디는 변경할 수 없습니다.</p>
+            </div>
+
             <FormField
-              label="사용자명"
-              name="username"
+              label="이름"
+              name="name"
               type="text"
               required
-              placeholder="사용자명을 입력하세요"
-              value={profileData.username}
-              onChange={(value) => setProfileData({ ...profileData, username: value as string })}
+              placeholder="이름을 입력하세요"
+              value={profileData.name}
+              onChange={(value) => setProfileData({ ...profileData, name: value as string })}
             />
             <FormField
               label="이메일"
@@ -196,14 +302,6 @@ export default function ProfilePage() {
               placeholder="이메일을 입력하세요"
               value={profileData.email}
               onChange={(value) => setProfileData({ ...profileData, email: value as string })}
-            />
-            <FormField
-              label="이름"
-              name="name"
-              type="text"
-              placeholder="이름을 입력하세요"
-              value={profileData.name}
-              onChange={(value) => setProfileData({ ...profileData, name: value as string })}
             />
             <FormActions
               onSubmit={handleProfileSubmit}

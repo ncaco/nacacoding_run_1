@@ -41,6 +41,10 @@ public class JwtUtil {
 				.getPayload().get("role");
 		return role != null ? role.toString() : "USER";
 	}
+
+	public String getUsername(String token) {
+		return getSubject(token);
+	}
 }
 
 

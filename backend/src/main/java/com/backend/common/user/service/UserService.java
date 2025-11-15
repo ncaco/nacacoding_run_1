@@ -60,8 +60,39 @@ public class UserService {
 				.collect(Collectors.toList());
 	}
 
+	public User updateProfile(String username, String name, String email) {
+		UserEntity entity = userRepository.findByUsername(username)
+				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + username));
+		entity.setName(name);
+		entity.setEmail(email);
+		UserEntity saved = userRepository.save(entity);
+		return toUser(saved);
+	}
+
+	public void changePassword(String username, String currentPassword, String newPassword) {
+		UserEntity entity = userRepository.findByUsername(username)
+				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + username));
+		
+		// 현재 비밀번호 확인
+		if (!passwordEncoder.matches(currentPassword, entity.getPassword())) {
+			throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+		}
+		
+		// 새 비밀번호 암호화 및 저장
+		String encoded = passwordEncoder.encode(newPassword);
+		entity.setPassword(encoded);
+		userRepository.save(entity);
+	}
+
 	private User toUser(UserEntity entity) {
-		return new User(entity.getId(), entity.getUsername(), entity.getPassword(), entity.getRole());
+		return new User(
+			entity.getId(),
+			entity.getUsername(),
+			entity.getPassword(),
+			entity.getRole(),
+			entity.getName(),
+			entity.getEmail()
+		);
 	}
 }
 

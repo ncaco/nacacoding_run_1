@@ -2,6 +2,8 @@ package com.backend.common.auth.controller;
 
 import com.backend.common.auth.dto.LoginRequest;
 import com.backend.common.auth.dto.LoginResponse;
+import com.backend.common.auth.dto.PasswordChangeRequest;
+import com.backend.common.auth.dto.ProfileUpdateRequest;
 import com.backend.common.auth.security.JwtUtil;
 import com.backend.common.auth.security.TokenBlacklistService;
 import com.backend.core.dto.ApiResponse;
@@ -17,7 +19,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -117,6 +121,97 @@ public class AuthController {
 		}
 		
 		tokenBlacklistService.blacklistToken(token);
+		return ResponseEntity.ok(ApiResponse.ok());
+	}
+
+	@Operation(summary = "프로필 조회", description = "현재 로그인한 관리자의 프로필 정보를 조회합니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+	})
+	@SecurityRequirement(name = "bearerAuth")
+	@GetMapping("/profile/admin")
+	public ResponseEntity<ApiResponse<User>> getAdminProfile(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+		if (authorization == null || !authorization.startsWith("Bearer ")) {
+			throw new IllegalArgumentException("인증 토큰이 필요합니다.");
+		}
+		String token = authorization.substring(7);
+		
+		// 토큰에서 역할 확인
+		String role = jwtUtil.getRole(token);
+		if (!Role.USER.name().equals(role)) {
+			throw new IllegalArgumentException("관리자(USER) 권한이 필요합니다.");
+		}
+		
+		// 토큰에서 사용자명 추출
+		String username = jwtUtil.getUsername(token);
+		User user = userService.findByUsername(username)
+				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+		
+		// 비밀번호는 응답에서 제외
+		user.setPassword("");
+		
+		return ResponseEntity.ok(ApiResponse.ok(user));
+	}
+
+	@Operation(summary = "프로필 수정", description = "현재 로그인한 관리자의 프로필 정보(이름, 이메일)를 수정합니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "수정 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+	})
+	@SecurityRequirement(name = "bearerAuth")
+	@PutMapping("/profile/admin")
+	public ResponseEntity<ApiResponse<User>> updateAdminProfile(
+			@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+			@Valid @RequestBody ProfileUpdateRequest request) {
+		if (authorization == null || !authorization.startsWith("Bearer ")) {
+			throw new IllegalArgumentException("인증 토큰이 필요합니다.");
+		}
+		String token = authorization.substring(7);
+		
+		// 토큰에서 역할 확인
+		String role = jwtUtil.getRole(token);
+		if (!Role.USER.name().equals(role)) {
+			throw new IllegalArgumentException("관리자(USER) 권한이 필요합니다.");
+		}
+		
+		// 토큰에서 사용자명 추출
+		String username = jwtUtil.getUsername(token);
+		User user = userService.updateProfile(username, request.getName(), request.getEmail());
+		
+		// 비밀번호는 응답에서 제외
+		user.setPassword("");
+		
+		return ResponseEntity.ok(ApiResponse.ok(user));
+	}
+
+	@Operation(summary = "비밀번호 변경", description = "현재 로그인한 관리자의 비밀번호를 변경합니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "변경 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청 또는 현재 비밀번호 불일치"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+	})
+	@SecurityRequirement(name = "bearerAuth")
+	@PutMapping("/password/admin")
+	public ResponseEntity<ApiResponse<Void>> changeAdminPassword(
+			@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+			@Valid @RequestBody PasswordChangeRequest request) {
+		if (authorization == null || !authorization.startsWith("Bearer ")) {
+			throw new IllegalArgumentException("인증 토큰이 필요합니다.");
+		}
+		String token = authorization.substring(7);
+		
+		// 토큰에서 역할 확인
+		String role = jwtUtil.getRole(token);
+		if (!Role.USER.name().equals(role)) {
+			throw new IllegalArgumentException("관리자(USER) 권한이 필요합니다.");
+		}
+		
+		// 토큰에서 사용자명 추출
+		String username = jwtUtil.getUsername(token);
+		userService.changePassword(username, request.getCurrentPassword(), request.getNewPassword());
+		
 		return ResponseEntity.ok(ApiResponse.ok());
 	}
 }
