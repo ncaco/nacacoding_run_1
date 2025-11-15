@@ -15,17 +15,63 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const profileRef = useRef<HTMLDivElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
-    // localStorage에서 사용자 정보 가져오기
-    const adminUsername = localStorage.getItem('adminUsername');
-    if (adminUsername) {
-      setUsername(adminUsername);
-      // 이메일은 username을 기반으로 생성 (실제로는 API에서 가져와야 함)
-      setEmail(`${adminUsername}@admin.com`);
-    }
+    // API에서 프로필 정보 가져오기
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          // 토큰이 없으면 localStorage에서 기본 정보만 가져오기
+          const adminUsername = localStorage.getItem('adminUsername');
+          if (adminUsername) {
+            setUsername(adminUsername);
+            setEmail(`${adminUsername}@admin.com`);
+            setName(adminUsername);
+          }
+          return;
+        }
+
+        const response = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success && data.data) {
+          const user = data.data;
+          setUsername(user.username || '');
+          setEmail(user.email || `${user.username || ''}@admin.com`);
+          setName(user.name || user.username || '');
+        } else {
+          // API 실패 시 localStorage에서 가져오기
+          const adminUsername = localStorage.getItem('adminUsername');
+          if (adminUsername) {
+            setUsername(adminUsername);
+            setEmail(`${adminUsername}@admin.com`);
+            setName(adminUsername);
+          }
+        }
+      } catch (error) {
+        console.error('프로필 조회 실패:', error);
+        // 에러 발생 시 localStorage에서 가져오기
+        const adminUsername = localStorage.getItem('adminUsername');
+        if (adminUsername) {
+          setUsername(adminUsername);
+          setEmail(`${adminUsername}@admin.com`);
+          setName(adminUsername);
+        }
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   useEffect(() => {
@@ -151,7 +197,7 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
             aria-expanded={isProfileOpen}
           >
             <span className="text-sm font-semibold text-white sm:text-base">
-              {username ? username.charAt(0).toUpperCase() : 'A'}
+              {(name || username) ? (name || username).charAt(0).toUpperCase() : 'A'}
             </span>
           </button>
 
@@ -163,16 +209,21 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600">
                     <span className="text-base font-semibold text-white">
-                      {username ? username.charAt(0).toUpperCase() : 'A'}
+                      {(name || username) ? (name || username).charAt(0).toUpperCase() : 'A'}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                      {username || '관리자'}
+                      {name || username || '관리자'}
                     </p>
                     <p className="truncate text-xs text-gray-500 dark:text-gray-400">
                       {email || 'admin@example.com'}
                     </p>
+                    {username && (
+                      <p className="truncate text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                        ID: {username}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
