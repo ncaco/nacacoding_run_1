@@ -4,7 +4,7 @@ import { useState, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
-import { isTokenExpired, logout, decodeJWT } from '../../utils/auth';
+import { isTokenExpired, logout, decodeJWT, refreshAccessToken } from '../../utils/auth';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // 로그인 상태 확인 및 토큰 만료 체크
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       const adminToken = localStorage.getItem('adminToken');
       if (!adminToken) {
         // 로그인 안되어 있으면 로그인 페이지로 리다이렉트
@@ -38,9 +38,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       
       // 토큰 만료 확인
       if (isTokenExpired(adminToken)) {
-        // 토큰이 만료되었으면 자동 로그아웃
-        logout(router);
-        return;
+        // 토큰이 만료되었으면 Refresh Token으로 갱신 시도
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+          // Refresh Token으로 갱신 실패 시 자동 로그아웃
+          logout(router);
+          return;
+        }
       }
       
       setIsChecking(false);
@@ -49,7 +53,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     checkAuth();
   }, [router]);
 
-  // 토큰 만료 실시간 감지
+  // 토큰 만료 전 자동 갱신 (만료 5분 전)
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     if (!adminToken) return;
@@ -61,19 +65,37 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const expirationTime = decoded.exp * 1000;
     const now = Date.now();
     const timeUntilExpiration = expirationTime - now;
+    const refreshBeforeExpiration = 5 * 60 * 1000; // 5분 전
 
     if (timeUntilExpiration <= 0) {
-      // 이미 만료된 경우
-      logout(router);
+      // 이미 만료된 경우 Refresh Token으로 갱신 시도
+      refreshAccessToken().then((newToken) => {
+        if (!newToken) {
+          logout(router);
+        }
+      });
       return;
     }
 
-    // 만료 시간에 맞춰 자동 로그아웃
-    const timeoutId = setTimeout(() => {
+    // 만료 5분 전에 자동 갱신
+    const refreshTime = Math.max(0, timeUntilExpiration - refreshBeforeExpiration);
+    const refreshTimeoutId = setTimeout(async () => {
+      const newToken = await refreshAccessToken();
+      if (!newToken) {
+        // Refresh Token으로 갱신 실패 시 로그아웃
+        logout(router);
+      }
+    }, refreshTime);
+
+    // 만료 시간에 맞춰 로그아웃 (Refresh Token도 만료된 경우)
+    const logoutTimeoutId = setTimeout(() => {
       logout(router);
     }, timeUntilExpiration);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(refreshTimeoutId);
+      clearTimeout(logoutTimeoutId);
+    };
   }, [router]);
 
   useEffect(() => {

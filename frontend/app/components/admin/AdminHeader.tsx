@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
-import { isTokenExpired, logout } from '../../utils/auth';
+import { isTokenExpired, logout, fetchWithTokenRefresh } from '../../utils/auth';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -37,10 +37,9 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
         return;
       }
 
-      const response = await fetch('http://localhost:8080/api/v1/admin/profile', {
+      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });

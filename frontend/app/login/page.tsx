@@ -34,9 +34,12 @@ export default function LoginPage() {
         throw new Error(data.message || '로그인에 실패했습니다.');
       }
 
-      // JWT 토큰 저장
+      // JWT 토큰 및 Refresh Token 저장
       if (data.data?.token) {
         localStorage.setItem('token', data.data.token);
+        if (data.data?.refreshToken) {
+          localStorage.setItem('refreshToken', data.data.refreshToken);
+        }
         localStorage.setItem('username', username);
         localStorage.setItem('userRole', 'MEMBER');
       } else {

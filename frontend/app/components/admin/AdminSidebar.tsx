@@ -132,6 +132,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       // 로컬 스토리지에서 토큰 및 사용자 정보 제거
       localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminRefreshToken');
       localStorage.removeItem('adminUsername');
       localStorage.removeItem('userRole');
 
@@ -141,6 +142,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       console.error('로그아웃 실패:', error);
       // 에러가 발생해도 로컬 스토리지는 정리하고 리다이렉트
       localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminRefreshToken');
       localStorage.removeItem('adminUsername');
       localStorage.removeItem('userRole');
       router.push('/admin/login');

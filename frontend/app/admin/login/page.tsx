@@ -48,9 +48,12 @@ export default function AdminLoginPage() {
         throw new Error(data.message || '로그인에 실패했습니다.');
       }
 
-      // JWT 토큰 저장
+      // JWT 토큰 및 Refresh Token 저장
       if (data.data?.token) {
         localStorage.setItem('adminToken', data.data.token);
+        if (data.data?.refreshToken) {
+          localStorage.setItem('adminRefreshToken', data.data.refreshToken);
+        }
         localStorage.setItem('adminUsername', username);
         localStorage.setItem('userRole', 'USER');
       } else {

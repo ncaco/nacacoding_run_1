@@ -7,7 +7,7 @@ import TabContainer from '../../components/admin/TabContainer';
 import PageHeader from '../../components/admin/PageHeader';
 import FormField from '../../components/admin/FormField';
 import FormActions from '../../components/admin/FormActions';
-import { decodeJWT, isTokenExpired, logout } from '../../utils/auth';
+import { decodeJWT, isTokenExpired, logout, fetchWithTokenRefresh } from '../../utils/auth';
 
 // 날짜 포맷팅 함수
 function formatDate(date: Date | null): string {
@@ -130,10 +130,9 @@ export default function ProfilePage() {
           return;
         }
 
-        const response = await fetch('http://localhost:8080/api/v1/admin/profile', {
+        const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -263,10 +262,9 @@ export default function ProfilePage() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
+      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -356,11 +354,8 @@ export default function ProfilePage() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const uploadResponse = await fetch('http://localhost:8080/api/v1/admin/profile/avatar', {
+      const uploadResponse = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile/avatar', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -430,10 +425,9 @@ export default function ProfilePage() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetch('http://localhost:8080/api/v1/admin/profile/password', {
+      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile/password', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -760,9 +754,11 @@ export default function ProfilePage() {
                 <div>
                   <p className="text-sm font-medium text-blue-800 dark:text-blue-300">보안 안내</p>
                   <ul className="mt-2 space-y-1 text-xs text-blue-700 dark:text-blue-400 list-disc list-inside">
-                    <li>세션이 만료되기 전에 로그아웃 후 다시 로그인하세요.</li>
+                    <li>Access Token은 1시간 동안 유효하며, 만료 5분 전에 자동으로 갱신됩니다.</li>
+                    <li>Refresh Token은 7일 동안 유효하며, Access Token 갱신에 사용됩니다.</li>
                     <li>정기적으로 비밀번호를 변경하여 보안을 강화하세요.</li>
-                    <li>의심스러운 활동이 발견되면 즉시 비밀번호를 변경하세요.</li>
+                    <li>의심스러운 활동이 발견되면 즉시 비밀번호를 변경하고 로그아웃하세요.</li>
+                    <li>공용 컴퓨터에서는 반드시 로그아웃 후 브라우저를 종료하세요.</li>
                   </ul>
                 </div>
               </div>
