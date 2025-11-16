@@ -42,7 +42,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
 				Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
 				SecurityContextHolder.getContext().setAuthentication(auth);
-			} catch (Exception ignored) { }
+			} catch (Exception e) {
+				// 토큰 검증 실패 시 예외를 무시하고 계속 진행
+				// permitAll() 경로는 컨트롤러에서 직접 토큰 검증을 수행하므로 여기서는 통과시킴
+			}
 		}
 		filterChain.doFilter(request, response);
 	}

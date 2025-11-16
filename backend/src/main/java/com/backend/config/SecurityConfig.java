@@ -59,8 +59,6 @@ public class SecurityConfig {
 						"/",
 						"/api/v1/auth/login/**",
 						"/api/v1/auth/forgot-password",
-						"/api/v1/auth/profile/**",
-						"/api/v1/auth/password/**",
 						"/actuator/health",
 						"/h2-console/**",
 						"/swagger-ui/**",
@@ -70,6 +68,7 @@ public class SecurityConfig {
 						"/webjars/**"
 					).permitAll()
 					.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+					.requestMatchers("/api/v1/admin/profile/**").hasRole("USER")
 					.requestMatchers("/api/v1/users/**").hasRole("USER")
 					.requestMatchers("/api/v1/site/**").hasRole("USER")
 					.requestMatchers("/api/v1/menu/**").hasRole("USER")

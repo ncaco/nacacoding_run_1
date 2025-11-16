@@ -12,7 +12,18 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
+  // localStorage에서 사이드바 상태 복원 (기본값: true)
+  const getInitialSidebarState = (): boolean => {
+    if (typeof window === 'undefined') return true;
+    // 모바일에서는 항상 닫힌 상태
+    if (window.innerWidth < 1024) return false;
+    const saved = localStorage.getItem('adminSidebarOpen');
+    if (saved === null) return true; // 기본값
+    return saved === 'true';
+  };
+  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => getInitialSidebarState());
   const [isChecking, setIsChecking] = useState(true);
 
   // 로그인 상태 확인 및 토큰 만료 체크
@@ -70,21 +81,48 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
         setIsSidebarOpen(false);
+        localStorage.setItem('adminSidebarOpen', 'false');
       } else {
-        setIsSidebarOpen(true);
+        // 데스크톱에서는 저장된 상태 복원
+        const saved = localStorage.getItem('adminSidebarOpen');
+        if (saved !== null) {
+          setIsSidebarOpen(saved === 'true');
+        }
       }
     };
 
     // 초기 설정
-    handleResize();
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+      localStorage.setItem('adminSidebarOpen', 'false');
+    } else {
+      // 데스크톱에서는 저장된 상태 사용
+      const saved = localStorage.getItem('adminSidebarOpen');
+      if (saved !== null) {
+        setIsSidebarOpen(saved === 'true');
+      }
+    }
 
     // 리사이즈 이벤트 리스너
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+  
+  // 사이드바 상태 변경 시 localStorage에 저장
+  useEffect(() => {
+    // 모바일이 아닐 때만 저장 (모바일에서는 항상 닫힘)
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      localStorage.setItem('adminSidebarOpen', isSidebarOpen.toString());
+    }
+  }, [isSidebarOpen]);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    const newState = !isSidebarOpen;
+    setIsSidebarOpen(newState);
+    // 즉시 localStorage에 저장
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      localStorage.setItem('adminSidebarOpen', newState.toString());
+    }
   };
 
   // 로그인 상태 확인 중일 때는 로딩 표시

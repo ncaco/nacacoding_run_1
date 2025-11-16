@@ -130,7 +130,7 @@ export default function ProfilePage() {
           return;
         }
 
-        const response = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
+        const response = await fetch('http://localhost:8080/api/v1/admin/profile', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -150,11 +150,18 @@ export default function ProfilePage() {
           const user = data.data;
           setUsername(user.username || '');
           setRole(user.role === 'USER' ? '관리자' : user.role);
+          
+          // avatarUrl이 상대 경로인 경우 백엔드 서버 URL 추가
+          let avatarUrl = user.avatarUrl || '';
+          if (avatarUrl && avatarUrl.startsWith('/')) {
+            avatarUrl = `http://localhost:8080${avatarUrl}`;
+          }
+          
           setProfileData({
             username: user.username || '',
             email: user.email || '',
             name: user.name || user.username || '',
-            avatarUrl: user.avatarUrl || '',
+            avatarUrl: avatarUrl,
           });
           
           // JWT 토큰 정보 업데이트
@@ -283,11 +290,17 @@ export default function ProfilePage() {
 
       // 업데이트된 정보로 상태 업데이트
       if (data.data) {
+        // avatarUrl이 상대 경로인 경우 백엔드 서버 URL 추가
+        let avatarUrl = data.data.avatarUrl || profileData.avatarUrl;
+        if (avatarUrl && avatarUrl.startsWith('/')) {
+          avatarUrl = `http://localhost:8080${avatarUrl}`;
+        }
+        
         setProfileData({
           username: data.data.username || profileData.username,
           email: data.data.email || profileData.email,
           name: data.data.name || profileData.name,
-          avatarUrl: data.data.avatarUrl || profileData.avatarUrl,
+          avatarUrl: avatarUrl,
         });
       }
 
@@ -339,11 +352,11 @@ export default function ProfilePage() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      // 파일 업로드
+      // 프로필 이미지 업로드 (전용 엔드포인트 사용)
       const formData = new FormData();
       formData.append('file', file);
 
-      const uploadResponse = await fetch('http://localhost:8080/api/v1/files', {
+      const uploadResponse = await fetch('http://localhost:8080/api/v1/admin/profile/avatar', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -363,41 +376,14 @@ export default function ProfilePage() {
         throw new Error(uploadData.message || '이미지 업로드에 실패했습니다.');
       }
 
-      // 업로드된 파일의 URL 생성 (파일 다운로드 API 사용)
-      const fileName = uploadData.data.filename;
-      const imageUrl = `http://localhost:8080/api/v1/files/${fileName}`;
+      // 업로드된 파일의 URL (백엔드에서 반환된 URL 사용)
+      const imageUrl = `http://localhost:8080${uploadData.data.url}`;
 
       // 프로필 데이터 업데이트
       setProfileData({
         ...profileData,
         avatarUrl: imageUrl,
       });
-
-      // 프로필 업데이트 API 호출
-      const updateResponse = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: profileData.name,
-          email: profileData.email,
-          avatarUrl: imageUrl,
-        }),
-      });
-
-      // 401 오류 발생 시 자동 로그아웃
-      if (updateResponse.status === 401) {
-        logout(router);
-        return;
-      }
-
-      const updateData = await updateResponse.json();
-
-      if (!updateResponse.ok || !updateData.success) {
-        throw new Error(updateData.message || '프로필 업데이트에 실패했습니다.');
-      }
 
       setSuccessMessage('프로필 이미지가 성공적으로 업로드되었습니다.');
       
@@ -444,7 +430,7 @@ export default function ProfilePage() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetch('http://localhost:8080/api/v1/auth/password/admin', {
+      const response = await fetch('http://localhost:8080/api/v1/admin/profile/password', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

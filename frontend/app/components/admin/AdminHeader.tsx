@@ -37,7 +37,7 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
         return;
       }
 
-      const response = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
+      const response = await fetch('http://localhost:8080/api/v1/admin/profile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -58,7 +58,13 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
         setUsername(user.username || '');
         setEmail(user.email || `${user.username || ''}@admin.com`);
         setName(user.name || user.username || '');
-        setAvatarUrl(user.avatarUrl || '');
+        
+        // avatarUrl이 상대 경로인 경우 백엔드 서버 URL 추가
+        let avatarUrl = user.avatarUrl || '';
+        if (avatarUrl && avatarUrl.startsWith('/')) {
+          avatarUrl = `http://localhost:8080${avatarUrl}`;
+        }
+        setAvatarUrl(avatarUrl);
       } else {
         // API 실패 시 localStorage에서 가져오기
         const adminUsername = localStorage.getItem('adminUsername');
