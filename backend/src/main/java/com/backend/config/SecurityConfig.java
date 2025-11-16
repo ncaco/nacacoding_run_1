@@ -73,6 +73,7 @@ public class SecurityConfig {
 					.requestMatchers("/api/v1/users/**").hasRole("USER")
 					.requestMatchers("/api/v1/site/**").hasRole("USER")
 					.requestMatchers("/api/v1/menu/**").hasRole("USER")
+					.requestMatchers("/api/v1/cmn-cd/**").hasRole("USER")
 					.anyRequest().authenticated()
 			)
 			.exceptionHandling(exceptions -> exceptions

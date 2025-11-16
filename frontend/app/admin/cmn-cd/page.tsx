@@ -5,32 +5,33 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import AdminLayout from '../../components/admin/AdminLayout';
 import TabContainer from '../../components/admin/TabContainer';
 import PageHeader from '../../components/admin/PageHeader';
-import SiteList from '../../components/admin/sites/SiteList';
-import SiteForm from '../../components/admin/sites/SiteForm';
+import CmnCdList from '../../components/admin/cmn-cd/CmnCdList';
+import CmnCdForm from '../../components/admin/cmn-cd/CmnCdForm';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
 
-interface Site {
+interface CmnCd {
   id: string;
-  siteType: 'ADMIN' | 'PORTAL';
-  siteName: string;
+  cd: string;
+  name: string;
   description?: string;
-  version: string;
   enabled?: boolean;
+  parentCd?: string;
+  children?: CmnCd[];
 }
 
-function SitesPageContent() {
+function CmnCdPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [sites, setSites] = useState<Site[]>([]);
+  const [cmnCds, setCmnCds] = useState<CmnCd[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [editingSite, setEditingSite] = useState<Site | null>(null);
+  const [editingCmnCd, setEditingCmnCd] = useState<CmnCd | null>(null);
 
-  // 사이트 목록 조회
-  const fetchSites = async () => {
+  // 공통코드 목록 조회
+  const fetchCmnCds = async () => {
     setIsLoading(true);
     setErrorMessage('');
     try {
@@ -39,7 +40,7 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/site', {
+      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/cmn-cd', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -54,15 +55,15 @@ function SitesPageContent() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || '사이트 목록 조회에 실패했습니다.');
+        throw new Error(data.message || '공통코드 목록 조회에 실패했습니다.');
       }
 
-      setSites(data.data || []);
+      setCmnCds(data.data || []);
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage('사이트 목록 조회에 실패했습니다. 다시 시도해주세요.');
+        setErrorMessage('공통코드 목록 조회에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
@@ -70,31 +71,29 @@ function SitesPageContent() {
   };
 
   useEffect(() => {
-    fetchSites();
+    fetchCmnCds();
   }, []);
 
   const handleAdd = () => {
-    setEditingSite(null);
+    setEditingCmnCd(null);
     setSuccessMessage('');
     setErrorMessage('');
-    // URL 쿼리 파라미터로 탭 변경
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', 'create');
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const handleEdit = (site: Site) => {
-    setEditingSite(site);
+  const handleEdit = (cmnCd: CmnCd) => {
+    setEditingCmnCd(cmnCd);
     setSuccessMessage('');
     setErrorMessage('');
-    // URL 쿼리 파라미터로 탭 변경
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', 'create');
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const handleDelete = async (site: Site) => {
-    if (!confirm(`정말로 "${site.siteName}" 사이트를 삭제하시겠습니까?`)) {
+  const handleDelete = async (cmnCd: CmnCd) => {
+    if (!confirm(`정말로 "${cmnCd.name}" 공통코드를 삭제하시겠습니까?`)) {
       return;
     }
 
@@ -106,7 +105,7 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/site/${site.id}`, {
+      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/cmn-cd/${cmnCd.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -121,20 +120,81 @@ function SitesPageContent() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || '사이트 삭제에 실패했습니다.');
+        throw new Error(data.message || '공통코드 삭제에 실패했습니다.');
       }
 
-      setSuccessMessage('사이트가 성공적으로 삭제되었습니다.');
+      setSuccessMessage('공통코드가 성공적으로 삭제되었습니다.');
       setTimeout(() => setSuccessMessage(''), 3000);
-      fetchSites();
+      fetchCmnCds();
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage('사이트 삭제에 실패했습니다. 다시 시도해주세요.');
+        setErrorMessage('공통코드 삭제에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // 트리 구조에서 특정 ID의 공통코드를 찾아서 업데이트하는 헬퍼 함수
+  const updateCmnCdInTree = (tree: CmnCd[], id: string, updates: Partial<CmnCd>): CmnCd[] => {
+    return tree.map((item) => {
+      if (item.id === id) {
+        return { ...item, ...updates };
+      }
+      if (item.children && item.children.length > 0) {
+        return {
+          ...item,
+          children: updateCmnCdInTree(item.children, id, updates),
+        };
+      }
+      return item;
+    });
+  };
+
+  const handleToggleEnabled = async (cmnCd: CmnCd, enabled: boolean) => {
+    setErrorMessage('');
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      // 기존 데이터를 유지하면서 enabled만 업데이트
+      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/cmn-cd/${cmnCd.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: cmnCd.name,
+          description: cmnCd.description || '',
+          enabled: enabled,
+        }),
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '상태 변경에 실패했습니다.');
+      }
+
+      // 로컬 상태 즉시 업데이트 (낙관적 업데이트)
+      setCmnCds((prevCmnCds) => updateCmnCdInTree(prevCmnCds, cmnCd.id, { enabled }));
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('상태 변경에 실패했습니다. 다시 시도해주세요.');
+      }
+      // 에러 발생 시 목록 다시 조회하여 원래 상태로 복구
+      fetchCmnCds();
     }
   };
 
@@ -149,23 +209,23 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const url = editingSite
-        ? `http://localhost:8080/api/v1/site/${editingSite.id}`
-        : 'http://localhost:8080/api/v1/site';
-      const method = editingSite ? 'PUT' : 'POST';
+      const url = editingCmnCd
+        ? `http://localhost:8080/api/v1/cmn-cd/${editingCmnCd.id}`
+        : 'http://localhost:8080/api/v1/cmn-cd';
+      const method = editingCmnCd ? 'PUT' : 'POST';
 
-      const requestBody = editingSite
+      const requestBody = editingCmnCd
         ? {
-            siteName: formData.siteName,
+            name: formData.name,
             description: formData.description || '',
-            version: formData.version,
             enabled: formData.enabled ?? true,
           }
         : {
-            siteType: formData.siteType,
-            siteName: formData.siteName,
+            cd: formData.cd,
+            name: formData.name,
             description: formData.description || '',
-            version: formData.version,
+            enabled: formData.enabled ?? true,
+            parentCd: formData.parentCd || null,
           };
 
       const response = await fetchWithTokenRefresh(url, {
@@ -184,24 +244,23 @@ function SitesPageContent() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || `${editingSite ? '수정' : '생성'}에 실패했습니다.`);
+        throw new Error(data.message || `${editingCmnCd ? '수정' : '생성'}에 실패했습니다.`);
       }
 
-      setSuccessMessage(`사이트가 성공적으로 ${editingSite ? '수정' : '생성'}되었습니다.`);
+      setSuccessMessage(`공통코드가 성공적으로 ${editingCmnCd ? '수정' : '생성'}되었습니다.`);
       setTimeout(() => {
         setSuccessMessage('');
-        setEditingSite(null);
-        // URL 쿼리 파라미터로 탭 변경
+        setEditingCmnCd(null);
         const params = new URLSearchParams(searchParams.toString());
         params.set('tab', 'list');
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
-        fetchSites();
+        fetchCmnCds();
       }, 1500);
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage(`사이트 ${editingSite ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
+        setErrorMessage(`공통코드 ${editingCmnCd ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
       }
     } finally {
       setIsSubmitting(false);
@@ -211,7 +270,7 @@ function SitesPageContent() {
   const tabs = [
     {
       id: 'list',
-      label: '사이트 목록',
+      label: '공통코드 목록',
       content: (
         <div>
           {successMessage && (
@@ -246,19 +305,20 @@ function SitesPageContent() {
             </div>
           )}
 
-          <SiteList
-            sites={sites}
+          <CmnCdList
+            cmnCds={cmnCds}
             isLoading={isLoading}
             onAdd={handleAdd}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onToggleEnabled={handleToggleEnabled}
           />
         </div>
       ),
     },
     {
       id: 'create',
-      label: editingSite ? '사이트 수정' : '사이트 생성',
+      label: editingCmnCd ? '공통코드 수정' : '공통코드 생성',
       content: (
         <div>
           {successMessage && (
@@ -293,24 +353,24 @@ function SitesPageContent() {
             </div>
           )}
 
-          <SiteForm
+          <CmnCdForm
             onSubmit={handleSubmit}
             onCancel={() => {
-              setEditingSite(null);
+              setEditingCmnCd(null);
               setErrorMessage('');
-              // URL 쿼리 파라미터로 탭 변경
               const params = new URLSearchParams(searchParams.toString());
               params.set('tab', 'list');
               router.push(`${pathname}?${params.toString()}`, { scroll: false });
             }}
-            initialData={editingSite ? {
-              siteType: editingSite.siteType,
-              siteName: editingSite.siteName,
-              description: editingSite.description,
-              version: editingSite.version,
-              enabled: editingSite.enabled,
+            initialData={editingCmnCd ? {
+              cd: editingCmnCd.cd,
+              name: editingCmnCd.name,
+              description: editingCmnCd.description,
+              enabled: editingCmnCd.enabled,
+              parentCd: editingCmnCd.parentCd,
             } : undefined}
             isLoading={isSubmitting}
+            parentCmnCds={cmnCds}
           />
         </div>
       ),
@@ -319,15 +379,15 @@ function SitesPageContent() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4 sm:space-y-6">
-        <PageHeader title="사이트 관리" description="사이트를 생성, 수정, 삭제할 수 있습니다." />
+      <div className="space-y-3 sm:space-y-6">
+        <PageHeader title="공통코드 관리" description="공통코드를 생성, 수정, 삭제할 수 있습니다." />
         <TabContainer tabs={tabs} defaultTab="list" />
       </div>
     </AdminLayout>
   );
 }
 
-export default function SitesPage() {
+export default function CmnCdPage() {
   return (
     <Suspense fallback={
       <AdminLayout>
@@ -357,7 +417,7 @@ export default function SitesPage() {
         </div>
       </AdminLayout>
     }>
-      <SitesPageContent />
+      <CmnCdPageContent />
     </Suspense>
   );
 }
