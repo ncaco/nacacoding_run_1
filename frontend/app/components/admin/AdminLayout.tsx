@@ -4,6 +4,7 @@ import { useState, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
+import { isTokenExpired, logout, decodeJWT } from '../../utils/auth';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -14,19 +15,54 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isChecking, setIsChecking] = useState(true);
 
-  // 로그인 상태 확인
+  // 로그인 상태 확인 및 토큰 만료 체크
   useEffect(() => {
     const checkAuth = () => {
       const adminToken = localStorage.getItem('adminToken');
       if (!adminToken) {
         // 로그인 안되어 있으면 로그인 페이지로 리다이렉트
         router.push('/admin/login');
-      } else {
-        setIsChecking(false);
+        return;
       }
+      
+      // 토큰 만료 확인
+      if (isTokenExpired(adminToken)) {
+        // 토큰이 만료되었으면 자동 로그아웃
+        logout(router);
+        return;
+      }
+      
+      setIsChecking(false);
     };
 
     checkAuth();
+  }, [router]);
+
+  // 토큰 만료 실시간 감지
+  useEffect(() => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) return;
+
+    // 토큰 만료 시간 확인
+    const decoded = decodeJWT(adminToken);
+    if (!decoded || !decoded.exp) return;
+
+    const expirationTime = decoded.exp * 1000;
+    const now = Date.now();
+    const timeUntilExpiration = expirationTime - now;
+
+    if (timeUntilExpiration <= 0) {
+      // 이미 만료된 경우
+      logout(router);
+      return;
+    }
+
+    // 만료 시간에 맞춰 자동 로그아웃
+    const timeoutId = setTimeout(() => {
+      logout(router);
+    }, timeUntilExpiration);
+
+    return () => clearTimeout(timeoutId);
   }, [router]);
 
   useEffect(() => {

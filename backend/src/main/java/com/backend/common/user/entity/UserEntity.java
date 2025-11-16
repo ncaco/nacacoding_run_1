@@ -29,6 +29,9 @@ public class UserEntity {
 	@Column
 	private String email;
 	
+	@Column
+	private String avatarUrl;
+	
 	public UserEntity() {}
 	
 	public UserEntity(String username, String password, Role role) {
@@ -57,5 +60,7 @@ public class UserEntity {
 	public void setName(String name) { this.name = name; }
 	public String getEmail() { return email; }
 	public void setEmail(String email) { this.email = email; }
+	public String getAvatarUrl() { return avatarUrl; }
+	public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 }
 

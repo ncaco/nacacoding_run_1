@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
+import { isTokenExpired, logout } from '../../utils/auth';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -16,63 +17,86 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
   const profileRef = useRef<HTMLDivElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  useEffect(() => {
-    // API에서 프로필 정보 가져오기
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-          // 토큰이 없으면 localStorage에서 기본 정보만 가져오기
-          const adminUsername = localStorage.getItem('adminUsername');
-          if (adminUsername) {
-            setUsername(adminUsername);
-            setEmail(`${adminUsername}@admin.com`);
-            setName(adminUsername);
-          }
-          return;
-        }
-
-        const response = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success && data.data) {
-          const user = data.data;
-          setUsername(user.username || '');
-          setEmail(user.email || `${user.username || ''}@admin.com`);
-          setName(user.name || user.username || '');
-        } else {
-          // API 실패 시 localStorage에서 가져오기
-          const adminUsername = localStorage.getItem('adminUsername');
-          if (adminUsername) {
-            setUsername(adminUsername);
-            setEmail(`${adminUsername}@admin.com`);
-            setName(adminUsername);
-          }
-        }
-      } catch (error) {
-        console.error('프로필 조회 실패:', error);
-        // 에러 발생 시 localStorage에서 가져오기
+  // 프로필 정보 가져오기 함수
+  const fetchProfile = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        // 토큰이 없으면 localStorage에서 기본 정보만 가져오기
         const adminUsername = localStorage.getItem('adminUsername');
         if (adminUsername) {
           setUsername(adminUsername);
           setEmail(`${adminUsername}@admin.com`);
           setName(adminUsername);
+          setAvatarUrl('');
+        }
+        return;
+      }
+
+      const response = await fetch('http://localhost:8080/api/v1/auth/profile/admin', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // 401 오류 발생 시 자동 로그아웃
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (response.ok && data.success && data.data) {
+        const user = data.data;
+        setUsername(user.username || '');
+        setEmail(user.email || `${user.username || ''}@admin.com`);
+        setName(user.name || user.username || '');
+        setAvatarUrl(user.avatarUrl || '');
+      } else {
+        // API 실패 시 localStorage에서 가져오기
+        const adminUsername = localStorage.getItem('adminUsername');
+        if (adminUsername) {
+          setUsername(adminUsername);
+          setEmail(`${adminUsername}@admin.com`);
+          setName(adminUsername);
+          setAvatarUrl('');
         }
       }
+    } catch (error) {
+      console.error('프로필 조회 실패:', error);
+      // 에러 발생 시 localStorage에서 가져오기
+      const adminUsername = localStorage.getItem('adminUsername');
+      if (adminUsername) {
+        setUsername(adminUsername);
+        setEmail(`${adminUsername}@admin.com`);
+        setName(adminUsername);
+        setAvatarUrl('');
+      }
+    }
+  }, [router]);
+
+  useEffect(() => {
+    // 초기 프로필 정보 가져오기
+    fetchProfile();
+
+    // 프로필 업데이트 이벤트 리스너
+    const handleProfileUpdate = () => {
+      fetchProfile();
     };
 
-    fetchProfile();
-  }, []);
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [fetchProfile]);
 
   useEffect(() => {
     // 외부 클릭 시 모달 닫기
@@ -192,13 +216,29 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 transition-all hover:ring-2 hover:ring-green-500 hover:ring-offset-2 dark:ring-offset-gray-900 sm:h-8 sm:w-8"
+            className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gradient-to-br from-green-400 to-green-600 transition-all hover:ring-2 hover:ring-green-500 hover:ring-offset-2 dark:ring-offset-gray-900 sm:h-8 sm:w-8"
             aria-label="Profile menu"
             aria-expanded={isProfileOpen}
           >
-            <span className="text-sm font-semibold text-white sm:text-base">
-              {(name || username) ? (name || username).charAt(0).toUpperCase() : 'A'}
-            </span>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="프로필"
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `<span class="text-sm font-semibold text-white sm:text-base">${(name || username) ? (name || username).charAt(0).toUpperCase() : 'A'}</span>`;
+                  }
+                }}
+              />
+            ) : (
+              <span className="text-sm font-semibold text-white sm:text-base">
+                {(name || username) ? (name || username).charAt(0).toUpperCase() : 'A'}
+              </span>
+            )}
           </button>
 
           {/* 프로필 드롭다운 모달 */}
@@ -207,10 +247,26 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
               {/* 사용자 정보 섹션 */}
               <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600">
-                    <span className="text-base font-semibold text-white">
-                      {(name || username) ? (name || username).charAt(0).toUpperCase() : 'A'}
-                    </span>
+                  <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-green-400 to-green-600">
+                    {avatarUrl ? (
+                      <img
+                        src={avatarUrl}
+                        alt="프로필"
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<span class="text-base font-semibold text-white">${(name || username) ? (name || username).charAt(0).toUpperCase() : 'A'}</span>`;
+                          }
+                        }}
+                      />
+                    ) : (
+                      <span className="text-base font-semibold text-white">
+                        {(name || username) ? (name || username).charAt(0).toUpperCase() : 'A'}
+                      </span>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 interface Tab {
   id: string;
@@ -11,10 +12,38 @@ interface Tab {
 interface TabContainerProps {
   tabs: Tab[];
   defaultTab?: string;
+  queryParam?: string; // URL 쿼리 파라미터 이름 (기본값: 'tab')
 }
 
-export default function TabContainer({ tabs, defaultTab }: TabContainerProps) {
-  const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id);
+export default function TabContainer({ tabs, defaultTab, queryParam = 'tab' }: TabContainerProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  // URL에서 탭 ID 가져오기
+  const tabFromUrl = searchParams.get(queryParam);
+  const initialTab = tabFromUrl && tabs.find(tab => tab.id === tabFromUrl) 
+    ? tabFromUrl 
+    : (defaultTab || tabs[0]?.id);
+  
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  // URL 파라미터가 변경되면 탭 업데이트
+  useEffect(() => {
+    const tabFromUrl = searchParams.get(queryParam);
+    if (tabFromUrl && tabs.find(tab => tab.id === tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams, queryParam, tabs]);
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    
+    // URL 쿼리 파라미터 업데이트
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(queryParam, tabId);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const activeTabContent = tabs.find((tab) => tab.id === activeTab)?.content;
 
@@ -28,7 +57,7 @@ export default function TabContainer({ tabs, defaultTab }: TabContainerProps) {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`whitespace-nowrap border-b-2 px-2 py-3 text-xs font-medium transition-colors sm:px-1 sm:py-4 sm:text-sm ${
                   isActive
                     ? 'border-green-500 text-green-600 dark:border-green-400 dark:text-green-400'

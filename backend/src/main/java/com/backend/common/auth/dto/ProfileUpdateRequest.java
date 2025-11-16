@@ -11,11 +11,19 @@ public class ProfileUpdateRequest {
 	@Email(message = "유효한 이메일 주소를 입력하세요.")
 	private String email;
 	
+	private String avatarUrl;
+	
 	public ProfileUpdateRequest() {}
 	
 	public ProfileUpdateRequest(String name, String email) {
 		this.name = name;
 		this.email = email;
+	}
+	
+	public ProfileUpdateRequest(String name, String email, String avatarUrl) {
+		this.name = name;
+		this.email = email;
+		this.avatarUrl = avatarUrl;
 	}
 	
 	public String getName() {
@@ -32,6 +40,14 @@ public class ProfileUpdateRequest {
 	
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+	
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
 	}
 }
 

@@ -59,6 +59,8 @@ public class SecurityConfig {
 						"/",
 						"/api/v1/auth/login/**",
 						"/api/v1/auth/forgot-password",
+						"/api/v1/auth/profile/**",
+						"/api/v1/auth/password/**",
 						"/actuator/health",
 						"/h2-console/**",
 						"/swagger-ui/**",

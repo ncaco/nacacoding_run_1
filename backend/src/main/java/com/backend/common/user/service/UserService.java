@@ -68,6 +68,18 @@ public class UserService {
 		UserEntity saved = userRepository.save(entity);
 		return toUser(saved);
 	}
+	
+	public User updateProfile(String username, String name, String email, String avatarUrl) {
+		UserEntity entity = userRepository.findByUsername(username)
+				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + username));
+		entity.setName(name);
+		entity.setEmail(email);
+		if (avatarUrl != null) {
+			entity.setAvatarUrl(avatarUrl);
+		}
+		UserEntity saved = userRepository.save(entity);
+		return toUser(saved);
+	}
 
 	public void changePassword(String username, String currentPassword, String newPassword) {
 		UserEntity entity = userRepository.findByUsername(username)
@@ -91,7 +103,8 @@ public class UserService {
 			entity.getPassword(),
 			entity.getRole(),
 			entity.getName(),
-			entity.getEmail()
+			entity.getEmail(),
+			entity.getAvatarUrl()
 		);
 	}
 }

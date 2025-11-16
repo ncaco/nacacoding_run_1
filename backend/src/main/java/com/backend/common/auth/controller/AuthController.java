@@ -137,21 +137,29 @@ public class AuthController {
 		}
 		String token = authorization.substring(7);
 		
-		// 토큰에서 역할 확인
-		String role = jwtUtil.getRole(token);
-		if (!Role.USER.name().equals(role)) {
-			throw new IllegalArgumentException("관리자(USER) 권한이 필요합니다.");
+		try {
+			// 토큰에서 역할 확인
+			String role = jwtUtil.getRole(token);
+			if (!Role.USER.name().equals(role)) {
+				throw new IllegalArgumentException("관리자(USER) 권한이 필요합니다.");
+			}
+			
+			// 토큰에서 사용자명 추출
+			String username = jwtUtil.getUsername(token);
+			User user = userService.findByUsername(username)
+					.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+			
+			// 비밀번호는 응답에서 제외
+			user.setPassword("");
+			
+			return ResponseEntity.ok(ApiResponse.ok(user));
+		} catch (Exception e) {
+			// JWT 토큰 검증 실패 또는 만료
+			if (e instanceof IllegalArgumentException) {
+				throw e;
+			}
+			throw new IllegalArgumentException("유효하지 않은 토큰입니다. 다시 로그인해주세요.");
 		}
-		
-		// 토큰에서 사용자명 추출
-		String username = jwtUtil.getUsername(token);
-		User user = userService.findByUsername(username)
-				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-		
-		// 비밀번호는 응답에서 제외
-		user.setPassword("");
-		
-		return ResponseEntity.ok(ApiResponse.ok(user));
 	}
 
 	@Operation(summary = "프로필 수정", description = "현재 로그인한 관리자의 프로필 정보(이름, 이메일)를 수정합니다.")
@@ -178,7 +186,7 @@ public class AuthController {
 		
 		// 토큰에서 사용자명 추출
 		String username = jwtUtil.getUsername(token);
-		User user = userService.updateProfile(username, request.getName(), request.getEmail());
+		User user = userService.updateProfile(username, request.getName(), request.getEmail(), request.getAvatarUrl());
 		
 		// 비밀번호는 응답에서 제외
 		user.setPassword("");
