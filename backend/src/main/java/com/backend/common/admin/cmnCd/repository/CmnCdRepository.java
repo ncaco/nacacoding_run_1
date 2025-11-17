@@ -13,6 +13,8 @@ public interface CmnCdRepository extends JpaRepository<CmnCdEntity, String> {
 	List<CmnCdEntity> findByParentCdIsNull();
 	List<CmnCdEntity> findByParentCd(String parentCd);
 	boolean existsByCd(String cd);
+	boolean existsByParentCdAndCd(String parentCd, String cd);
+	boolean existsByParentCdIsNullAndCd(String cd);
 	List<CmnCdEntity> findAllByOrderByCdAsc();
 }
 

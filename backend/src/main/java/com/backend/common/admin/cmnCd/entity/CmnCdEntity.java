@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "cmn_cd", uniqueConstraints = {
-	@UniqueConstraint(columnNames = "cd")
+	@UniqueConstraint(columnNames = {"parentCd", "cd"})
 })
 public class CmnCdEntity {
 	@Id
@@ -15,7 +15,7 @@ public class CmnCdEntity {
 	
 	@NotBlank
 	@Pattern(regexp = "^[PC]\\d{3}$", message = "코드는 P001~P999 또는 C001~C999 형식이어야 합니다.")
-	@Column(nullable = false, unique = true, length = 4)
+	@Column(nullable = false, length = 4)
 	private String cd;
 	
 	@NotBlank

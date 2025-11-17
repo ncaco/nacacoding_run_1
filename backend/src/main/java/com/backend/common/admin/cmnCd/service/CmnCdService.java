@@ -66,9 +66,17 @@ public class CmnCdService {
 	}
 
 	public CmnCd createCmnCd(CmnCdCreateRequest request) {
-		// 코드 중복 확인
-		if (cmnCdRepository.existsByCd(request.getCd())) {
-			throw new IllegalArgumentException("이미 존재하는 코드입니다: " + request.getCd());
+		// 코드 중복 확인: 상위코드와 하위코드 조합이 유니크해야 함
+		if (request.getParentCd() == null || request.getParentCd().isEmpty()) {
+			// 상위코드인 경우: parentCd가 null이고 cd가 유니크해야 함
+			if (cmnCdRepository.existsByParentCdIsNullAndCd(request.getCd())) {
+				throw new IllegalArgumentException("이미 존재하는 상위코드입니다: " + request.getCd());
+			}
+		} else {
+			// 하위코드인 경우: (parentCd, cd) 조합이 유니크해야 함
+			if (cmnCdRepository.existsByParentCdAndCd(request.getParentCd(), request.getCd())) {
+				throw new IllegalArgumentException("이미 존재하는 하위코드입니다: " + request.getCd() + " (상위코드: " + request.getParentCd() + ")");
+			}
 		}
 
 		// 코드 형식 검증
@@ -86,8 +94,8 @@ public class CmnCdService {
 			if (!request.getParentCd().startsWith("P")) {
 				throw new IllegalArgumentException("부모 코드는 P001~P999 형식이어야 합니다.");
 			}
-			// 부모 코드 존재 확인
-			if (!cmnCdRepository.existsByCd(request.getParentCd())) {
+			// 부모 코드 존재 확인 (상위코드만 확인)
+			if (!cmnCdRepository.existsByParentCdIsNullAndCd(request.getParentCd())) {
 				throw new IllegalArgumentException("부모 코드를 찾을 수 없습니다: " + request.getParentCd());
 			}
 		} else {

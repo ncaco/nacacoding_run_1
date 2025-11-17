@@ -29,6 +29,7 @@ function CmnCdPageContent() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [editingCmnCd, setEditingCmnCd] = useState<CmnCd | null>(null);
+  const [selectedParentCdCode, setSelectedParentCdCode] = useState<string | null>(null);
 
   // 공통코드 목록 조회
   const fetchCmnCds = async () => {
@@ -81,6 +82,197 @@ function CmnCdPageContent() {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', 'create');
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // P 코드 중 최대값 찾기
+  const getNextParentCode = (): string => {
+    const parentCodes = cmnCds.filter((cd) => cd.cd.startsWith('P')).map((cd) => cd.cd);
+    if (parentCodes.length === 0) {
+      return 'P001';
+    }
+    const numbers = parentCodes
+      .map((cd) => parseInt(cd.substring(1)))
+      .filter((num) => !isNaN(num))
+      .sort((a, b) => b - a);
+    const maxNum = numbers.length > 0 ? numbers[0] : 0;
+    const nextNum = maxNum + 1;
+    return `P${nextNum.toString().padStart(3, '0')}`;
+  };
+
+  // C 코드 중 최대값 찾기 (선택된 상위코드의 하위코드만 확인)
+  const getNextChildCode = (parentCd: string): string => {
+    // 선택된 상위코드의 하위코드만 확인
+    const parent = cmnCds.find((cd) => cd.cd === parentCd);
+    if (!parent || !parent.children || parent.children.length === 0) {
+      return 'C001';
+    }
+    // 해당 상위코드(parentCd)의 하위코드만 필터링
+    const childCodes = parent.children
+      .filter((child) => child.parentCd === parentCd)
+      .map((cd) => cd.cd);
+    const numbers = childCodes
+      .map((cd) => parseInt(cd.substring(1)))
+      .filter((num) => !isNaN(num))
+      .sort((a, b) => b - a);
+    const maxNum = numbers.length > 0 ? numbers[0] : 0;
+    const nextNum = maxNum + 1;
+    return `C${nextNum.toString().padStart(3, '0')}`;
+  };
+
+  // 상위코드 이름 생성 (신규상위코드 1, 2, 3...)
+  const getNextParentName = (): string => {
+    const parentCodes = cmnCds.filter((cd) => cd.cd.startsWith('P'));
+    if (parentCodes.length === 0) {
+      return '신규상위코드 1';
+    }
+    const parentNames = parentCodes
+      .map((cd) => cd.name)
+      .filter((name) => name.startsWith('신규상위코드'))
+      .map((name) => {
+        const match = name.match(/신규상위코드\s*(\d+)/);
+        return match ? parseInt(match[1]) : 0;
+      })
+      .filter((num) => !isNaN(num))
+      .sort((a, b) => b - a);
+    const maxNum = parentNames.length > 0 ? parentNames[0] : 0;
+    return `신규상위코드 ${maxNum + 1}`;
+  };
+
+  // 하위코드 이름 생성 (신규하위코드 1, 2, 3...)
+  const getNextChildName = (parentCd: string): string => {
+    const parent = cmnCds.find((cd) => cd.cd === parentCd);
+    if (!parent || !parent.children || parent.children.length === 0) {
+      return '신규하위코드 1';
+    }
+    const childNames = parent.children
+      .map((cd) => cd.name)
+      .filter((name) => name.startsWith('신규하위코드'))
+      .map((name) => {
+        const match = name.match(/신규하위코드\s*(\d+)/);
+        return match ? parseInt(match[1]) : 0;
+      })
+      .filter((num) => !isNaN(num))
+      .sort((a, b) => b - a);
+    const maxNum = childNames.length > 0 ? childNames[0] : 0;
+    return `신규하위코드 ${maxNum + 1}`;
+  };
+
+  const handleAddParent = async () => {
+    setIsSubmitting(true);
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      const nextCode = getNextParentCode();
+      const nextName = getNextParentName();
+      const requestBody = {
+        cd: nextCode,
+        name: nextName,
+        description: '',
+        enabled: true,
+        parentCd: null,
+      };
+
+      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/cmn-cd', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '상위코드 생성에 실패했습니다.');
+      }
+
+      setSuccessMessage('상위코드가 성공적으로 생성되었습니다.');
+      setTimeout(() => setSuccessMessage(''), 3000);
+      
+      // 신규 추가한 상위코드로 포커스 이동
+      setSelectedParentCdCode(nextCode);
+      await fetchCmnCds();
+      
+      // 목록 갱신 후 선택 해제 (한 번만 선택되도록)
+      setTimeout(() => {
+        setSelectedParentCdCode(null);
+      }, 100);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('상위코드 생성에 실패했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddChild = async (parentCd: CmnCd) => {
+    setIsSubmitting(true);
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      const nextCode = getNextChildCode(parentCd.cd);
+      const nextName = getNextChildName(parentCd.cd);
+      const requestBody = {
+        cd: nextCode,
+        name: nextName,
+        description: '',
+        enabled: true,
+        parentCd: parentCd.cd,
+      };
+
+      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/cmn-cd', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '하위코드 생성에 실패했습니다.');
+      }
+
+      setSuccessMessage('하위코드가 성공적으로 생성되었습니다.');
+      setTimeout(() => setSuccessMessage(''), 3000);
+      
+      // 목록 재조회하여 하위코드 목록 갱신
+      await fetchCmnCds();
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('하위코드 생성에 실패했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleEdit = (cmnCd: CmnCd) => {
@@ -309,9 +501,12 @@ function CmnCdPageContent() {
             cmnCds={cmnCds}
             isLoading={isLoading}
             onAdd={handleAdd}
+            onAddParent={handleAddParent}
+            onAddChild={handleAddChild}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onToggleEnabled={handleToggleEnabled}
+            selectedParentCdCode={selectedParentCdCode}
           />
         </div>
       ),
