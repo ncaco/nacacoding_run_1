@@ -2,11 +2,13 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
 import AdminLayout from '../../components/admin/AdminLayout';
 import TabContainer from '../../components/admin/TabContainer';
 import PageHeader from '../../components/admin/PageHeader';
 import SiteList from '../../components/admin/sites/SiteList';
 import SiteForm from '../../components/admin/sites/SiteForm';
+import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
 
 interface Site {
@@ -25,14 +27,15 @@ function SitesPageContent() {
   const [sites, setSites] = useState<Site[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const [editingSite, setEditingSite] = useState<Site | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; site: Site | null }>({
+    isOpen: false,
+    site: null,
+  });
 
   // 사이트 목록 조회
   const fetchSites = async () => {
     setIsLoading(true);
-    setErrorMessage('');
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
@@ -60,9 +63,9 @@ function SitesPageContent() {
       setSites(data.data || []);
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || '사이트 목록 조회에 실패했습니다.');
       } else {
-        setErrorMessage('사이트 목록 조회에 실패했습니다. 다시 시도해주세요.');
+        toast.error('사이트 목록 조회에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
@@ -75,8 +78,6 @@ function SitesPageContent() {
 
   const handleAdd = () => {
     setEditingSite(null);
-    setSuccessMessage('');
-    setErrorMessage('');
     // URL 쿼리 파라미터로 탭 변경
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', 'create');
@@ -85,21 +86,23 @@ function SitesPageContent() {
 
   const handleEdit = (site: Site) => {
     setEditingSite(site);
-    setSuccessMessage('');
-    setErrorMessage('');
     // URL 쿼리 파라미터로 탭 변경
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', 'create');
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const handleDelete = async (site: Site) => {
-    if (!confirm(`정말로 "${site.siteName}" 사이트를 삭제하시겠습니까?`)) {
-      return;
-    }
+  const handleDelete = (site: Site) => {
+    setDeleteDialog({ isOpen: true, site });
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteDialog.site) return;
+
+    const site = deleteDialog.site;
+    setDeleteDialog({ isOpen: false, site: null });
     setIsLoading(true);
-    setErrorMessage('');
+
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
@@ -124,14 +127,13 @@ function SitesPageContent() {
         throw new Error(data.message || '사이트 삭제에 실패했습니다.');
       }
 
-      setSuccessMessage('사이트가 성공적으로 삭제되었습니다.');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      toast.success('사이트가 성공적으로 삭제되었습니다.');
       fetchSites();
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || '사이트 삭제에 실패했습니다.');
       } else {
-        setErrorMessage('사이트 삭제에 실패했습니다. 다시 시도해주세요.');
+        toast.error('사이트 삭제에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
@@ -140,8 +142,6 @@ function SitesPageContent() {
 
   const handleSubmit = async (formData: any) => {
     setIsSubmitting(true);
-    setSuccessMessage('');
-    setErrorMessage('');
 
     try {
       const token = localStorage.getItem('adminToken');
@@ -187,9 +187,8 @@ function SitesPageContent() {
         throw new Error(data.message || `${editingSite ? '수정' : '생성'}에 실패했습니다.`);
       }
 
-      setSuccessMessage(`사이트가 성공적으로 ${editingSite ? '수정' : '생성'}되었습니다.`);
+      toast.success(`사이트가 성공적으로 ${editingSite ? '수정' : '생성'}되었습니다.`);
       setTimeout(() => {
-        setSuccessMessage('');
         setEditingSite(null);
         // URL 쿼리 파라미터로 탭 변경
         const params = new URLSearchParams(searchParams.toString());
@@ -199,9 +198,9 @@ function SitesPageContent() {
       }, 1500);
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || `사이트 ${editingSite ? '수정' : '생성'}에 실패했습니다.`);
       } else {
-        setErrorMessage(`사이트 ${editingSite ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
+        toast.error(`사이트 ${editingSite ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
       }
     } finally {
       setIsSubmitting(false);
@@ -214,38 +213,6 @@ function SitesPageContent() {
       label: '사이트 목록',
       content: (
         <div>
-          {successMessage && (
-            <div className="mb-4 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-              <div className="flex">
-                <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-green-800 dark:text-green-300">{successMessage}</p>
-              </div>
-            </div>
-          )}
-
-          {errorMessage && (
-            <div className="mb-4 rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
-              <div className="flex">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-red-800 dark:text-red-300">{errorMessage}</p>
-              </div>
-            </div>
-          )}
-
           <SiteList
             sites={sites}
             isLoading={isLoading}
@@ -261,43 +228,10 @@ function SitesPageContent() {
       label: editingSite ? '사이트 수정' : '사이트 생성',
       content: (
         <div>
-          {successMessage && (
-            <div className="mb-4 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-              <div className="flex">
-                <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-green-800 dark:text-green-300">{successMessage}</p>
-              </div>
-            </div>
-          )}
-
-          {errorMessage && (
-            <div className="mb-4 rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
-              <div className="flex">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-red-800 dark:text-red-300">{errorMessage}</p>
-              </div>
-            </div>
-          )}
-
           <SiteForm
             onSubmit={handleSubmit}
             onCancel={() => {
               setEditingSite(null);
-              setErrorMessage('');
               // URL 쿼리 파라미터로 탭 변경
               const params = new URLSearchParams(searchParams.toString());
               params.set('tab', 'list');
@@ -323,6 +257,18 @@ function SitesPageContent() {
         <PageHeader title="사이트 관리" description="사이트를 생성, 수정, 삭제할 수 있습니다." />
         <TabContainer tabs={tabs} defaultTab="list" />
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, site: null })}
+        onConfirm={handleConfirmDelete}
+        title="사이트 삭제"
+        message={`정말로 "${deleteDialog.site?.siteName}" 사이트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        confirmLabel="삭제"
+        cancelLabel="취소"
+        variant="danger"
+        isLoading={isLoading}
+      />
     </AdminLayout>
   );
 }

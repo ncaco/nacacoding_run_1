@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import AdminLayout from '../../components/admin/AdminLayout';
-import TabContainer from '../../components/admin/TabContainer';
 import PageHeader from '../../components/admin/PageHeader';
 import CmnCdList from '../../components/admin/cmn-cd/CmnCdList';
 import CmnCdForm from '../../components/admin/cmn-cd/CmnCdForm';
+import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
 
 interface CmnCd {
@@ -21,20 +22,19 @@ interface CmnCd {
 
 function CmnCdPageContent() {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [cmnCds, setCmnCds] = useState<CmnCd[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const [editingCmnCd, setEditingCmnCd] = useState<CmnCd | null>(null);
   const [selectedParentCdCode, setSelectedParentCdCode] = useState<string | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; cmnCd: CmnCd | null }>({
+    isOpen: false,
+    cmnCd: null,
+  });
 
   // 공통코드 목록 조회
   const fetchCmnCds = async () => {
     setIsLoading(true);
-    setErrorMessage('');
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
@@ -62,9 +62,9 @@ function CmnCdPageContent() {
       setCmnCds(data.data || []);
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || '공통코드 목록 조회에 실패했습니다.');
       } else {
-        setErrorMessage('공통코드 목록 조회에 실패했습니다. 다시 시도해주세요.');
+        toast.error('공통코드 목록 조회에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
@@ -77,11 +77,6 @@ function CmnCdPageContent() {
 
   const handleAdd = () => {
     setEditingCmnCd(null);
-    setSuccessMessage('');
-    setErrorMessage('');
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', 'create');
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   // P 코드 중 최대값 찾기
@@ -159,8 +154,6 @@ function CmnCdPageContent() {
 
   const handleAddParent = async () => {
     setIsSubmitting(true);
-    setSuccessMessage('');
-    setErrorMessage('');
 
     try {
       const token = localStorage.getItem('adminToken');
@@ -197,8 +190,7 @@ function CmnCdPageContent() {
         throw new Error(data.message || '상위코드 생성에 실패했습니다.');
       }
 
-      setSuccessMessage('상위코드가 성공적으로 생성되었습니다.');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      toast.success('상위코드가 성공적으로 생성되었습니다.');
       
       // 신규 추가한 상위코드로 포커스 이동
       setSelectedParentCdCode(nextCode);
@@ -210,9 +202,9 @@ function CmnCdPageContent() {
       }, 100);
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || '상위코드 생성에 실패했습니다.');
       } else {
-        setErrorMessage('상위코드 생성에 실패했습니다. 다시 시도해주세요.');
+        toast.error('상위코드 생성에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsSubmitting(false);
@@ -221,8 +213,6 @@ function CmnCdPageContent() {
 
   const handleAddChild = async (parentCd: CmnCd) => {
     setIsSubmitting(true);
-    setSuccessMessage('');
-    setErrorMessage('');
 
     try {
       const token = localStorage.getItem('adminToken');
@@ -259,16 +249,15 @@ function CmnCdPageContent() {
         throw new Error(data.message || '하위코드 생성에 실패했습니다.');
       }
 
-      setSuccessMessage('하위코드가 성공적으로 생성되었습니다.');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      toast.success('하위코드가 성공적으로 생성되었습니다.');
       
       // 목록 재조회하여 하위코드 목록 갱신
       await fetchCmnCds();
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || '하위코드 생성에 실패했습니다.');
       } else {
-        setErrorMessage('하위코드 생성에 실패했습니다. 다시 시도해주세요.');
+        toast.error('하위코드 생성에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsSubmitting(false);
@@ -277,20 +266,19 @@ function CmnCdPageContent() {
 
   const handleEdit = (cmnCd: CmnCd) => {
     setEditingCmnCd(cmnCd);
-    setSuccessMessage('');
-    setErrorMessage('');
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', 'create');
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const handleDelete = async (cmnCd: CmnCd) => {
-    if (!confirm(`정말로 "${cmnCd.name}" 공통코드를 삭제하시겠습니까?`)) {
-      return;
-    }
+  const handleDelete = (cmnCd: CmnCd) => {
+    setDeleteDialog({ isOpen: true, cmnCd });
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteDialog.cmnCd) return;
+
+    const cmnCd = deleteDialog.cmnCd;
+    setDeleteDialog({ isOpen: false, cmnCd: null });
     setIsLoading(true);
-    setErrorMessage('');
+
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
@@ -315,14 +303,13 @@ function CmnCdPageContent() {
         throw new Error(data.message || '공통코드 삭제에 실패했습니다.');
       }
 
-      setSuccessMessage('공통코드가 성공적으로 삭제되었습니다.');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      toast.success('공통코드가 성공적으로 삭제되었습니다.');
       fetchCmnCds();
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || '공통코드 삭제에 실패했습니다.');
       } else {
-        setErrorMessage('공통코드 삭제에 실패했습니다. 다시 시도해주세요.');
+        toast.error('공통코드 삭제에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
@@ -346,7 +333,6 @@ function CmnCdPageContent() {
   };
 
   const handleToggleEnabled = async (cmnCd: CmnCd, enabled: boolean) => {
-    setErrorMessage('');
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
@@ -379,11 +365,12 @@ function CmnCdPageContent() {
 
       // 로컬 상태 즉시 업데이트 (낙관적 업데이트)
       setCmnCds((prevCmnCds) => updateCmnCdInTree(prevCmnCds, cmnCd.id, { enabled }));
+      toast.success(`공통코드가 ${enabled ? '활성화' : '비활성화'}되었습니다.`);
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || '상태 변경에 실패했습니다.');
       } else {
-        setErrorMessage('상태 변경에 실패했습니다. 다시 시도해주세요.');
+        toast.error('상태 변경에 실패했습니다. 다시 시도해주세요.');
       }
       // 에러 발생 시 목록 다시 조회하여 원래 상태로 복구
       fetchCmnCds();
@@ -392,8 +379,6 @@ function CmnCdPageContent() {
 
   const handleSubmit = async (formData: any) => {
     setIsSubmitting(true);
-    setSuccessMessage('');
-    setErrorMessage('');
 
     try {
       const token = localStorage.getItem('adminToken');
@@ -439,64 +424,44 @@ function CmnCdPageContent() {
         throw new Error(data.message || `${editingCmnCd ? '수정' : '생성'}에 실패했습니다.`);
       }
 
-      setSuccessMessage(`공통코드가 성공적으로 ${editingCmnCd ? '수정' : '생성'}되었습니다.`);
+      toast.success(`공통코드가 성공적으로 ${editingCmnCd ? '수정' : '생성'}되었습니다.`);
+      
       setTimeout(() => {
-        setSuccessMessage('');
         setEditingCmnCd(null);
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('tab', 'list');
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
         fetchCmnCds();
       }, 1500);
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        toast.error(error.message || `공통코드 ${editingCmnCd ? '수정' : '생성'}에 실패했습니다.`);
       } else {
-        setErrorMessage(`공통코드 ${editingCmnCd ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
+        toast.error(`공통코드 ${editingCmnCd ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
       }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const tabs = [
-    {
-      id: 'list',
-      label: '공통코드 목록',
-      content: (
-        <div>
-          {successMessage && (
-            <div className="mb-4 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-              <div className="flex">
-                <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-green-800 dark:text-green-300">{successMessage}</p>
-              </div>
-            </div>
-          )}
-
-          {errorMessage && (
-            <div className="mb-4 rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
-              <div className="flex">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-red-800 dark:text-red-300">{errorMessage}</p>
-              </div>
-            </div>
-          )}
-
+  return (
+    <AdminLayout>
+      <div className="space-y-2">
+        <PageHeader title="공통코드 관리" description="공통코드를 생성, 수정, 삭제할 수 있습니다." />
+        {editingCmnCd ? (
+          <CmnCdForm
+            onSubmit={handleSubmit}
+            onCancel={() => {
+              setEditingCmnCd(null);
+            }}
+            initialData={{
+              cd: editingCmnCd.cd,
+              name: editingCmnCd.name,
+              description: editingCmnCd.description,
+              enabled: editingCmnCd.enabled,
+              parentCd: editingCmnCd.parentCd,
+            }}
+            isLoading={isSubmitting}
+            parentCmnCds={cmnCds}
+          />
+        ) : (
           <CmnCdList
             cmnCds={cmnCds}
             isLoading={isLoading}
@@ -508,76 +473,20 @@ function CmnCdPageContent() {
             onToggleEnabled={handleToggleEnabled}
             selectedParentCdCode={selectedParentCdCode}
           />
-        </div>
-      ),
-    },
-    {
-      id: 'create',
-      label: editingCmnCd ? '공통코드 수정' : '공통코드 생성',
-      content: (
-        <div>
-          {successMessage && (
-            <div className="mb-4 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-              <div className="flex">
-                <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-green-800 dark:text-green-300">{successMessage}</p>
-              </div>
-            </div>
-          )}
-
-          {errorMessage && (
-            <div className="mb-4 rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
-              <div className="flex">
-                <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-red-800 dark:text-red-300">{errorMessage}</p>
-              </div>
-            </div>
-          )}
-
-          <CmnCdForm
-            onSubmit={handleSubmit}
-            onCancel={() => {
-              setEditingCmnCd(null);
-              setErrorMessage('');
-              const params = new URLSearchParams(searchParams.toString());
-              params.set('tab', 'list');
-              router.push(`${pathname}?${params.toString()}`, { scroll: false });
-            }}
-            initialData={editingCmnCd ? {
-              cd: editingCmnCd.cd,
-              name: editingCmnCd.name,
-              description: editingCmnCd.description,
-              enabled: editingCmnCd.enabled,
-              parentCd: editingCmnCd.parentCd,
-            } : undefined}
-            isLoading={isSubmitting}
-            parentCmnCds={cmnCds}
-          />
-        </div>
-      ),
-    },
-  ];
-
-  return (
-    <AdminLayout>
-      <div className="space-y-3 sm:space-y-6">
-        <PageHeader title="공통코드 관리" description="공통코드를 생성, 수정, 삭제할 수 있습니다." />
-        <TabContainer tabs={tabs} defaultTab="list" />
+        )}
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, cmnCd: null })}
+        onConfirm={handleConfirmDelete}
+        title="공통코드 삭제"
+        message={`정말로 "${deleteDialog.cmnCd?.name}" 공통코드를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        confirmLabel="삭제"
+        cancelLabel="취소"
+        variant="danger"
+        isLoading={isLoading}
+      />
     </AdminLayout>
   );
 }

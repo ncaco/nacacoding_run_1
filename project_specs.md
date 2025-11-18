@@ -5,7 +5,7 @@
 - **프로젝트명**: nacacoding_run_1
 - **백엔드**: Spring Boot 4.0.0-SNAPSHOT (Java 21)
 - **프론트엔드**: Next.js 16.0.1 (React 19.2.0, TypeScript)
-- **데이터베이스**: H2 (인메모리)
+- **데이터베이스**: PostgreSQL (localhost:5432)
 - **인증**: JWT 기반 인증 시스템
 - **사이트 구성**:
   - **통합관리사이트 (ADMIN)**: 시스템 관리 및 통계 조회를 위한 관리자 사이트

@@ -2,31 +2,40 @@ package com.backend.common.admin.menu.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "menus")
+@org.hibernate.annotations.Comment("메뉴 정보를 저장하는 테이블 (사이트에 속하며 계층 구조 지원)")
 public class MenuEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@Comment("메뉴 고유 식별자 (UUID 형식)")
 	private String id;
 	
 	@Column(nullable = false)
+	@Comment("사이트 ID (sites 테이블 참조)")
 	private String siteId;
 	
 	@NotBlank
 	@Column(nullable = false)
+	@Comment("메뉴명")
 	private String name;
 	
 	@Column(length = 500)
+	@Comment("메뉴 URL")
 	private String url;
 	
 	@Column(nullable = false)
+	@Comment("표시 순서")
 	private Integer displayOrder = 0;
 	
 	@Column
+	@Comment("부모 메뉴 ID (계층 구조용, 최상위 메뉴는 NULL)")
 	private String parentId;
 	
 	@Column(nullable = false)
+	@Comment("활성화 여부 (기본값: true)")
 	private Boolean enabled = true;
 	
 	public MenuEntity() {}

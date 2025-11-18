@@ -127,6 +127,13 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
     }
   }, [selectedParentCdCode, parentCmnCds]);
 
+  // 상위코드가 모두 삭제되었을 때 선택 초기화
+  useEffect(() => {
+    if (parentCmnCds.length === 0) {
+      setSelectedParentCd(null);
+    }
+  }, [parentCmnCds]);
+
   // 첫 번째 상위코드를 자동 선택
   useEffect(() => {
     if (parentCmnCds.length > 0 && !selectedParentCd && !selectedParentCdCode) {
@@ -141,9 +148,12 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
       const updatedParent = parentCmnCds.find((cd) => cd.id === selectedParentCd.id);
       if (updatedParent) {
         setSelectedParentCd(updatedParent);
+      } else {
+        // 선택된 상위코드가 더 이상 존재하지 않으면 초기화
+        setSelectedParentCd(null);
       }
     }
-  }, [cmnCds, parentCmnCds, selectedParentCdCode]);
+  }, [cmnCds, parentCmnCds, selectedParentCd, selectedParentCdCode]);
 
   if (isLoading) {
     return (
@@ -157,14 +167,14 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
   }
 
   return (
-    <div className="rounded-lg bg-white shadow-sm dark:bg-gray-900 dark:shadow-gray-800/50">
+    <div className="flex h-[calc(100vh-200px)] flex-col rounded-lg bg-white shadow-sm dark:bg-gray-900 dark:shadow-gray-800/50">
       <ListHeader title="공통코드 목록" actionLabel="새 공통코드 추가" onAction={onAdd} />
 
       {/* 좌우 분할 레이아웃 */}
-      <div className="flex flex-col gap-4 p-3 sm:flex-row sm:gap-6 sm:p-6">
+      <div className="flex flex-1 flex-col gap-2 overflow-hidden p-2 sm:flex-row sm:gap-3 sm:p-3">
         {/* 왼쪽: 상위코드 목록 */}
-        <div className="flex-1 rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-900 sm:px-4 sm:py-3">
+        <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2 py-1.5 dark:border-gray-700 dark:bg-gray-900 sm:px-3 sm:py-2">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white sm:text-base">상위코드</h3>
             {onAddParent && (
               <button
@@ -178,21 +188,23 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
               </button>
             )}
           </div>
-          <div className="max-h-[600px] overflow-y-auto bg-gray-50 p-2 dark:bg-gray-800 sm:p-3">
+          <div className="cmn-cd-scroll flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-50 p-1.5 dark:bg-gray-800 sm:p-2">
             {parentCmnCds.length === 0 ? (
-              <EmptyState
-                icon={
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                    />
-                  </svg>
-                }
-                message="등록된 상위코드가 없습니다."
-              />
+              <div className="flex flex-1 items-center justify-center">
+                <EmptyState
+                  icon={
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
+                  }
+                  message="등록된 상위코드가 없습니다."
+                />
+              </div>
             ) : (
               <div className="space-y-1.5 sm:space-y-2">
                 {parentCmnCds.map((cmnCd) => (
@@ -212,8 +224,8 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
         </div>
 
         {/* 오른쪽: 하위코드 목록 */}
-        <div className="flex-1 rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-900 sm:px-4 sm:py-3">
+        <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2 py-1.5 dark:border-gray-700 dark:bg-gray-900 sm:px-3 sm:py-2">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white sm:text-base">
               하위코드 {selectedParentCd && `(${selectedParentCd.cd} - ${selectedParentCd.name})`}
             </h3>
@@ -229,35 +241,39 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
               </button>
             )}
           </div>
-          <div className="max-h-[600px] overflow-y-auto bg-gray-50 p-2 dark:bg-gray-800 sm:p-3">
+          <div className="cmn-cd-scroll flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-50 p-1.5 dark:bg-gray-800 sm:p-2">
             {!selectedParentCd ? (
-              <EmptyState
-                icon={
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                    />
-                  </svg>
-                }
-                message="상위코드를 선택해주세요."
-              />
+              <div className="flex flex-1 items-center justify-center">
+                <EmptyState
+                  icon={
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
+                  }
+                  message="상위코드를 선택해주세요."
+                />
+              </div>
             ) : childCmnCds.length === 0 ? (
-              <EmptyState
-                icon={
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                    />
-                  </svg>
-                }
-                message="등록된 하위코드가 없습니다."
-              />
+              <div className="flex flex-1 items-center justify-center">
+                <EmptyState
+                  icon={
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
+                  }
+                  message="등록된 하위코드가 없습니다."
+                />
+              </div>
             ) : (
               <div className="space-y-1.5 sm:space-y-2">
                 {childCmnCds.map((cmnCd) => (

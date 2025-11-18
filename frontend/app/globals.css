@@ -85,6 +85,48 @@ html.dark div.bg-gradient-to-r.dark\:from-gray-900.dark\:to-gray-950 {
   background: linear-gradient(to right, rgb(17 24 39), rgb(3 7 18)) !important; /* gray-900 to gray-950 */
 }
 
+/* Toast 위치 조정 (헤더 밑쪽) */
+[data-sonner-toaster] {
+  top: 80px !important; /* 헤더 높이(64px) + 여백(16px) */
+}
+
+/* 공통코드 목록 영역 스크롤바 스타일 */
+.cmn-cd-scroll {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(156 163 175) rgb(243 244 246); /* Firefox */
+}
+
+.cmn-cd-scroll::-webkit-scrollbar {
+  width: 8px; /* Chrome, Safari, Opera */
+  height: 8px;
+}
+
+.cmn-cd-scroll::-webkit-scrollbar-track {
+  background: rgb(243 244 246); /* gray-100 */
+  border-radius: 4px;
+}
+
+.dark .cmn-cd-scroll::-webkit-scrollbar-track {
+  background: rgb(31 41 55); /* gray-800 */
+}
+
+.cmn-cd-scroll::-webkit-scrollbar-thumb {
+  background: rgb(156 163 175); /* gray-400 */
+  border-radius: 4px;
+}
+
+.cmn-cd-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgb(107 114 128); /* gray-500 */
+}
+
+.dark .cmn-cd-scroll::-webkit-scrollbar-thumb {
+  background: rgb(75 85 99); /* gray-600 */
+}
+
+.dark .cmn-cd-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgb(107 114 128); /* gray-500 */
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
