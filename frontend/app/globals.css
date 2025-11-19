@@ -87,7 +87,7 @@ html.dark div.bg-gradient-to-r.dark\:from-gray-900.dark\:to-gray-950 {
 
 /* Toast 위치 조정 (헤더 밑쪽) */
 [data-sonner-toaster] {
-  top: 80px !important; /* 헤더 높이(64px) + 여백(16px) */
+  top: 56px !important; /* 헤더 높이(48px) + 여백(8px) */
 }
 
 /* 공통코드 목록 영역 스크롤바 스타일 */
