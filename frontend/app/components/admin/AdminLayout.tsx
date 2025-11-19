@@ -24,6 +24,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   };
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => getInitialSidebarState());
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const saved = localStorage.getItem('adminSidebarCollapsed');
+    return saved === 'true';
+  });
   const [isChecking, setIsChecking] = useState(true);
 
   // 로그인 상태 확인 및 토큰 만료 체크
@@ -147,6 +152,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   };
 
+  const toggleSidebarCollapse = () => {
+    const newState = !isSidebarCollapsed;
+    setIsSidebarCollapsed(newState);
+    localStorage.setItem('adminSidebarCollapsed', newState.toString());
+  };
+
   // 로그인 상태 확인 중일 때는 로딩 표시
   if (isChecking) {
     return (
@@ -179,14 +190,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
-      <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <AdminSidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebarCollapse}
+      />
       <div
         className={`flex flex-1 flex-col transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? 'ml-0 lg:ml-64' : 'ml-0'
+          isSidebarOpen 
+            ? isSidebarCollapsed 
+              ? 'ml-0 lg:ml-14' 
+              : 'ml-0 lg:ml-56'
+            : 'ml-0'
         }`}
       >
         <AdminHeader onMenuClick={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-               <main className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-6 scrollbar-hide">{children}</main>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-6 scrollbar-hide">{children}</main>
       </div>
     </div>
   );
