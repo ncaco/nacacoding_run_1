@@ -1,6 +1,7 @@
 'use client';
 
 import { FormFieldProps } from './types';
+import CustomSelect from './CustomSelect';
 
 export default function FormField({
   label,
@@ -14,7 +15,7 @@ export default function FormField({
   onChange,
 }: FormFieldProps) {
   const baseInputClasses =
-    'mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white';
+    'mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:border-[#1f2435] dark:bg-[#1a1e2c] dark:text-white dark:placeholder-gray-500 dark:focus:border-[#303650] dark:focus:ring-[#303650]';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     if (onChange) {
@@ -28,7 +29,7 @@ export default function FormField({
 
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor={name} className="block text-xs font-medium text-gray-700 dark:text-gray-300">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -44,20 +45,12 @@ export default function FormField({
           className={baseInputClasses}
         />
       ) : type === 'select' ? (
-        <select
-          id={name}
-          name={name}
-          required={required}
+        <CustomSelect
           value={value as string}
-          onChange={handleChange}
-          className={baseInputClasses}
-        >
-          {options?.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => onChange && onChange(val)}
+          options={options || []}
+          placeholder="선택하세요"
+        />
       ) : type === 'checkbox' ? (
         <div className="flex items-center">
           <input
@@ -66,9 +59,9 @@ export default function FormField({
             type="checkbox"
             checked={value as boolean}
             onChange={handleChange}
-            className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 dark:border-gray-700 dark:bg-gray-800"
+            className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 dark:border-[#1f2435] dark:bg-[#1a1e2c]"
           />
-          <label htmlFor={name} className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+          <label htmlFor={name} className="ml-2 block text-xs text-gray-900 dark:text-gray-300">
             {placeholder || label}
           </label>
         </div>

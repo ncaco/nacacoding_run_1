@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import ListHeader from '../ListHeader';
 import ToggleSwitch from '../ToggleSwitch';
 import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
@@ -33,69 +32,67 @@ function CmnCdItem({ cmnCd, isSelected, onSelect, onEdit, onDelete, onToggleEnab
 
   return (
     <div
-      className={`flex items-center gap-1.5 rounded-lg border p-2 transition-colors sm:gap-2 sm:p-3 ${
+      className={`group flex cursor-pointer items-center gap-2 rounded-lg border px-2.5 py-2 transition-all ${
         isSelected
-          ? 'border-green-500 bg-white dark:border-green-500 dark:bg-gray-800'
-          : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700'
+          ? 'border-gray-300 bg-gray-50 dark:border-[#1f2435] dark:bg-[#1a1e2c]'
+          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:hover:border-[#303650] dark:hover:bg-[#1a1e2c]'
       }`}
       onClick={() => onSelect && onSelect(cmnCd)}
     >
-      {/* 코드 */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <span
-            className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-mono font-semibold sm:px-2 ${
-              isParent
-                ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-200'
-                : 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200'
-            }`}
-          >
-            {cmnCd.cd}
-          </span>
-          <span className="text-xs font-medium text-gray-900 dark:text-white truncate sm:text-sm">{cmnCd.name}</span>
-        </div>
+      {/* 코드 배지 */}
+      <span
+        className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-mono font-semibold ${
+          isParent
+            ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
+            : 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
+        }`}
+      >
+        {cmnCd.cd}
+      </span>
+
+      {/* 이름과 설명 */}
+      <div className="min-w-0 flex-1">
+        <div className="text-xs font-medium text-gray-900 dark:text-white truncate">{cmnCd.name}</div>
         {cmnCd.description && (
-          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-1 sm:mt-1">{cmnCd.description}</p>
+          <div className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">{cmnCd.description}</div>
         )}
       </div>
 
-      {/* 오른쪽 액션 영역: 상태 토글 + 작업 버튼 */}
-      <div className="flex items-center gap-2 sm:gap-3" onClick={(e) => e.stopPropagation()}>
-        {/* 상태 토글 스위치 */}
+      {/* 액션 버튼들 */}
+      <div className="flex shrink-0 items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+        {/* 상태 토글 */}
         {onToggleEnabled && (
-          <div className="flex h-[28px] w-[80px] items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2 dark:border-gray-700 dark:bg-gray-800 sm:h-[32px] sm:w-[88px] sm:gap-2 sm:px-2.5">
+          <div className="flex items-center gap-1 rounded border border-gray-200 bg-white px-1.5 py-1 dark:border-[#1f2435] dark:bg-[#0f1119]">
             <ToggleSwitch
               enabled={cmnCd.enabled ?? true}
               onToggle={(enabled) => onToggleEnabled(cmnCd, enabled)}
               size="sm"
             />
-            <span className={`text-xs font-medium whitespace-nowrap ${cmnCd.enabled ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+            <span className={`text-[10px] font-medium whitespace-nowrap ${cmnCd.enabled ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
               {cmnCd.enabled ? '활성' : '비활성'}
             </span>
           </div>
         )}
 
-        {/* 작업 버튼 */}
-        {(onEdit || onDelete) && (
-          <div className="flex gap-1 sm:gap-2">
-            {onEdit && (
-              <button
-                onClick={() => onEdit(cmnCd)}
-                className="cursor-pointer rounded-lg border border-green-600 bg-white px-2 py-1 text-xs font-medium text-green-600 transition-colors hover:bg-green-50 dark:border-green-400 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-green-900/20 sm:px-3 sm:py-1.5"
-              >
-                수정
-              </button>
-            )}
-            {onDelete && (
-              <button
-                onClick={() => onDelete(cmnCd)}
-                className="cursor-pointer rounded-lg border border-red-600 bg-white px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-400 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/20 sm:px-3 sm:py-1.5"
-              >
-                삭제
-              </button>
-            )}
-          </div>
-        )}
+        {/* 수정/삭제 버튼 */}
+        <div className="flex gap-1">
+          {onEdit && (
+            <button
+              onClick={() => onEdit(cmnCd)}
+              className="rounded border border-gray-300 bg-white px-2 py-1 text-[10px] font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:text-gray-300 dark:hover:bg-[#1a1e2c]"
+            >
+              수정
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={() => onDelete(cmnCd)}
+              className="rounded border border-red-300 bg-white px-2 py-1 text-[10px] font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-500/30 dark:bg-[#0f1119] dark:text-red-400 dark:hover:bg-red-500/10"
+            >
+              삭제
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -104,12 +101,12 @@ function CmnCdItem({ cmnCd, isSelected, onSelect, onEdit, onDelete, onToggleEnab
 export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAddChild, onEdit, onDelete, onToggleEnabled, selectedParentCdCode }: CmnCdListProps) {
   const [selectedParentCd, setSelectedParentCd] = useState<CmnCd | null>(null);
 
-  // 상위코드만 필터링 (P로 시작하는 코드)
+  // 상위코드만 필터링
   const parentCmnCds = useMemo(() => {
     return cmnCds.filter((cd) => cd.cd.startsWith('P'));
   }, [cmnCds]);
 
-  // 선택한 상위코드의 하위코드만 필터링 (C로 시작하는 코드)
+  // 선택한 상위코드의 하위코드만 필터링
   const childCmnCds = useMemo(() => {
     if (!selectedParentCd) {
       return [];
@@ -144,12 +141,10 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
   // 선택된 상위코드의 하위코드 목록 갱신
   useEffect(() => {
     if (selectedParentCd && !selectedParentCdCode) {
-      // 선택된 상위코드의 최신 정보로 업데이트
       const updatedParent = parentCmnCds.find((cd) => cd.id === selectedParentCd.id);
       if (updatedParent) {
         setSelectedParentCd(updatedParent);
       } else {
-        // 선택된 상위코드가 더 이상 존재하지 않으면 초기화
         setSelectedParentCd(null);
       }
     }
@@ -157,9 +152,11 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
 
   if (isLoading) {
     return (
-      <div className="rounded-lg bg-white shadow-sm dark:bg-gray-900 dark:shadow-gray-800/50">
-        <ListHeader title="공통코드 목록" actionLabel="새 공통코드 추가" onAction={onAdd} />
-        <div className="p-4 sm:p-6">
+      <div className="rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
+        <div className="border-b border-gray-200 px-3 py-2 dark:border-[#1f2435]">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">공통코드 목록</h3>
+        </div>
+        <div className="p-4">
           <LoadingState />
         </div>
       </div>
@@ -167,33 +164,36 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
   }
 
   return (
-    <div className="flex h-[calc(100vh-200px)] flex-col rounded-lg bg-white shadow-sm dark:bg-gray-900 dark:shadow-gray-800/50">
-      <ListHeader title="공통코드 목록" actionLabel="새 공통코드 추가" onAction={onAdd} />
+    <div className="flex h-[calc(100vh-180px)] flex-col rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
+      {/* 헤더 */}
+      <div className="border-b border-gray-200 px-3 py-2 dark:border-[#1f2435]">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">공통코드 목록</h3>
+      </div>
 
       {/* 좌우 분할 레이아웃 */}
       <div className="flex flex-1 flex-col gap-2 overflow-hidden p-2 sm:flex-row sm:gap-3 sm:p-3">
         {/* 왼쪽: 상위코드 목록 */}
-        <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2 py-1.5 dark:border-gray-700 dark:bg-gray-900 sm:px-3 sm:py-2">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white sm:text-base">상위코드</h3>
+        <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
+          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2.5 py-1.5 dark:border-[#1f2435] dark:bg-[#141827]">
+            <h4 className="text-xs font-semibold text-gray-900 dark:text-white">상위코드</h4>
             {onAddParent && (
               <button
                 onClick={onAddParent}
-                className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:h-7 sm:w-7"
+                className="flex h-5 w-5 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:text-gray-400 dark:hover:bg-[#1a1e2c]"
                 title="상위코드 추가"
               >
-                <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
               </button>
             )}
           </div>
-          <div className="cmn-cd-scroll flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-50 p-1.5 dark:bg-gray-800 sm:p-2">
+          <div className="cmn-cd-scroll flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-50 p-1.5 dark:bg-[#0f1119] sm:p-2">
             {parentCmnCds.length === 0 ? (
               <div className="flex flex-1 items-center justify-center">
                 <EmptyState
                   icon={
-                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -206,7 +206,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
                 />
               </div>
             ) : (
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="space-y-1">
                 {parentCmnCds.map((cmnCd) => (
                   <CmnCdItem
                     key={cmnCd.id}
@@ -224,29 +224,29 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
         </div>
 
         {/* 오른쪽: 하위코드 목록 */}
-        <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2 py-1.5 dark:border-gray-700 dark:bg-gray-900 sm:px-3 sm:py-2">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white sm:text-base">
-              하위코드 {selectedParentCd && `(${selectedParentCd.cd} - ${selectedParentCd.name})`}
-            </h3>
+        <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
+          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2.5 py-1.5 dark:border-[#1f2435] dark:bg-[#141827]">
+            <h4 className="text-xs font-semibold text-gray-900 dark:text-white">
+              하위코드 {selectedParentCd && <span className="text-[10px] font-normal text-gray-500 dark:text-gray-400">({selectedParentCd.cd})</span>}
+            </h4>
             {onAddChild && selectedParentCd && (
               <button
                 onClick={() => onAddChild(selectedParentCd)}
-                className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 sm:h-7 sm:w-7"
+                className="flex h-5 w-5 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:text-gray-400 dark:hover:bg-[#1a1e2c]"
                 title="하위코드 추가"
               >
-                <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
               </button>
             )}
           </div>
-          <div className="cmn-cd-scroll flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-50 p-1.5 dark:bg-gray-800 sm:p-2">
+          <div className="cmn-cd-scroll flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-50 p-1.5 dark:bg-[#0f1119] sm:p-2">
             {!selectedParentCd ? (
               <div className="flex flex-1 items-center justify-center">
                 <EmptyState
                   icon={
-                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -262,7 +262,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
               <div className="flex flex-1 items-center justify-center">
                 <EmptyState
                   icon={
-                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -275,7 +275,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
                 />
               </div>
             ) : (
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="space-y-1">
                 {childCmnCds.map((cmnCd) => (
                   <CmnCdItem
                     key={cmnCd.id}
@@ -293,4 +293,3 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
     </div>
   );
 }
-

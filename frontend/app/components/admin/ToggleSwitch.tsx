@@ -39,8 +39,8 @@ export default function ToggleSwitch({
       disabled={disabled}
       onClick={() => !disabled && onToggle(!enabled)}
       className={`
-        relative inline-flex ${sizeClasses[size]} flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
-        ${enabled ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'}
+        relative inline-flex ${sizeClasses[size]} shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
+        ${enabled ? 'bg-green-600' : 'bg-gray-200 dark:bg-[#1f2435]'}
       `}
     >
       <span

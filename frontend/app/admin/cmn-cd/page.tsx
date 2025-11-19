@@ -443,7 +443,7 @@ function CmnCdPageContent() {
 
   return (
     <AdminLayout>
-      <div className="space-y-2">
+      <div className="space-y-3">
         <PageHeader title="공통코드 관리" description="공통코드를 생성, 수정, 삭제할 수 있습니다." />
         {editingCmnCd ? (
           <CmnCdForm

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
 
@@ -78,11 +78,11 @@ export default function CmnCdForm({ onSubmit, onCancel, initialData, isLoading =
   };
 
   return (
-    <div className="rounded-lg bg-white p-3 shadow-sm dark:bg-gray-900 dark:shadow-gray-800/50 sm:p-6">
-      <h3 className="text-sm font-semibold text-gray-900 dark:text-white sm:text-base lg:text-lg">
+    <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-[#1f2435] dark:bg-[#0f1119] sm:p-6">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-white sm:text-base">
         {isEditMode ? '공통코드 수정' : '새 공통코드 생성'}
       </h3>
-      <form className="mt-3 space-y-3 sm:mt-6 sm:space-y-4" onSubmit={handleSubmit}>
+      <form className="mt-4 space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
         {!isEditMode && (
           <>
             <FormField
@@ -120,10 +120,10 @@ export default function CmnCdForm({ onSubmit, onCancel, initialData, isLoading =
         )}
         {isEditMode && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
               코드
             </label>
-            <div className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+            <div className="mt-1 block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-500 dark:border-[#1f2435] dark:bg-[#1a1e2c] dark:text-gray-400">
               {formData.cd}
             </div>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">코드는 변경할 수 없습니다.</p>
@@ -168,4 +168,3 @@ export default function CmnCdForm({ onSubmit, onCancel, initialData, isLoading =
     </div>
   );
 }
-

@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import AdminLayout from '../../components/admin/AdminLayout';
-import TabContainer from '../../components/admin/TabContainer';
 import PageHeader from '../../components/admin/PageHeader';
 import SiteList from '../../components/admin/sites/SiteList';
 import SiteForm from '../../components/admin/sites/SiteForm';
@@ -22,8 +21,6 @@ interface Site {
 
 function SitesPageContent() {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [sites, setSites] = useState<Site[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,19 +74,11 @@ function SitesPageContent() {
   }, []);
 
   const handleAdd = () => {
-    setEditingSite(null);
-    // URL 쿼리 파라미터로 탭 변경
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', 'create');
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    setEditingSite({} as Site);
   };
 
   const handleEdit = (site: Site) => {
     setEditingSite(site);
-    // URL 쿼리 파라미터로 탭 변경
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', 'create');
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const handleDelete = (site: Site) => {
@@ -149,12 +138,13 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const url = editingSite
+      const isEditMode = editingSite && editingSite.id;
+      const url = isEditMode
         ? `http://localhost:8080/api/v1/site/${editingSite.id}`
         : 'http://localhost:8080/api/v1/site';
-      const method = editingSite ? 'PUT' : 'POST';
+      const method = isEditMode ? 'PUT' : 'POST';
 
-      const requestBody = editingSite
+      const requestBody = isEditMode
         ? {
             siteName: formData.siteName,
             description: formData.description || '',
@@ -184,60 +174,37 @@ function SitesPageContent() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || `${editingSite ? '수정' : '생성'}에 실패했습니다.`);
+        throw new Error(data.message || `${isEditMode ? '수정' : '생성'}에 실패했습니다.`);
       }
 
-      toast.success(`사이트가 성공적으로 ${editingSite ? '수정' : '생성'}되었습니다.`);
+      toast.success(`사이트가 성공적으로 ${isEditMode ? '수정' : '생성'}되었습니다.`);
       setTimeout(() => {
         setEditingSite(null);
-        // URL 쿼리 파라미터로 탭 변경
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('tab', 'list');
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
         fetchSites();
       }, 1500);
     } catch (error) {
+      const isEditMode = editingSite && editingSite.id;
       if (error instanceof Error) {
-        toast.error(error.message || `사이트 ${editingSite ? '수정' : '생성'}에 실패했습니다.`);
+        toast.error(error.message || `사이트 ${isEditMode ? '수정' : '생성'}에 실패했습니다.`);
       } else {
-        toast.error(`사이트 ${editingSite ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
+        toast.error(`사이트 ${isEditMode ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
       }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const tabs = [
-    {
-      id: 'list',
-      label: '사이트 목록',
-      content: (
-        <div>
-          <SiteList
-            sites={sites}
-            isLoading={isLoading}
-            onAdd={handleAdd}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        </div>
-      ),
-    },
-    {
-      id: 'create',
-      label: editingSite ? '사이트 수정' : '사이트 생성',
-      content: (
-        <div>
+  return (
+    <AdminLayout>
+      <div className="space-y-3">
+        <PageHeader title="사이트 관리" description="사이트를 생성, 수정, 삭제할 수 있습니다." />
+        {editingSite ? (
           <SiteForm
             onSubmit={handleSubmit}
             onCancel={() => {
               setEditingSite(null);
-              // URL 쿼리 파라미터로 탭 변경
-              const params = new URLSearchParams(searchParams.toString());
-              params.set('tab', 'list');
-              router.push(`${pathname}?${params.toString()}`, { scroll: false });
             }}
-            initialData={editingSite ? {
+            initialData={editingSite.id ? {
               siteType: editingSite.siteType,
               siteName: editingSite.siteName,
               description: editingSite.description,
@@ -246,16 +213,15 @@ function SitesPageContent() {
             } : undefined}
             isLoading={isSubmitting}
           />
-        </div>
-      ),
-    },
-  ];
-
-  return (
-    <AdminLayout>
-      <div className="space-y-4 sm:space-y-6">
-        <PageHeader title="사이트 관리" description="사이트를 생성, 수정, 삭제할 수 있습니다." />
-        <TabContainer tabs={tabs} defaultTab="list" />
+        ) : (
+          <SiteList
+            sites={sites}
+            isLoading={isLoading}
+            onAdd={handleAdd}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
 
       <ConfirmDialog
@@ -307,4 +273,3 @@ export default function SitesPage() {
     </Suspense>
   );
 }
-

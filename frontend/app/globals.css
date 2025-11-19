@@ -127,6 +127,42 @@ html.dark div.bg-gradient-to-r.dark\:from-gray-900.dark\:to-gray-950 {
   background: rgb(107 114 128); /* gray-500 */
 }
 
+/* Select dropdown 스타일 개선 */
+select {
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+}
+
+/* Select option 스타일 (제한적) */
+select option {
+  padding: 8px 12px;
+  background-color: white;
+  color: rgb(17 24 39);
+  font-size: 0.75rem;
+}
+
+.dark select option {
+  background-color: rgb(26 30 44); /* #1a1e2c */
+  color: rgb(255 255 255);
+}
+
+select option:checked,
+select option:focus,
+select option:hover {
+  background-color: rgb(59 130 246); /* blue-500 */
+  color: white;
+}
+
+.dark select option:checked,
+.dark select option:focus,
+.dark select option:hover {
+  background-color: rgb(59 130 246); /* blue-500 */
+  color: white;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;

@@ -246,13 +246,13 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen transform overflow-hidden bg-white transition-all duration-300 ease-in-out dark:bg-gray-900 ${
+        className={`fixed left-0 top-0 z-40 h-screen transform overflow-hidden bg-white transition-all duration-300 ease-in-out dark:bg-[#0f1119] ${
           isCollapsed ? 'w-14' : 'w-56'
         } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div className="flex h-full flex-col overflow-hidden">
           {/* Header */}
-          <div className="flex h-12 items-center justify-between border-b border-gray-200 px-3 dark:border-gray-800">
+          <div className="flex h-12 items-center justify-between border-b border-gray-200 px-3 dark:border-[#1f2435]">
             <div className="flex items-center gap-1.5">
               <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-900 dark:bg-gray-100">
                 <svg className="h-3 w-3 text-white dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
@@ -269,7 +269,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
             {!isCollapsed && (
               <button
                 onClick={onToggleCollapse}
-                className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1f2435] dark:hover:text-white"
                 aria-label="Collapse sidebar"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,7 +286,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
 
           {/* Search Bar */}
           {!isCollapsed && (
-            <div className="border-b border-gray-200 px-3 py-2 dark:border-gray-800">
+            <div className="border-b border-gray-200 px-3 py-2 dark:border-[#1f2435]">
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5">
                   <svg className="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,10 +304,10 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-1.5 pl-8 pr-14 text-xs text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:bg-white focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-gray-600"
+                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-1.5 pl-8 pr-14 text-xs text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:bg-white focus:outline-none dark:border-transparent dark:bg-[#1a1e2c] dark:text-white dark:placeholder-gray-500 dark:focus:border-[#303650] dark:focus:bg-[#1f2435]"
                 />
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5">
-                  <kbd className="hidden rounded border border-gray-300 bg-white px-1 py-0.5 text-[10px] font-semibold text-gray-500 sm:inline-block dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                  <kbd className="hidden rounded border border-gray-300 bg-white px-1 py-0.5 text-[10px] font-semibold text-gray-500 sm:inline-block dark:border-[#303650] dark:bg-[#1a1e2c] dark:text-gray-400">
                     ⌘K
                   </kbd>
                 </div>
@@ -317,10 +317,10 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
 
           {/* Collapsed: Toggle Button and Search Icon */}
           {isCollapsed && (
-            <div className="space-y-1.5 border-b border-gray-200 px-1.5 py-2 dark:border-gray-800">
+            <div className="space-y-1.5 border-b border-gray-200 px-1.5 py-2 dark:border-[#1f2435]">
               <button
                 onClick={onToggleCollapse}
-                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1f2435] dark:hover:text-white"
                 aria-label="Expand sidebar"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,7 +337,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                   setShowSearch(true);
                   setTimeout(() => searchInputRef.current?.focus(), 0);
                 }}
-                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1f2435] dark:hover:text-white"
                 aria-label="Search"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -370,12 +370,12 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                           onMouseLeave={handleMenuItemLeave}
                           className={`group relative flex w-full items-center justify-center rounded-lg px-1.5 py-2 text-xs font-medium transition-colors ${
                             isActive
-                              ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
-                              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
+                              ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                           }`}
                           title={item.name}
                         >
-                          <span className={`flex-shrink-0 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                          <span className={`shrink-0 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
                             <div className="h-4 w-4">{item.icon}</div>
                           </span>
                           {item.badge && (
@@ -390,11 +390,11 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                             onClick={() => toggleMenu(item.name)}
                             className={`group relative flex w-full items-center gap-2 rounded-lg px-2 py-2 text-xs font-medium transition-colors ${
                               isActive
-                                ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
-                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
+                                ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                             }`}
                           >
-                            <span className={`flex-shrink-0 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                            <span className={`shrink-0 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
                               <div className="h-4 w-4">{item.icon}</div>
                             </span>
                             <span className="flex-1 overflow-hidden text-left">
@@ -415,7 +415,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                             </svg>
                           </button>
                           {isExpanded && (
-                            <div className="ml-3 mt-0.5 space-y-0.5 border-l-2 border-gray-200 pl-3 dark:border-gray-700">
+                            <div className="ml-3 mt-0.5 space-y-0.5 border-l-2 border-gray-200 pl-3 dark:border-[#1f2435]">
                               {item.subItems?.map((subItem) => {
                                 const isSubActive = pathname === subItem.href;
                                 return (
@@ -425,8 +425,8 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                                     onClick={handleLinkClick}
                                     className={`block rounded-lg px-2 py-1.5 text-xs transition-colors ${
                                       isSubActive
-                                        ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
-                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
+                                        ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                                     }`}
                                   >
                                     {subItem.name}
@@ -444,12 +444,12 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                       onClick={handleLinkClick}
                       className={`group relative flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-medium transition-colors ${
                         isActive
-                          ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
+                          ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                       } ${isCollapsed ? 'justify-center px-1.5' : ''}`}
                       title={isCollapsed ? item.name : undefined}
                     >
-                      <span className={`flex-shrink-0 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                      <span className={`shrink-0 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
                         <div className="h-4 w-4">{item.icon}</div>
                       </span>
                       {!isCollapsed && (
@@ -475,7 +475,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                   {/* Floating Dropdown for Collapsed Mode */}
                   {isCollapsed && hasSubItems && isHovered && (
                     <div
-                      className="floating-dropdown fixed z-50 min-w-[180px] rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+                      className="floating-dropdown fixed z-50 min-w-[180px] rounded-lg border border-gray-200 bg-white shadow-xl dark:border-[#1f2435] dark:bg-[#141827]"
                       style={{
                         top: `${dropdownPosition.top}px`,
                         left: `${dropdownPosition.left}px`,
@@ -486,7 +486,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                       <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
                         {item.name}
                       </div>
-                      <div className="border-t border-gray-200 dark:border-gray-700">
+                      <div className="border-t border-gray-200 dark:border-[#1f2435]">
                         {item.subItems?.map((subItem) => {
                           const isSubActive = pathname === subItem.href;
                           return (
@@ -499,8 +499,8 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                               }}
                               className={`block px-3 py-2 text-sm transition-colors first:rounded-t-lg last:rounded-b-lg ${
                                 isSubActive
-                                  ? 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white'
-                                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
+                                  ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                               }`}
                             >
                               {subItem.name}
@@ -517,8 +517,8 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
 
           {/* Support Section */}
           {!isCollapsed && (
-            <div className="border-t border-gray-200 px-3 py-3 dark:border-gray-800">
-              <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div className="border-t border-gray-200 px-3 py-3 dark:border-[#1f2435]">
+              <div className="rounded-lg bg-gray-50 p-3 dark:bg-[#1a1e2c]">
                 <div className="mb-1.5 flex items-center gap-1.5">
                   <svg className="h-3.5 w-3.5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -533,7 +533,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                 <p className="mb-2 text-[10px] text-gray-600 dark:text-gray-400">
                   Get in touch with our agents
                 </p>
-                <button className="w-full rounded-lg bg-white px-2 py-1.5 text-[10px] font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
+                <button className="w-full rounded-lg bg-white px-2 py-1.5 text-[10px] font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-50 dark:bg-[#0f1119] dark:text-white dark:hover:bg-[#1f2435]">
                   Contact us
                 </button>
               </div>
@@ -551,7 +551,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
             aria-hidden="true"
           />
           <div className="fixed inset-0 z-50 flex items-start justify-center pt-20">
-            <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800">
+            <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white shadow-2xl dark:border-[#1f2435] dark:bg-[#141827]">
               <div className="relative p-4">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                   <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -570,12 +570,12 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onBlur={() => setTimeout(() => setShowSearch(false), 200)}
-                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:bg-white focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-gray-600"
+                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:bg-white focus:outline-none dark:border-transparent dark:bg-[#1a1e2c] dark:text-white dark:placeholder-gray-500 dark:focus:border-[#303650] dark:focus:bg-[#1f2435]"
                   autoFocus
                 />
               </div>
               {searchQuery && (
-                <div className="max-h-64 overflow-y-auto border-t border-gray-200 p-2 dark:border-gray-700">
+                <div className="max-h-64 overflow-y-auto border-t border-gray-200 p-2 dark:border-[#1f2435]">
                   {filteredMenuItems.map((item) => (
                     <Link
                       key={item.href}
@@ -585,7 +585,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                         setSearchQuery('');
                         handleLinkClick();
                       }}
-                      className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                      className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-[#1a1e2c]"
                     >
                       {item.name}
                     </Link>
