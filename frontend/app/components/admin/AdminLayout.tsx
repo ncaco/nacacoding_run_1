@@ -196,15 +196,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={toggleSidebarCollapse}
       />
-      <div
-        className={`flex flex-1 flex-col transition-all duration-300 ease-in-out ${
-          isSidebarOpen 
-            ? isSidebarCollapsed 
-              ? 'ml-0 lg:ml-14' 
-              : 'ml-0 lg:ml-56'
-            : 'ml-0'
-        }`}
-      >
+      <div className="flex flex-1 flex-col min-w-0">
         <AdminHeader onMenuClick={toggleSidebar} isSidebarOpen={isSidebarOpen} />
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-6 scrollbar-hide">{children}</main>
       </div>

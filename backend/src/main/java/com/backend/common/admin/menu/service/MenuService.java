@@ -64,6 +64,7 @@ public class MenuService {
 			request.getSiteId(),
 			request.getName(),
 			request.getUrl(),
+			request.getIcon(),
 			request.getDisplayOrder() != null ? request.getDisplayOrder() : 0,
 			request.getParentId()
 		);
@@ -77,6 +78,7 @@ public class MenuService {
 		
 		entity.setName(request.getName());
 		entity.setUrl(request.getUrl());
+		entity.setIcon(request.getIcon());
 		if (request.getDisplayOrder() != null) {
 			entity.setDisplayOrder(request.getDisplayOrder());
 		}
@@ -108,6 +110,7 @@ public class MenuService {
 			entity.getSiteId(),
 			entity.getName(),
 			entity.getUrl(),
+			entity.getIcon(),
 			entity.getDisplayOrder(),
 			entity.getParentId(),
 			entity.getEnabled()

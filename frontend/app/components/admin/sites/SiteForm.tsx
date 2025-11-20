@@ -15,9 +15,10 @@ interface SiteFormProps {
     enabled?: boolean;
   };
   isLoading?: boolean;
+  siteTypeOptions?: Array<{ value: string; label: string }>;
 }
 
-export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = false }: SiteFormProps) {
+export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = false, siteTypeOptions = [] }: SiteFormProps) {
   const isEditMode = !!initialData?.siteName;
   
   const [formData, setFormData] = useState({
@@ -68,8 +69,7 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
                 onChange={(value) => setFormData({ ...formData, siteType: value })}
                 options={[
                   { value: '', label: '선택하세요' },
-                  { value: 'ADMIN', label: '통합관리사이트' },
-                  { value: 'PORTAL', label: '메인포털사이트' },
+                  ...siteTypeOptions,
                 ]}
               />
               {!formData.siteType && (
@@ -87,10 +87,10 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
               </label>
               <div className="mt-1 flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 dark:border-[#1f2435] dark:bg-[#1a1e2c]">
                 <span className="rounded px-1.5 py-0.5 text-[10px] font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
-                  {formData.siteType === 'ADMIN' ? '관리' : formData.siteType === 'PORTAL' ? '포털' : formData.siteType}
+                  {siteTypeOptions.find((opt) => opt.value === formData.siteType)?.label || formData.siteType}
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {formData.siteType === 'ADMIN' ? '통합관리사이트' : formData.siteType === 'PORTAL' ? '메인포털사이트' : formData.siteType}
+                  ({formData.siteType})
                 </span>
               </div>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">사이트 타입은 변경할 수 없습니다.</p>

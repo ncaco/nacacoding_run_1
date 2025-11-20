@@ -1,6 +1,5 @@
 package com.backend.common.admin.site.entity;
 
-import com.backend.common.admin.site.model.SiteType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.Comment;
@@ -14,10 +13,10 @@ public class SiteEntity {
 	@Comment("사이트 고유 식별자 (UUID 형식)")
 	private String id;
 	
-	@Enumerated(EnumType.STRING)
+	@NotBlank
 	@Column(nullable = false, unique = true)
-	@Comment("사이트 타입 (ADMIN: 통합관리사이트, PORTAL: 메인포털사이트)")
-	private SiteType siteType;
+	@Comment("사이트 타입 (공통코드 P001의 하위코드 사용)")
+	private String siteType;
 	
 	@NotBlank
 	@Column(nullable = false)
@@ -38,7 +37,7 @@ public class SiteEntity {
 	
 	public SiteEntity() {}
 	
-	public SiteEntity(SiteType siteType, String siteName, String description, String version) {
+	public SiteEntity(String siteType, String siteName, String description, String version) {
 		this.siteType = siteType;
 		this.siteName = siteName;
 		this.description = description;
@@ -48,8 +47,8 @@ public class SiteEntity {
 	
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
-	public SiteType getSiteType() { return siteType; }
-	public void setSiteType(SiteType siteType) { this.siteType = siteType; }
+	public String getSiteType() { return siteType; }
+	public void setSiteType(String siteType) { this.siteType = siteType; }
 	public String getSiteName() { return siteName; }
 	public void setSiteName(String siteName) { this.siteName = siteName; }
 	public String getDescription() { return description; }

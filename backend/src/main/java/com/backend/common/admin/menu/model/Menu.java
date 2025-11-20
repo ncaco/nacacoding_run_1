@@ -8,17 +8,19 @@ public class Menu {
 	@NotBlank
 	private String name;
 	private String url;
+	private String icon;
 	private Integer displayOrder;
 	private String parentId;
 	private Boolean enabled;
 	
 	public Menu() {}
 	
-	public Menu(String id, String siteId, String name, String url, Integer displayOrder, String parentId, Boolean enabled) {
+	public Menu(String id, String siteId, String name, String url, String icon, Integer displayOrder, String parentId, Boolean enabled) {
 		this.id = id;
 		this.siteId = siteId;
 		this.name = name;
 		this.url = url;
+		this.icon = icon;
 		this.displayOrder = displayOrder;
 		this.parentId = parentId;
 		this.enabled = enabled;
@@ -32,6 +34,8 @@ public class Menu {
 	public void setName(String name) { this.name = name; }
 	public String getUrl() { return url; }
 	public void setUrl(String url) { this.url = url; }
+	public String getIcon() { return icon; }
+	public void setIcon(String icon) { this.icon = icon; }
 	public Integer getDisplayOrder() { return displayOrder; }
 	public void setDisplayOrder(Integer displayOrder) { this.displayOrder = displayOrder; }
 	public String getParentId() { return parentId; }

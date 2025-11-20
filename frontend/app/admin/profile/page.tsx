@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../components/admin/AdminLayout';
 import TabContainer from '../../components/admin/TabContainer';
-import PageHeader from '../../components/admin/PageHeader';
 import FormField from '../../components/admin/FormField';
 import FormActions from '../../components/admin/FormActions';
 import { decodeJWT, isTokenExpired, logout, fetchWithTokenRefresh } from '../../utils/auth';
@@ -867,7 +866,6 @@ export default function ProfilePage() {
   return (
     <AdminLayout>
       <div className="space-y-4 sm:space-y-6">
-        <PageHeader title="마이페이지" description="프로필 정보를 수정하고 비밀번호를 변경할 수 있습니다." />
         <Suspense fallback={
           <div className="flex items-center justify-center py-12">
             <div className="text-center">

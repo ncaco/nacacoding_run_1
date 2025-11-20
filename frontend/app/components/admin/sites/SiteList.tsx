@@ -21,14 +21,17 @@ interface SiteListProps {
   onAdd?: () => void;
   onEdit?: (site: Site) => void;
   onDelete?: (site: Site) => void;
+  siteTypeOptions?: Array<{ value: string; label: string }>;
 }
 
-function SiteItem({ site, onEdit, onDelete }: { site: Site; onEdit?: (site: Site) => void; onDelete?: (site: Site) => void }) {
+function SiteItem({ site, onEdit, onDelete, siteTypeOptions = [] }: { site: Site; onEdit?: (site: Site) => void; onDelete?: (site: Site) => void; siteTypeOptions?: Array<{ value: string; label: string }> }) {
+  const siteTypeLabel = siteTypeOptions.find((opt) => opt.value === site.siteType)?.label || site.siteType;
+  
   return (
     <div className="group flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-2.5 py-2 transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:hover:border-[#303650] dark:hover:bg-[#1a1e2c]">
       {/* 사이트 타입 배지 */}
       <span className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
-        {site.siteType === 'ADMIN' ? '관리' : site.siteType === 'PORTAL' ? '포털' : site.siteType}
+        {siteTypeLabel}
       </span>
 
       {/* 사이트명과 설명 */}
@@ -73,7 +76,7 @@ function SiteItem({ site, onEdit, onDelete }: { site: Site; onEdit?: (site: Site
   );
 }
 
-export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete }: SiteListProps) {
+export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete, siteTypeOptions = [] }: SiteListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [siteTypeFilter, setSiteTypeFilter] = useState<string>('');
 
@@ -146,8 +149,7 @@ export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete }: 
               onChange={(value) => setSiteTypeFilter(value)}
               options={[
                 { value: '', label: '전체 타입' },
-                { value: 'ADMIN', label: '통합관리사이트' },
-                { value: 'PORTAL', label: '메인포털사이트' },
+                ...siteTypeOptions,
               ]}
               placeholder="전체 타입"
             />
@@ -191,6 +193,7 @@ export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete }: 
                 site={site}
                 onEdit={onEdit}
                 onDelete={onDelete}
+                siteTypeOptions={siteTypeOptions}
               />
             ))}
           </div>

@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
 import { isTokenExpired, logout, fetchWithTokenRefresh } from '../../utils/auth';
+import { menuItems } from './AdminSidebar';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -13,6 +14,7 @@ interface AdminHeaderProps {
 
 export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -20,6 +22,32 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const profileRef = useRef<HTMLDivElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // 현재 경로에 맞는 메뉴 정보 찾기
+  const findCurrentMenu = () => {
+    // 먼저 서브메뉴에서 찾기
+    for (const item of menuItems) {
+      if (item.subItems) {
+        const subItem = item.subItems.find((sub) => pathname === sub.href);
+        if (subItem) {
+          return subItem;
+        }
+      }
+    }
+    // 메인 메뉴에서 찾기
+    for (const item of menuItems) {
+      if (item.href === '/admin') {
+        if (pathname === '/admin') {
+          return item;
+        }
+      } else if (pathname.startsWith(item.href)) {
+        return item;
+      }
+    }
+    return null;
+  };
+
+  const currentMenu = findCurrentMenu();
 
   // 프로필 정보 가져오기 함수
   const fetchProfile = useCallback(async () => {
@@ -155,9 +183,37 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
     }
   };
 
+
   return (
-    <header className="sticky top-0 z-40 flex h-12 items-center justify-end border-b border-gray-200 bg-white px-3 dark:border-gray-800 dark:bg-gray-900 sm:px-4">
-      <div className="relative flex items-center gap-2 sm:gap-4">
+    <header className="sticky top-0 z-50 flex h-12 items-center justify-between border-b border-gray-200 bg-white px-3 dark:border-gray-800 dark:bg-gray-900 sm:px-4">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        {/* 메뉴 버튼 (모바일 및 데스크톱) */}
+        <button
+          onClick={onMenuClick}
+          className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100 shrink-0"
+          aria-label={isSidebarOpen ? "메뉴 닫기" : "메뉴 열기"}
+          aria-expanded={isSidebarOpen}
+        >
+          {isSidebarOpen ? (
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
+
+        {/* 현재 페이지 메뉴명 */}
+        {currentMenu && (
+          <h1 className="text-sm font-semibold text-gray-900 dark:text-white truncate sm:text-base">
+            {currentMenu.name}
+          </h1>
+        )}
+      </div>
+      
+      <div className="relative flex items-center gap-2 sm:gap-4 shrink-0">
         <ThemeToggle />
         <button
           className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"

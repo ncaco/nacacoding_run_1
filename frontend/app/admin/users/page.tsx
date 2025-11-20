@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import TabContainer from '../../components/admin/TabContainer';
-import PageHeader from '../../components/admin/PageHeader';
 import UserList from '../../components/admin/users/UserList';
 import UserForm from '../../components/admin/users/UserForm';
 
@@ -55,7 +54,6 @@ export default function UsersPage() {
   return (
     <AdminLayout>
       <div className="space-y-4 sm:space-y-6">
-        <PageHeader title="사용자 관리" description="사용자를 생성, 수정, 삭제할 수 있습니다." />
         <TabContainer tabs={tabs} />
       </div>
     </AdminLayout>

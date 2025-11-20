@@ -13,6 +13,7 @@ export default function FormField({
   rows = 3,
   value,
   onChange,
+  helperText,
 }: FormFieldProps) {
   const baseInputClasses =
     'mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:border-[#1f2435] dark:bg-[#1a1e2c] dark:text-white dark:placeholder-gray-500 dark:focus:border-[#303650] dark:focus:ring-[#303650]';
@@ -76,6 +77,11 @@ export default function FormField({
           onChange={handleChange}
           className={baseInputClasses}
         />
+      )}
+      {helperText && (
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          {helperText}
+        </p>
       )}
     </div>
   );

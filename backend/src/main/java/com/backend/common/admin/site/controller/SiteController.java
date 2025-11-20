@@ -4,7 +4,6 @@ import com.backend.core.dto.ApiResponse;
 import com.backend.common.admin.site.dto.SiteCreateRequest;
 import com.backend.common.admin.site.dto.SiteUpdateRequest;
 import com.backend.common.admin.site.model.Site;
-import com.backend.common.admin.site.model.SiteType;
 import com.backend.common.admin.site.service.SiteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -56,24 +55,17 @@ public class SiteController {
 				.orElseThrow(() -> new IllegalArgumentException("사이트를 찾을 수 없습니다: " + id));
 	}
 
-	@Operation(summary = "사이트 타입으로 조회", description = "사이트 타입(ADMIN/PORTAL)으로 사이트 정보를 조회합니다. 관리자(USER) 권한이 필요합니다.")
+	@Operation(summary = "사이트 타입으로 조회", description = "사이트 타입(공통코드 P001의 하위코드)으로 사이트 정보를 조회합니다. 관리자(USER) 권한이 필요합니다.")
 	@ApiResponses(value = {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사이트를 찾을 수 없음 또는 잘못된 사이트 타입"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사이트를 찾을 수 없음"),
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "권한 부족")
 	})
 	@SecurityRequirement(name = "bearerAuth")
 	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/type/{siteType}")
-	public ResponseEntity<ApiResponse<Site>> getBySiteType(@PathVariable("siteType") String siteTypeStr) {
-		SiteType siteType;
-		try {
-			siteType = SiteType.valueOf(siteTypeStr.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("잘못된 사이트 타입입니다. ADMIN 또는 PORTAL을 사용해주세요.");
-		}
-		
+	public ResponseEntity<ApiResponse<Site>> getBySiteType(@PathVariable("siteType") String siteType) {
 		return siteService.findBySiteType(siteType)
 				.map(site -> ResponseEntity.ok(ApiResponse.ok(site)))
 				.orElseThrow(() -> new IllegalArgumentException("사이트를 찾을 수 없습니다: " + siteType));

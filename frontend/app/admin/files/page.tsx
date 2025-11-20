@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import TabContainer from '../../components/admin/TabContainer';
-import PageHeader from '../../components/admin/PageHeader';
 import FileList from '../../components/admin/files/FileList';
 import FileUpload from '../../components/admin/files/FileUpload';
 
@@ -55,7 +54,6 @@ export default function FilesPage() {
   return (
     <AdminLayout>
       <div className="space-y-4 sm:space-y-6">
-        <PageHeader title="파일 관리" description="파일을 업로드, 다운로드, 삭제할 수 있습니다." />
         <TabContainer tabs={tabs} />
       </div>
     </AdminLayout>

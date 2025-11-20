@@ -26,6 +26,10 @@ public class MenuEntity {
 	@Comment("메뉴 URL")
 	private String url;
 	
+	@Column(length = 100)
+	@Comment("메뉴 아이콘 (예: M4 6h16M4 12h16M4 18h16)")
+	private String icon;
+	
 	@Column(nullable = false)
 	@Comment("표시 순서")
 	private Integer displayOrder = 0;
@@ -40,10 +44,11 @@ public class MenuEntity {
 	
 	public MenuEntity() {}
 	
-	public MenuEntity(String siteId, String name, String url, Integer displayOrder, String parentId) {
+	public MenuEntity(String siteId, String name, String url, String icon, Integer displayOrder, String parentId) {
 		this.siteId = siteId;
 		this.name = name;
 		this.url = url;
+		this.icon = icon;
 		this.displayOrder = displayOrder != null ? displayOrder : 0;
 		this.parentId = parentId;
 		this.enabled = true;
@@ -57,6 +62,8 @@ public class MenuEntity {
 	public void setName(String name) { this.name = name; }
 	public String getUrl() { return url; }
 	public void setUrl(String url) { this.url = url; }
+	public String getIcon() { return icon; }
+	public void setIcon(String icon) { this.icon = icon; }
 	public Integer getDisplayOrder() { return displayOrder; }
 	public void setDisplayOrder(Integer displayOrder) { this.displayOrder = displayOrder; }
 	public String getParentId() { return parentId; }

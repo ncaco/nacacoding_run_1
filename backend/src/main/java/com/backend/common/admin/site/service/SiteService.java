@@ -4,7 +4,6 @@ import com.backend.common.admin.site.dto.SiteCreateRequest;
 import com.backend.common.admin.site.dto.SiteUpdateRequest;
 import com.backend.common.admin.site.entity.SiteEntity;
 import com.backend.common.admin.site.model.Site;
-import com.backend.common.admin.site.model.SiteType;
 import com.backend.common.admin.site.repository.SiteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +32,7 @@ public class SiteService {
 				.map(this::toSite);
 	}
 
-	public Optional<Site> findBySiteType(SiteType siteType) {
+	public Optional<Site> findBySiteType(String siteType) {
 		return siteRepository.findBySiteType(siteType)
 				.map(this::toSite);
 	}

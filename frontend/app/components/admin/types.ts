@@ -47,6 +47,7 @@ export interface FormFieldProps {
   rows?: number;
   value?: string | number | boolean;
   onChange?: (value: any) => void;
+  helperText?: string;
 }
 
 export interface FormActionsProps {

@@ -68,6 +68,23 @@ html.dark .border-gray-300 {
   border-color: rgb(55 65 81) !important; /* gray-700 */
 }
 
+/* 다크모드에서 탭 active 밑줄 강제 적용 */
+html.dark button[aria-selected="true"].border-b-\[3px\] {
+  border-bottom-color: rgb(255 255 255) !important;
+}
+
+/* 다크모드에서 선택된 메뉴 항목 배경색 강제 적용 */
+html.dark div.menu-item-selected.bg-gray-100 {
+  background-color: rgb(20 24 39) !important; /* #141827 */
+}
+
+/* 다크모드에서 선택된 사이드바 메뉴 항목 배경색 강제 적용 */
+html.dark button.sidebar-menu-item-selected.bg-gray-100,
+html.dark a.sidebar-menu-item-selected.bg-gray-100 {
+  background-color: rgb(20 24 39) !important; /* #141827 */
+  border-left: 3px solid rgb(255 255 255) !important; /* 왼쪽 보더로 선택 상태 강조 */
+}
+
 /* 헤더 다크모드 스타일 강제 적용 */
 html.dark header.dark\:bg-gray-900\/80,
 html.dark header.dark\:bg-gray-950\/90 {

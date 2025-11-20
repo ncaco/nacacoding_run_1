@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import ToggleSwitch from '../ToggleSwitch';
 import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
@@ -22,13 +22,69 @@ interface CmnCdListProps {
   onAddParent?: () => void;
   onAddChild?: (parentCd: CmnCd) => void;
   onEdit?: (cmnCd: CmnCd) => void;
+  onInlineEdit?: (cmnCd: CmnCd) => void;
   onDelete?: (cmnCd: CmnCd) => void;
   onToggleEnabled?: (cmnCd: CmnCd, enabled: boolean) => void;
   selectedParentCdCode?: string | null;
 }
 
-function CmnCdItem({ cmnCd, isSelected, onSelect, onEdit, onDelete, onToggleEnabled }: { cmnCd: CmnCd; isSelected?: boolean; onSelect?: (cmnCd: CmnCd) => void; onEdit?: (cmnCd: CmnCd) => void; onDelete?: (cmnCd: CmnCd) => void; onToggleEnabled?: (cmnCd: CmnCd, enabled: boolean) => void }) {
+function CmnCdItem({ cmnCd, isSelected, onSelect, onEdit, onInlineEdit, onDelete, onToggleEnabled }: { cmnCd: CmnCd; isSelected?: boolean; onSelect?: (cmnCd: CmnCd) => void; onEdit?: (cmnCd: CmnCd) => void; onInlineEdit?: (cmnCd: CmnCd) => void; onDelete?: (cmnCd: CmnCd) => void; onToggleEnabled?: (cmnCd: CmnCd, enabled: boolean) => void }) {
   const isParent = cmnCd.cd.startsWith('P');
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(cmnCd.name);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // cmnCd가 변경되면 편집 상태 초기화
+  useEffect(() => {
+    setEditedName(cmnCd.name);
+    setIsEditingName(false);
+  }, [cmnCd.id, cmnCd.name]);
+
+  // 편집 모드로 전환 시 입력 필드에 포커스
+  useEffect(() => {
+    if (isEditingName && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditingName]);
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditingName(true);
+    setEditedName(cmnCd.name);
+  };
+
+  const handleNameSave = () => {
+    if (editedName.trim() && editedName !== cmnCd.name) {
+      if (onInlineEdit) {
+        onInlineEdit({
+          ...cmnCd,
+          name: editedName.trim(),
+        });
+      } else if (onEdit) {
+        onEdit({
+          ...cmnCd,
+          name: editedName.trim(),
+        });
+      }
+    }
+    setIsEditingName(false);
+  };
+
+  const handleNameCancel = () => {
+    setEditedName(cmnCd.name);
+    setIsEditingName(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleNameSave();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleNameCancel();
+    }
+  };
 
   return (
     <div
@@ -52,7 +108,26 @@ function CmnCdItem({ cmnCd, isSelected, onSelect, onEdit, onDelete, onToggleEnab
 
       {/* 이름과 설명 */}
       <div className="min-w-0 flex-1">
-        <div className="text-xs font-medium text-gray-900 dark:text-white truncate">{cmnCd.name}</div>
+        {isEditingName ? (
+          <input
+            ref={inputRef}
+            type="text"
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            onBlur={handleNameSave}
+            onKeyDown={handleKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full rounded border border-gray-300 bg-white px-1.5 py-0.5 text-xs text-gray-900 focus:border-gray-400 focus:outline-none dark:border-[#303650] dark:bg-[#1a1e2c] dark:text-white dark:focus:border-[#404a65]"
+          />
+        ) : (
+          <div
+            className="text-xs font-medium text-gray-900 dark:text-white truncate cursor-text"
+            onDoubleClick={handleDoubleClick}
+            title="더블클릭하여 이름 수정"
+          >
+            {cmnCd.name}
+          </div>
+        )}
         {cmnCd.description && (
           <div className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">{cmnCd.description}</div>
         )}
@@ -98,7 +173,7 @@ function CmnCdItem({ cmnCd, isSelected, onSelect, onEdit, onDelete, onToggleEnab
   );
 }
 
-export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAddChild, onEdit, onDelete, onToggleEnabled, selectedParentCdCode }: CmnCdListProps) {
+export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAddChild, onEdit, onInlineEdit, onDelete, onToggleEnabled, selectedParentCdCode }: CmnCdListProps) {
   const [selectedParentCd, setSelectedParentCd] = useState<CmnCd | null>(null);
 
   // 상위코드만 필터링
@@ -214,6 +289,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
                     isSelected={selectedParentCd?.id === cmnCd.id}
                     onSelect={setSelectedParentCd}
                     onEdit={onEdit}
+                    onInlineEdit={onInlineEdit}
                     onDelete={onDelete}
                     onToggleEnabled={onToggleEnabled}
                   />
@@ -281,6 +357,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
                     key={cmnCd.id}
                     cmnCd={cmnCd}
                     onEdit={onEdit}
+                    onInlineEdit={onInlineEdit}
                     onDelete={onDelete}
                     onToggleEnabled={onToggleEnabled}
                   />

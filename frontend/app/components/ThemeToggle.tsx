@@ -23,8 +23,9 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
-      className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+      className="group relative rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
       aria-label="Toggle theme"
+      title={currentTheme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
     >
       {currentTheme === 'dark' ? (
         <svg

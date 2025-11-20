@@ -4,7 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public class Site {
 	private String id;
-	private SiteType siteType;
+	@NotBlank
+	private String siteType;
 	@NotBlank
 	private String siteName;
 	private String description;
@@ -14,7 +15,7 @@ public class Site {
 	
 	public Site() {}
 	
-	public Site(String id, SiteType siteType, String siteName, String description, String version, Boolean enabled) {
+	public Site(String id, String siteType, String siteName, String description, String version, Boolean enabled) {
 		this.id = id;
 		this.siteType = siteType;
 		this.siteName = siteName;
@@ -25,8 +26,8 @@ public class Site {
 	
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
-	public SiteType getSiteType() { return siteType; }
-	public void setSiteType(SiteType siteType) { this.siteType = siteType; }
+	public String getSiteType() { return siteType; }
+	public void setSiteType(String siteType) { this.siteType = siteType; }
 	public String getSiteName() { return siteName; }
 	public void setSiteName(String siteName) { this.siteName = siteName; }
 	public String getDescription() { return description; }

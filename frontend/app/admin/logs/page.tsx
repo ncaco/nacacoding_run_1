@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import TabContainer from '../../components/admin/TabContainer';
-import PageHeader from '../../components/admin/PageHeader';
 import LogList from '../../components/admin/logs/LogList';
 import LogForm from '../../components/admin/logs/LogForm';
 
@@ -49,7 +48,6 @@ export default function LogsPage() {
   return (
     <AdminLayout>
       <div className="space-y-4 sm:space-y-6">
-        <PageHeader title="로그 관리" description="로그를 조회하고 추가할 수 있습니다." />
         <TabContainer tabs={tabs} />
       </div>
     </AdminLayout>

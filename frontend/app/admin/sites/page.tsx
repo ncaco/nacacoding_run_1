@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import AdminLayout from '../../components/admin/AdminLayout';
-import PageHeader from '../../components/admin/PageHeader';
 import SiteList from '../../components/admin/sites/SiteList';
 import SiteForm from '../../components/admin/sites/SiteForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
@@ -12,11 +11,21 @@ import { fetchWithTokenRefresh, logout } from '../../utils/auth';
 
 interface Site {
   id: string;
-  siteType: 'ADMIN' | 'PORTAL';
+  siteType: string;
   siteName: string;
   description?: string;
   version: string;
   enabled?: boolean;
+}
+
+interface CmnCd {
+  id: string;
+  cd: string;
+  name: string;
+  description?: string;
+  enabled?: boolean;
+  parentCd?: string;
+  children?: CmnCd[];
 }
 
 function SitesPageContent() {
@@ -29,6 +38,60 @@ function SitesPageContent() {
     isOpen: false,
     site: null,
   });
+  const [siteTypeOptions, setSiteTypeOptions] = useState<Array<{ value: string; label: string }>>([]);
+
+  // 공통코드에서 사이트 타입 옵션 조회 (P001의 하위코드)
+  const fetchSiteTypeOptions = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/cmn-cd', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '공통코드 조회에 실패했습니다.');
+      }
+
+      const cmnCds: CmnCd[] = data.data || [];
+      // P001 찾기
+      const p001 = cmnCds.find((cd) => cd.cd === 'P001');
+      
+      if (p001 && p001.children) {
+        // P001의 하위코드들을 옵션으로 변환
+        const options = p001.children
+          .filter((child) => child.enabled !== false) // 활성화된 것만
+          .map((child) => ({
+            value: child.cd,
+            label: child.name,
+          }));
+        setSiteTypeOptions(options);
+      } else {
+        // P001이 없거나 하위코드가 없는 경우 빈 배열
+        setSiteTypeOptions([]);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || '사이트 타입 옵션 조회에 실패했습니다.');
+      } else {
+        toast.error('사이트 타입 옵션 조회에 실패했습니다. 다시 시도해주세요.');
+      }
+      setSiteTypeOptions([]);
+    }
+  };
 
   // 사이트 목록 조회
   const fetchSites = async () => {
@@ -70,6 +133,7 @@ function SitesPageContent() {
   };
 
   useEffect(() => {
+    fetchSiteTypeOptions();
     fetchSites();
   }, []);
 
@@ -197,7 +261,6 @@ function SitesPageContent() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <PageHeader title="사이트 관리" description="사이트를 생성, 수정, 삭제할 수 있습니다." />
         {editingSite ? (
           <SiteForm
             onSubmit={handleSubmit}
@@ -212,6 +275,7 @@ function SitesPageContent() {
               enabled: editingSite.enabled,
             } : undefined}
             isLoading={isSubmitting}
+            siteTypeOptions={siteTypeOptions}
           />
         ) : (
           <SiteList
@@ -220,6 +284,7 @@ function SitesPageContent() {
             onAdd={handleAdd}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            siteTypeOptions={siteTypeOptions}
           />
         )}
       </div>

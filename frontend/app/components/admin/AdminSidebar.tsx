@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 interface SubMenuItem {
   name: string;
   href: string;
+  description?: string;
 }
 
 interface MenuItem {
@@ -14,6 +15,7 @@ interface MenuItem {
   href: string;
   icon: React.ReactNode;
   badge?: number;
+  description?: string;
   subItems?: SubMenuItem[];
 }
 
@@ -21,6 +23,7 @@ const menuItems: MenuItem[] = [
   {
     name: '대시보드',
     href: '/admin',
+    description: '시스템 개요 및 통계를 확인하세요.',
     icon: (
       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -35,6 +38,7 @@ const menuItems: MenuItem[] = [
   {
     name: '사이트 관리',
     href: '/admin/sites',
+    description: '사이트를 생성, 수정, 삭제할 수 있습니다.',
     icon: (
       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -49,6 +53,7 @@ const menuItems: MenuItem[] = [
   {
     name: '메뉴 관리',
     href: '/admin/menus',
+    description: '메뉴를 생성, 수정, 삭제할 수 있습니다.',
     icon: (
       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -63,6 +68,7 @@ const menuItems: MenuItem[] = [
   {
     name: '사용자 관리',
     href: '/admin/users',
+    description: '사용자를 생성, 수정, 삭제할 수 있습니다.',
     icon: (
       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -77,6 +83,7 @@ const menuItems: MenuItem[] = [
   {
     name: '공통코드 관리',
     href: '/admin/cmn-cd',
+    description: '공통코드를 생성, 수정, 삭제할 수 있습니다.',
     icon: (
       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -91,6 +98,7 @@ const menuItems: MenuItem[] = [
   {
     name: '파일 관리',
     href: '/admin/files',
+    description: '파일을 업로드, 다운로드, 삭제할 수 있습니다.',
     icon: (
       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -105,6 +113,7 @@ const menuItems: MenuItem[] = [
   {
     name: '로그 관리',
     href: '/admin/logs',
+    description: '로그를 조회하고 추가할 수 있습니다.',
     icon: (
       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -117,6 +126,8 @@ const menuItems: MenuItem[] = [
     ),
   },
 ];
+
+export { menuItems };
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -241,14 +252,21 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
           className="fixed inset-0 z-30 bg-black/50 transition-opacity duration-300 ease-in-out lg:hidden"
           onClick={onClose}
           aria-hidden="true"
+          style={{ zIndex: 30 }}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen transform overflow-hidden bg-white transition-all duration-300 ease-in-out dark:bg-[#0f1119] ${
-          isCollapsed ? 'w-14' : 'w-56'
-        } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={`h-screen transform overflow-hidden bg-white transition-all duration-300 ease-in-out dark:bg-[#0f1119] ${
+          // 모바일: fixed, 데스크톱: static (레이아웃에 포함)
+          'fixed left-0 top-0 z-40 lg:static lg:z-auto'
+        } ${
+          // 너비: 모바일에서는 항상 설정, 데스크톱에서는 열려있을 때만
+          isOpen 
+            ? `${isCollapsed ? 'w-14' : 'w-56'} lg:shrink-0`
+            : '-translate-x-full lg:w-0 lg:translate-x-0 lg:overflow-hidden'
+        }`}
       >
         <div className="flex h-full flex-col overflow-hidden">
           {/* Header */}
@@ -269,7 +287,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
             {!isCollapsed && (
               <button
                 onClick={onToggleCollapse}
-                className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1f2435] dark:hover:text-white"
+                className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#141827] dark:hover:text-white"
                 aria-label="Collapse sidebar"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -320,7 +338,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
             <div className="space-y-1.5 border-b border-gray-200 px-1.5 py-2 dark:border-[#1f2435]">
               <button
                 onClick={onToggleCollapse}
-                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1f2435] dark:hover:text-white"
+                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1a1e2c] dark:hover:text-white"
                 aria-label="Expand sidebar"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,7 +355,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                   setShowSearch(true);
                   setTimeout(() => searchInputRef.current?.focus(), 0);
                 }}
-                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1f2435] dark:hover:text-white"
+                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1a1e2c] dark:hover:text-white"
                 aria-label="Search"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -353,7 +371,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
           )}
 
           {/* Menu Items */}
-          <nav className="flex-1 space-y-0.5 overflow-y-auto overflow-x-hidden px-1.5 py-2 scrollbar-hide">
+          <nav className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-2 py-2 scrollbar-hide">
             {filteredMenuItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
               const hasSubItems = item.subItems && item.subItems.length > 0;
@@ -368,9 +386,9 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                         <button
                           onMouseEnter={(e) => handleMenuItemHover(item.name, e)}
                           onMouseLeave={handleMenuItemLeave}
-                          className={`group relative flex w-full items-center justify-center rounded-lg px-1.5 py-2 text-xs font-medium transition-colors ${
+                          className={`group relative flex w-full items-center justify-center rounded-lg px-1.5 py-2.5 text-xs font-medium transition-all duration-200 sidebar-menu-item ${
                             isActive
-                              ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                              ? 'bg-gray-100 text-gray-900 dark:text-white sidebar-menu-item-selected shadow-sm'
                               : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                           }`}
                           title={item.name}
@@ -388,9 +406,9 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                         <>
                           <button
                             onClick={() => toggleMenu(item.name)}
-                            className={`group relative flex w-full items-center gap-2 rounded-lg px-2 py-2 text-xs font-medium transition-colors ${
+                            className={`group relative flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-xs font-medium transition-all duration-200 sidebar-menu-item ${
                               isActive
-                                ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                                ? 'bg-gray-100 text-gray-900 dark:text-white sidebar-menu-item-selected shadow-sm'
                                 : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                             }`}
                           >
@@ -423,9 +441,9 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                                     key={subItem.href}
                                     href={subItem.href}
                                     onClick={handleLinkClick}
-                                    className={`block rounded-lg px-2 py-1.5 text-xs transition-colors ${
+                                    className={`block rounded-lg px-2.5 py-2 text-xs transition-all duration-200 sidebar-menu-item ${
                                       isSubActive
-                                        ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                                        ? 'bg-gray-100 text-gray-900 dark:text-white sidebar-menu-item-selected shadow-sm'
                                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                                     }`}
                                   >
@@ -442,9 +460,9 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                     <Link
                       href={item.href}
                       onClick={handleLinkClick}
-                      className={`group relative flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-medium transition-colors ${
+                      className={`group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-xs font-medium transition-all duration-200 sidebar-menu-item ${
                         isActive
-                          ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                          ? 'bg-gray-100 text-gray-900 dark:text-white sidebar-menu-item-selected shadow-sm'
                           : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                       } ${isCollapsed ? 'justify-center px-1.5' : ''}`}
                       title={isCollapsed ? item.name : undefined}
@@ -497,9 +515,9 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                                 handleLinkClick();
                                 setHoveredMenuItem(null);
                               }}
-                              className={`block px-3 py-2 text-sm transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                              className={`block px-3 py-2.5 text-sm transition-all duration-200 first:rounded-t-lg last:rounded-b-lg sidebar-menu-item ${
                                 isSubActive
-                                  ? 'bg-gray-100 text-gray-900 dark:bg-[#1f2435] dark:text-white'
+                                  ? 'bg-gray-100 text-gray-900 dark:text-white sidebar-menu-item-selected shadow-sm'
                                   : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-[#1a1e2c] dark:hover:text-white'
                               }`}
                             >

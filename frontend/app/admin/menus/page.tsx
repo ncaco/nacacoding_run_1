@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Tab } from '@headlessui/react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import PageHeader from '../../components/admin/PageHeader';
 import MenuList from '../../components/admin/menus/MenuList';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
@@ -236,6 +235,7 @@ function MenusPageContent() {
         siteId: parentMenu.siteId,
         name: nextName,
         url: '',
+        icon: '',
         displayOrder: nextDisplayOrder,
         parentId: parentMenu.id,
       };
@@ -488,6 +488,7 @@ function MenusPageContent() {
         ? {
             name: formData.name,
             url: formData.url || '',
+            icon: formData.icon || '',
             displayOrder: formData.displayOrder || 0,
             parentId: formData.parentId || null,
             enabled: formData.enabled ?? true,
@@ -496,6 +497,7 @@ function MenusPageContent() {
             siteId: formData.siteId,
             name: formData.name,
             url: formData.url || '',
+            icon: formData.icon || '',
             displayOrder: formData.displayOrder || 0,
             parentId: formData.parentId || null,
           };
@@ -543,8 +545,6 @@ function MenusPageContent() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <PageHeader title="메뉴 관리" description="메뉴를 생성, 수정, 삭제할 수 있습니다." />
-        
         {/* 사이트 탭 */}
         {sites.length > 0 && (() => {
           const selectedIndex = sites.findIndex(s => s.id === selectedSiteId);
@@ -559,10 +559,10 @@ function MenusPageContent() {
                   <Tab
                     key={site.id}
                     className={({ selected }) =>
-                      `shrink-0 border-b-2 px-3 py-2 text-xs font-medium transition-colors focus:outline-none ${
+                      `shrink-0 border-b-[3px] px-3 py-2 text-xs font-medium transition-colors focus:outline-none ${
                         selected
-                          ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
-                          : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300'
+                          ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white [&.dark]:!border-white'
+                          : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-300'
                       }`
                     }
                   >

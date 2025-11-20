@@ -1,12 +1,10 @@
 package com.backend.common.admin.site.dto;
 
-import com.backend.common.admin.site.model.SiteType;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class SiteCreateRequest {
-	@NotNull
-	private SiteType siteType;
+	@NotBlank
+	private String siteType;
 	
 	@NotBlank
 	private String siteName;
@@ -16,8 +14,8 @@ public class SiteCreateRequest {
 	@NotBlank
 	private String version;
 	
-	public SiteType getSiteType() { return siteType; }
-	public void setSiteType(SiteType siteType) { this.siteType = siteType; }
+	public String getSiteType() { return siteType; }
+	public void setSiteType(String siteType) { this.siteType = siteType; }
 	public String getSiteName() { return siteName; }
 	public void setSiteName(String siteName) { this.siteName = siteName; }
 	public String getDescription() { return description; }

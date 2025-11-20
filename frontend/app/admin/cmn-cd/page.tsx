@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import AdminLayout from '../../components/admin/AdminLayout';
-import PageHeader from '../../components/admin/PageHeader';
 import CmnCdList from '../../components/admin/cmn-cd/CmnCdList';
 import CmnCdForm from '../../components/admin/cmn-cd/CmnCdForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
@@ -268,6 +267,51 @@ function CmnCdPageContent() {
     setEditingCmnCd(cmnCd);
   };
 
+  const handleInlineEdit = async (cmnCd: CmnCd) => {
+    setIsSubmitting(true);
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/cmn-cd/${cmnCd.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: cmnCd.name,
+          description: cmnCd.description || '',
+          enabled: cmnCd.enabled ?? true,
+        }),
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '공통코드 수정에 실패했습니다.');
+      }
+
+      toast.success('공통코드 이름이 수정되었습니다.');
+      fetchCmnCds();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || '공통코드 수정에 실패했습니다.');
+      } else {
+        toast.error('공통코드 수정에 실패했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleDelete = (cmnCd: CmnCd) => {
     setDeleteDialog({ isOpen: true, cmnCd });
   };
@@ -444,7 +488,6 @@ function CmnCdPageContent() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <PageHeader title="공통코드 관리" description="공통코드를 생성, 수정, 삭제할 수 있습니다." />
         {editingCmnCd ? (
           <CmnCdForm
             onSubmit={handleSubmit}
@@ -469,6 +512,7 @@ function CmnCdPageContent() {
             onAddParent={handleAddParent}
             onAddChild={handleAddChild}
             onEdit={handleEdit}
+            onInlineEdit={handleInlineEdit}
             onDelete={handleDelete}
             onToggleEnabled={handleToggleEnabled}
             selectedParentCdCode={selectedParentCdCode}
