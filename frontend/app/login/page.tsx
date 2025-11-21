@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getApiUrl } from '../utils/api';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -20,7 +21,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/login/user', {
+      const response = await fetch(getApiUrl('/auth/login/user'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -8,12 +8,14 @@ import SiteList from '../../components/admin/sites/SiteList';
 import SiteForm from '../../components/admin/sites/SiteForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
+import { getApiUrl } from '../../utils/api';
 
 interface Site {
   id: string;
   siteType: string;
   siteName: string;
   description?: string;
+  contextPath: string;
   version: string;
   enabled?: boolean;
 }
@@ -48,7 +50,7 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/cmn-cd', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/cmn-cd'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +104,7 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/site', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/site'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +144,16 @@ function SitesPageContent() {
   };
 
   const handleEdit = (site: Site) => {
-    setEditingSite(site);
+    // ID가 없으면 오류
+    if (!site.id) {
+      toast.error('사이트 ID가 없습니다.');
+      return;
+    }
+    // contextPath가 없는 경우 빈 문자열로 설정
+    setEditingSite({
+      ...site,
+      contextPath: site.contextPath !== undefined ? site.contextPath : '',
+    });
   };
 
   const handleDelete = (site: Site) => {
@@ -156,7 +167,7 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/site/${site.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/site/${site.id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -205,7 +216,7 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/site/${site.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/site/${site.id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -245,16 +256,29 @@ function SitesPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const isEditMode = editingSite && editingSite.id;
+      // 수정 모드 확인: editingSite가 있고 id가 있어야 함
+      const isEditMode = !!(editingSite && editingSite.id && editingSite.id.trim() !== '');
+      
+      // 수정 모드일 때는 반드시 id가 있어야 함
+      if (isEditMode && !editingSite?.id) {
+        throw new Error('사이트 ID가 없습니다. 다시 시도해주세요.');
+      }
+      
       const url = isEditMode
-        ? `http://localhost:8080/api/v1/site/${editingSite.id}`
-        : 'http://localhost:8080/api/v1/site';
+        ? getApiUrl(`/site/${editingSite!.id}`)
+        : getApiUrl('/site');
       const method = isEditMode ? 'PUT' : 'POST';
+      
+      // 디버깅: 수정 모드일 때 ID 확인
+      if (isEditMode) {
+        console.log('사이트 수정 요청:', { id: editingSite!.id, formData });
+      }
 
       const requestBody = isEditMode
         ? {
             siteName: formData.siteName,
             description: formData.description || '',
+            contextPath: formData.contextPath,
             version: formData.version,
             enabled: formData.enabled ?? true,
           }
@@ -262,6 +286,7 @@ function SitesPageContent() {
             siteType: formData.siteType,
             siteName: formData.siteName,
             description: formData.description || '',
+            contextPath: formData.contextPath,
             version: formData.version,
           };
 
@@ -314,6 +339,7 @@ function SitesPageContent() {
               siteType: editingSite.siteType,
               siteName: editingSite.siteName,
               description: editingSite.description,
+              contextPath: editingSite.contextPath,
               version: editingSite.version,
               enabled: editingSite.enabled,
             } : undefined}

@@ -27,7 +27,10 @@ export default function IconForm({ onSubmit, onCancel, initialData, isLoading = 
     svgCode: initialData?.svgCode || '',
     enabled: initialData?.enabled ?? true,
   });
-  const [useCustomSvg, setUseCustomSvg] = useState(!initialData?.svgCode || !initialData.svgCode.match(/^[MLHVCSQTAZmlhvcsqtaz0-9\s,.-]+$/));
+  // 아이콘 선택 탭이 기본값 (새로 생성 시 또는 일반적인 SVG path 패턴인 경우)
+  const [useCustomSvg, setUseCustomSvg] = useState(
+    initialData?.svgCode && !initialData.svgCode.match(/^[MLHVCSQTAZmlhvcsqtaz0-9\s,.-]+$/)
+  );
 
   // SVG 코드가 변경되면 사용자 정의 SVG인지 확인
   useEffect(() => {

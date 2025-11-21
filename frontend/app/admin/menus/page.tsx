@@ -8,6 +8,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import MenuList from '../../components/admin/menus/MenuList';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
+import { getApiUrl } from '../../utils/api';
 
 interface Menu {
   id: string;
@@ -58,7 +59,7 @@ function MenusPageContent() {
         return;
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/site', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/site'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ function MenusPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/menu', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/menu'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ function MenusPageContent() {
         return;
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/icon', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/icon'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +220,7 @@ function MenusPageContent() {
         parentId: null,
       };
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/menu', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/menu'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -280,7 +281,7 @@ function MenusPageContent() {
         parentId: parentMenu.id,
       };
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/menu', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/menu'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -335,7 +336,7 @@ function MenusPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/menu/${menu.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/menu/${menu.id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -388,7 +389,7 @@ function MenusPageContent() {
           return;
         }
 
-        const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/menu/${reorderedMenu.id}`, {
+        const response = await fetchWithTokenRefresh(getApiUrl(`/menu/${reorderedMenu.id}`), {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -441,7 +442,7 @@ function MenusPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/menu/${menu.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/menu/${menu.id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -520,8 +521,8 @@ function MenusPageContent() {
 
       const isEditMode = formData.id;
       const url = isEditMode
-        ? `http://localhost:8080/api/v1/menu/${formData.id}`
-        : 'http://localhost:8080/api/v1/menu';
+        ? getApiUrl(`/menu/${formData.id}`)
+        : getApiUrl('/menu');
       const method = isEditMode ? 'PUT' : 'POST';
 
       const requestBody = isEditMode

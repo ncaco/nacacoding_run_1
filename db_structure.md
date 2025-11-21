@@ -88,18 +88,20 @@ public enum Role {
 ```sql
 CREATE TABLE sites (
     id VARCHAR(255) PRIMARY KEY,
-    site_type VARCHAR(255) NOT NULL UNIQUE,
+    site_type VARCHAR(255) NOT NULL,
     site_name VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
+    context_path VARCHAR(255) NOT NULL UNIQUE,
     version VARCHAR(255) NOT NULL,
     enabled BOOLEAN NOT NULL
 );
 
 COMMENT ON TABLE sites IS '사이트 정보를 저장하는 테이블';
 COMMENT ON COLUMN sites.id IS '사이트 고유 식별자 (UUID 형식)';
-COMMENT ON COLUMN sites.site_type IS '사이트 타입 (ADMIN: 통합관리사이트, PORTAL: 메인포털사이트)';
+COMMENT ON COLUMN sites.site_type IS '사이트 타입 (공통코드 P001의 하위코드 사용)';
 COMMENT ON COLUMN sites.site_name IS '사이트명';
 COMMENT ON COLUMN sites.description IS '사이트 설명';
+COMMENT ON COLUMN sites.context_path IS 'Context Path (빈 값 = root, 예: ''admin'' = /admin)';
 COMMENT ON COLUMN sites.version IS '사이트 버전';
 COMMENT ON COLUMN sites.enabled IS '활성화 여부 (기본값: true)';
 ```
@@ -109,15 +111,16 @@ COMMENT ON COLUMN sites.enabled IS '활성화 여부 (기본값: true)';
 | 컬럼명 | 타입 | 제약조건 | 설명 |
 |--------|------|----------|------|
 | `id` | VARCHAR(255) | PRIMARY KEY, UUID | 사이트 고유 식별자 (UUID 형식) |
-| `site_type` | VARCHAR(255) | NOT NULL, UNIQUE | 사이트 타입 (ADMIN: 통합관리사이트, PORTAL: 메인포털사이트) |
+| `site_type` | VARCHAR(255) | NOT NULL | 사이트 타입 (공통코드 P001의 하위코드 사용) |
 | `site_name` | VARCHAR(255) | NOT NULL | 사이트명 |
 | `description` | VARCHAR(1000) | NULL | 사이트 설명 |
+| `context_path` | VARCHAR(255) | NOT NULL, UNIQUE | Context Path (빈 값 = root, 예: 'admin' = /admin) |
 | `version` | VARCHAR(255) | NOT NULL | 사이트 버전 |
 | `enabled` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
 
 #### 인덱스
 
-- `site_type` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
+- `context_path` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
 
 #### 사이트 타입 (SiteType) Enum
 

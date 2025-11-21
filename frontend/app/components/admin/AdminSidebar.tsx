@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { getApiUrl } from '../../utils/api';
 
 interface SubMenuItem {
   name: string;
@@ -226,7 +227,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
       const token = localStorage.getItem('adminToken');
       
       if (token) {
-        await fetch('http://localhost:8080/api/v1/auth/logout/admin', {
+        await fetch(getApiUrl('/auth/logout/admin'), {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

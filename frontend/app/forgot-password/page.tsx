@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getApiUrl } from '../utils/api';
 import Link from 'next/link';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -19,7 +20,7 @@ export default function ForgotPasswordPage() {
 
     try {
       // TODO: 실제 API 엔드포인트로 변경
-      const response = await fetch('http://localhost:8080/api/v1/auth/forgot-password', {
+      const response = await fetch(getApiUrl('/auth/forgot-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

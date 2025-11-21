@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getApiUrl } from '../../utils/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/login/admin', {
+      const response = await fetch(getApiUrl('/auth/login/admin'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

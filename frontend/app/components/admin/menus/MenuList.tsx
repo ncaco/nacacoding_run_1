@@ -671,6 +671,7 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, 
                         .map((icon) => ({
                           value: icon.iconId,
                           label: icon.name,
+                          icon: icon.svgCode,
                         })),
                     ]}
                     placeholder="아이콘을 선택하세요 (선택사항)"

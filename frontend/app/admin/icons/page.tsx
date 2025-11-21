@@ -8,6 +8,7 @@ import IconList from '../../components/admin/icons/IconList';
 import IconForm from '../../components/admin/icons/IconForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
+import { getApiUrl } from '../../utils/api';
 
 interface Icon {
   id: string;
@@ -37,7 +38,7 @@ function IconsPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/icon', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/icon'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ function IconsPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/icon/${deleteDialog.icon.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/icon/${deleteDialog.icon.id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +134,7 @@ function IconsPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/icon/${icon.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/icon/${icon.id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -180,8 +181,8 @@ function IconsPageContent() {
 
       const isEditMode = editingIcon && editingIcon.id;
       const url = isEditMode
-        ? `http://localhost:8080/api/v1/icon/${editingIcon.id}`
-        : 'http://localhost:8080/api/v1/icon';
+        ? getApiUrl(`/icon/${editingIcon.id}`)
+        : getApiUrl('/icon');
       const method = isEditMode ? 'PUT' : 'POST';
 
       const requestBody = isEditMode

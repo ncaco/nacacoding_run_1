@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
 
@@ -11,6 +11,7 @@ interface SiteFormProps {
     siteType?: string;
     siteName?: string;
     description?: string;
+    contextPath?: string;
     version?: string;
     enabled?: boolean;
   };
@@ -25,9 +26,34 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
     siteType: initialData?.siteType || '',
     siteName: initialData?.siteName || '',
     description: initialData?.description || '',
+    contextPath: initialData?.contextPath || '',
     version: initialData?.version || '',
     enabled: initialData?.enabled ?? true,
   });
+
+  // initialData가 변경되면 formData 업데이트
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        siteType: initialData.siteType || '',
+        siteName: initialData.siteName || '',
+        description: initialData.description || '',
+        contextPath: initialData.contextPath !== undefined ? initialData.contextPath : '',
+        version: initialData.version || '',
+        enabled: initialData.enabled ?? true,
+      });
+    } else {
+      // initialData가 없으면 (새로 생성하는 경우) 초기화
+      setFormData({
+        siteType: '',
+        siteName: '',
+        description: '',
+        contextPath: '',
+        version: '',
+        enabled: true,
+      });
+    }
+  }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,6 +141,16 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
             placeholder="사이트 설명을 입력하세요 (선택사항)"
             value={formData.description}
             onChange={(value) => setFormData({ ...formData, description: value })}
+          />
+
+          <FormField
+            label="Context Path"
+            name="contextPath"
+            type="text"
+            placeholder="예: '' (빈 값 = root), 'admin' = /admin, 공백(' ')도 가능"
+            value={formData.contextPath}
+            onChange={(value) => setFormData({ ...formData, contextPath: value })}
+            helperText="빈 값('')은 root 경로(포털사이트), 'admin'은 /admin 경로(관리자 사이트)를 의미합니다. 공백 문자열(' ')도 저장 가능합니다."
           />
 
           <div>

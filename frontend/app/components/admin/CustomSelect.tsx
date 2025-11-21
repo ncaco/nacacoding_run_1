@@ -1,14 +1,17 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import Select, { StylesConfig } from 'react-select';
 
 interface CustomSelectProps {
   value?: string;
   onChange?: (value: string) => void;
-  options: Array<{ value: string; label: string }>;
+  options: Array<{ value: string; label: string; icon?: string }>;
   placeholder?: string;
   isDisabled?: boolean;
   className?: string;
+  formatOptionLabel?: (option: { value: string; label: string; icon?: string }) => React.ReactNode;
 }
 
 export default function CustomSelect({
@@ -18,8 +21,15 @@ export default function CustomSelect({
   placeholder = '선택하세요',
   isDisabled = false,
   className = '',
+  formatOptionLabel,
 }: CustomSelectProps) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const selectedOption = options.find((opt) => opt.value === value);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const customStyles: StylesConfig<any, false> = {
     control: (provided: any, state: any) => ({
@@ -96,6 +106,8 @@ export default function CustomSelect({
       ...provided,
       color: 'rgb(17 24 39)', // gray-900
       fontSize: '0.75rem',
+      display: 'flex',
+      alignItems: 'center',
     }),
   };
 
@@ -176,16 +188,34 @@ export default function CustomSelect({
       ...provided,
       color: 'white',
       fontSize: '0.75rem',
+      display: 'flex',
+      alignItems: 'center',
     }),
   };
 
-  // 다크모드 감지
-  const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+  // 다크모드 감지 (mounted 후에만 적용)
+  const isDark = mounted && resolvedTheme === 'dark';
   const styles = isDark ? darkStyles : customStyles;
+
+  // 기본 formatOptionLabel (아이콘이 있는 경우)
+  const defaultFormatOptionLabel = ({ label, icon }: { label: string; icon?: string }) => {
+    if (icon) {
+      return (
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 shrink-0 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
+          </svg>
+          <span>{label}</span>
+        </div>
+      );
+    }
+    return <span>{label}</span>;
+  };
 
   return (
     <div className={className}>
       <Select
+        key={resolvedTheme} // 다크모드 변경 시 강제 리렌더링
         value={selectedOption}
         onChange={(option) => onChange && option && onChange(option.value)}
         options={options}
@@ -196,6 +226,7 @@ export default function CustomSelect({
         classNamePrefix="react-select"
         menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
         menuPosition="fixed"
+        formatOptionLabel={formatOptionLabel || defaultFormatOptionLabel}
       />
     </div>
   );

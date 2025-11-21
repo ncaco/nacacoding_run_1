@@ -10,16 +10,19 @@ public class Site {
 	private String siteName;
 	private String description;
 	@NotBlank
+	private String contextPath;
+	@NotBlank
 	private String version;
 	private Boolean enabled;
 	
 	public Site() {}
 	
-	public Site(String id, String siteType, String siteName, String description, String version, Boolean enabled) {
+	public Site(String id, String siteType, String siteName, String description, String contextPath, String version, Boolean enabled) {
 		this.id = id;
 		this.siteType = siteType;
 		this.siteName = siteName;
 		this.description = description;
+		this.contextPath = contextPath;
 		this.version = version;
 		this.enabled = enabled;
 	}
@@ -32,6 +35,8 @@ public class Site {
 	public void setSiteName(String siteName) { this.siteName = siteName; }
 	public String getDescription() { return description; }
 	public void setDescription(String description) { this.description = description; }
+	public String getContextPath() { return contextPath; }
+	public void setContextPath(String contextPath) { this.contextPath = contextPath; }
 	public String getVersion() { return version; }
 	public void setVersion(String version) { this.version = version; }
 	public Boolean getEnabled() { return enabled; }

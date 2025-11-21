@@ -38,14 +38,15 @@ public class SiteService {
 	}
 
 	public Site createSite(SiteCreateRequest request) {
-		if (siteRepository.existsBySiteType(request.getSiteType())) {
-			throw new IllegalArgumentException("이미 존재하는 사이트 타입입니다: " + request.getSiteType());
+		if (siteRepository.existsByContextPath(request.getContextPath())) {
+			throw new IllegalArgumentException("이미 존재하는 Context Path입니다: " + request.getContextPath());
 		}
 		
 		SiteEntity entity = new SiteEntity(
 			request.getSiteType(),
 			request.getSiteName(),
 			request.getDescription(),
+			request.getContextPath(),
 			request.getVersion()
 		);
 		SiteEntity saved = siteRepository.save(entity);
@@ -56,8 +57,16 @@ public class SiteService {
 		SiteEntity entity = siteRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("사이트를 찾을 수 없습니다: " + id));
 		
+		// Context Path가 변경되는 경우 중복 체크
+		if (!entity.getContextPath().equals(request.getContextPath())) {
+			if (siteRepository.existsByContextPath(request.getContextPath())) {
+				throw new IllegalArgumentException("이미 존재하는 Context Path입니다: " + request.getContextPath());
+			}
+		}
+		
 		entity.setSiteName(request.getSiteName());
 		entity.setDescription(request.getDescription());
+		entity.setContextPath(request.getContextPath());
 		entity.setVersion(request.getVersion());
 		if (request.getEnabled() != null) {
 			entity.setEnabled(request.getEnabled());
@@ -80,6 +89,7 @@ public class SiteService {
 			entity.getSiteType(),
 			entity.getSiteName(),
 			entity.getDescription(),
+			entity.getContextPath(),
 			entity.getVersion(),
 			entity.getEnabled()
 		);

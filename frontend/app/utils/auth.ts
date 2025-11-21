@@ -1,3 +1,5 @@
+import { getApiUrl } from './api';
+
 // JWT 토큰 디코딩 유틸리티
 export function decodeJWT(token: string): any {
   try {
@@ -47,7 +49,7 @@ export async function refreshAccessToken(): Promise<string | null> {
       return null;
     }
 
-    const response = await fetch('http://localhost:8080/api/v1/auth/refresh', {
+    const response = await fetch(getApiUrl('/auth/refresh'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

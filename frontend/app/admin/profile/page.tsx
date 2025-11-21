@@ -129,7 +129,7 @@ export default function ProfilePage() {
           return;
         }
 
-        const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile', {
+        const response = await fetchWithTokenRefresh(getApiUrl('/admin/profile'), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -261,7 +261,7 @@ export default function ProfilePage() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/admin/profile'), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -353,7 +353,7 @@ export default function ProfilePage() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const uploadResponse = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile/avatar', {
+      const uploadResponse = await fetchWithTokenRefresh(getApiUrl('/admin/profile/avatar'), {
         method: 'POST',
         body: formData,
       });
@@ -424,7 +424,7 @@ export default function ProfilePage() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile/password', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/admin/profile/password'), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

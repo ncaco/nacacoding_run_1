@@ -10,5 +10,7 @@ import java.util.Optional;
 public interface SiteRepository extends JpaRepository<SiteEntity, String> {
 	Optional<SiteEntity> findBySiteType(String siteType);
 	boolean existsBySiteType(String siteType);
+	Optional<SiteEntity> findByContextPath(String contextPath);
+	boolean existsByContextPath(String contextPath);
 }
 

@@ -8,6 +8,7 @@ import CmnCdList from '../../components/admin/cmn-cd/CmnCdList';
 import CmnCdForm from '../../components/admin/cmn-cd/CmnCdForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
+import { getApiUrl } from '../../utils/api';
 
 interface CmnCd {
   id: string;
@@ -40,7 +41,7 @@ function CmnCdPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/cmn-cd', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/cmn-cd'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +171,7 @@ function CmnCdPageContent() {
         parentCd: null,
       };
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/cmn-cd', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/cmn-cd'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -229,7 +230,7 @@ function CmnCdPageContent() {
         parentCd: parentCd.cd,
       };
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/cmn-cd', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/cmn-cd'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -276,7 +277,7 @@ function CmnCdPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/cmn-cd/${cmnCd.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/cmn-cd/${cmnCd.id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -329,7 +330,7 @@ function CmnCdPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/cmn-cd/${cmnCd.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/cmn-cd/${cmnCd.id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -384,7 +385,7 @@ function CmnCdPageContent() {
       }
 
       // 기존 데이터를 유지하면서 enabled만 업데이트
-      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/cmn-cd/${cmnCd.id}`, {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/cmn-cd/${cmnCd.id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -431,8 +432,8 @@ function CmnCdPageContent() {
       }
 
       const url = editingCmnCd
-        ? `http://localhost:8080/api/v1/cmn-cd/${editingCmnCd.id}`
-        : 'http://localhost:8080/api/v1/cmn-cd';
+        ? getApiUrl(`/cmn-cd/${editingCmnCd.id}`)
+        : getApiUrl('/cmn-cd');
       const method = editingCmnCd ? 'PUT' : 'POST';
 
       const requestBody = editingCmnCd

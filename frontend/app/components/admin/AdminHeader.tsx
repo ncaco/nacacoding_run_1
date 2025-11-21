@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
 import { isTokenExpired, logout, fetchWithTokenRefresh } from '../../utils/auth';
+import { getApiUrl } from '../../utils/api';
 import { menuItems } from './AdminSidebar';
 
 interface AdminHeaderProps {
@@ -65,7 +66,7 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
         return;
       }
 
-      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/admin/profile', {
+      const response = await fetchWithTokenRefresh(getApiUrl('/admin/profile'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +156,7 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
       
       if (token) {
         // 로그아웃 API 호출
-        await fetch('http://localhost:8080/api/v1/auth/logout/admin', {
+        await fetch(getApiUrl('/auth/logout/admin'), {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

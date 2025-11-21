@@ -2,6 +2,7 @@ package com.backend.common.admin.site.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.Comment;
 
 @Entity
@@ -14,7 +15,7 @@ public class SiteEntity {
 	private String id;
 	
 	@NotBlank
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	@Comment("사이트 타입 (공통코드 P001의 하위코드 사용)")
 	private String siteType;
 	
@@ -27,6 +28,11 @@ public class SiteEntity {
 	@Comment("사이트 설명")
 	private String description;
 	
+	@NotNull
+	@Column(nullable = false, unique = true)
+	@Comment("Context Path (빈 값 = root, 예: 'admin' = /admin, 공백 문자열도 허용)")
+	private String contextPath;
+	
 	@Column(nullable = false)
 	@Comment("사이트 버전")
 	private String version;
@@ -37,10 +43,11 @@ public class SiteEntity {
 	
 	public SiteEntity() {}
 	
-	public SiteEntity(String siteType, String siteName, String description, String version) {
+	public SiteEntity(String siteType, String siteName, String description, String contextPath, String version) {
 		this.siteType = siteType;
 		this.siteName = siteName;
 		this.description = description;
+		this.contextPath = contextPath;
 		this.version = version;
 		this.enabled = true;
 	}
@@ -53,6 +60,8 @@ public class SiteEntity {
 	public void setSiteName(String siteName) { this.siteName = siteName; }
 	public String getDescription() { return description; }
 	public void setDescription(String description) { this.description = description; }
+	public String getContextPath() { return contextPath; }
+	public void setContextPath(String contextPath) { this.contextPath = contextPath; }
 	public String getVersion() { return version; }
 	public void setVersion(String version) { this.version = version; }
 	public Boolean getEnabled() { return enabled; }
