@@ -149,6 +149,49 @@ function SitesPageContent() {
     setDeleteDialog({ isOpen: true, site });
   };
 
+  const handleToggleEnabled = async (site: Site, enabled: boolean) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      const response = await fetchWithTokenRefresh(`http://localhost:8080/api/v1/site/${site.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          siteName: site.siteName,
+          description: site.description || '',
+          version: site.version,
+          enabled: enabled,
+        }),
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '상태 변경에 실패했습니다.');
+      }
+
+      toast.success(`사이트가 ${enabled ? '활성화' : '비활성화'}되었습니다.`);
+      fetchSites();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || '상태 변경에 실패했습니다.');
+      } else {
+        toast.error('상태 변경에 실패했습니다. 다시 시도해주세요.');
+      }
+      fetchSites();
+    }
+  };
+
   const handleConfirmDelete = async () => {
     if (!deleteDialog.site) return;
 
@@ -284,6 +327,7 @@ function SitesPageContent() {
             onAdd={handleAdd}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onToggleEnabled={handleToggleEnabled}
             siteTypeOptions={siteTypeOptions}
           />
         )}

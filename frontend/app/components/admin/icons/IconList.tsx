@@ -4,44 +4,45 @@ import { useState, useMemo } from 'react';
 import ToggleSwitch from '../ToggleSwitch';
 import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
-import CustomSelect from '../CustomSelect';
 
-interface Site {
+interface Icon {
   id: string;
-  siteType: string;
-  siteName: string;
-  description?: string;
-  version: string;
-  enabled: boolean;
+  iconId: string;
+  name: string;
+  svgCode: string;
+  enabled?: boolean;
 }
 
-interface SiteListProps {
-  sites: Site[];
+interface IconListProps {
+  icons: Icon[];
   isLoading: boolean;
   onAdd?: () => void;
-  onEdit?: (site: Site) => void;
-  onDelete?: (site: Site) => void;
-  onToggleEnabled?: (site: Site, enabled: boolean) => void;
-  siteTypeOptions?: Array<{ value: string; label: string }>;
+  onEdit?: (icon: Icon) => void;
+  onDelete?: (icon: Icon) => void;
+  onToggleEnabled?: (icon: Icon, enabled: boolean) => void;
 }
 
-function SiteItem({ site, onEdit, onDelete, onToggleEnabled, siteTypeOptions = [] }: { site: Site; onEdit?: (site: Site) => void; onDelete?: (site: Site) => void; onToggleEnabled?: (site: Site, enabled: boolean) => void; siteTypeOptions?: Array<{ value: string; label: string }> }) {
-  const siteTypeLabel = siteTypeOptions.find((opt) => opt.value === site.siteType)?.label || site.siteType;
-  
+function IconItem({ icon, onEdit, onDelete, onToggleEnabled }: { icon: Icon; onEdit?: (icon: Icon) => void; onDelete?: (icon: Icon) => void; onToggleEnabled?: (icon: Icon, enabled: boolean) => void }) {
   return (
     <div className="group flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-2.5 py-2 transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:hover:border-[#303650] dark:hover:bg-[#1a1e2c]">
-      {/* 사이트 타입 배지 */}
-      <span className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
-        {siteTypeLabel}
-      </span>
+      {/* 아이콘 미리보기 */}
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-gray-200 bg-gray-50 dark:border-[#1f2435] dark:bg-[#1a1e2c]">
+        <svg className="h-5 w-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d={icon.svgCode} />
+        </svg>
+      </div>
 
-      {/* 사이트명과 설명 */}
+      {/* 아이콘 정보 */}
       <div className="min-w-0 flex-1">
-        <div className="text-xs font-medium text-gray-900 dark:text-white truncate">{site.siteName}</div>
-        {site.description && (
-          <div className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">{site.description}</div>
-        )}
-        <div className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">v{site.version}</div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-gray-900 dark:text-white truncate">{icon.name}</span>
+          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-gray-600 dark:bg-[#1a1e2c] dark:text-gray-400 shrink-0">
+            {icon.iconId}
+          </span>
+        </div>
+        <p className="mt-0.5 truncate text-[10px] text-gray-500 dark:text-gray-400">
+          {icon.svgCode.length > 50 ? `${icon.svgCode.substring(0, 50)}...` : icon.svgCode}
+        </p>
       </div>
 
       {/* 액션 버튼들 */}
@@ -50,12 +51,12 @@ function SiteItem({ site, onEdit, onDelete, onToggleEnabled, siteTypeOptions = [
         {onToggleEnabled && (
           <div className="flex items-center gap-1 rounded border border-gray-200 bg-white px-1.5 py-1 dark:border-[#1f2435] dark:bg-[#0f1119]">
             <ToggleSwitch
-              enabled={site.enabled ?? true}
-              onToggle={(enabled) => onToggleEnabled(site, enabled)}
+              enabled={icon.enabled ?? true}
+              onToggle={(enabled) => onToggleEnabled(icon, enabled)}
               size="sm"
             />
-            <span className={`text-[10px] font-medium whitespace-nowrap ${site.enabled ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
-              {site.enabled ? '활성' : '비활성'}
+            <span className={`text-[10px] font-medium whitespace-nowrap ${icon.enabled ?? true ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+              {icon.enabled ?? true ? '활성' : '비활성'}
             </span>
           </div>
         )}
@@ -64,7 +65,7 @@ function SiteItem({ site, onEdit, onDelete, onToggleEnabled, siteTypeOptions = [
         <div className="flex gap-1">
           {onEdit && (
             <button
-              onClick={() => onEdit(site)}
+              onClick={() => onEdit(icon)}
               className="rounded border border-gray-300 bg-white px-2 py-1 text-[10px] font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:text-gray-300 dark:hover:bg-[#1a1e2c]"
             >
               수정
@@ -72,7 +73,7 @@ function SiteItem({ site, onEdit, onDelete, onToggleEnabled, siteTypeOptions = [
           )}
           {onDelete && (
             <button
-              onClick={() => onDelete(site)}
+              onClick={() => onDelete(icon)}
               className="rounded border border-red-300 bg-white px-2 py-1 text-[10px] font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-500/30 dark:bg-[#0f1119] dark:text-red-400 dark:hover:bg-red-500/10"
             >
               삭제
@@ -84,25 +85,24 @@ function SiteItem({ site, onEdit, onDelete, onToggleEnabled, siteTypeOptions = [
   );
 }
 
-export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete, onToggleEnabled, siteTypeOptions = [] }: SiteListProps) {
+export default function IconList({ icons, isLoading, onAdd, onEdit, onDelete, onToggleEnabled }: IconListProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [siteTypeFilter, setSiteTypeFilter] = useState<string>('');
 
-  // 필터링된 사이트 목록
-  const filteredSites = useMemo(() => {
-    return sites.filter((site) => {
-      const matchesSearch = site.siteName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (site.description && site.description.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesType = !siteTypeFilter || site.siteType === siteTypeFilter;
-      return matchesSearch && matchesType;
+  // 필터링된 아이콘 목록
+  const filteredIcons = useMemo(() => {
+    return icons.filter((icon) => {
+      const matchesSearch = icon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        icon.iconId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        icon.svgCode.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
     });
-  }, [sites, searchTerm, siteTypeFilter]);
+  }, [icons, searchTerm]);
 
   if (isLoading) {
     return (
       <div className="rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
         <div className="border-b border-gray-200 px-3 py-2 dark:border-[#1f2435]">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">사이트 목록</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">아이콘 목록</h3>
         </div>
         <div className="p-4">
           <LoadingState />
@@ -115,10 +115,10 @@ export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete, on
     <div className="flex h-[calc(100vh-180px)] flex-col rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119] overflow-visible">
       {/* 헤더 */}
       <div className="border-b border-gray-200 px-3 py-2 dark:border-[#1f2435]">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">사이트 목록</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">아이콘 목록</h3>
       </div>
 
-      {/* 검색 및 필터 영역 */}
+      {/* 검색 영역 */}
       <div className="relative z-10 border-b border-gray-200 bg-gray-50 px-3 py-2 dark:border-[#1f2435] dark:bg-[#141827]">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           {/* 검색 */}
@@ -133,7 +133,7 @@ export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete, on
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="사이트명 또는 설명으로 검색..."
+                placeholder="아이콘명, ID 또는 SVG 코드로 검색..."
                 className="w-full rounded-lg border border-gray-300 bg-white py-1.5 pl-8 pr-2 text-xs text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:bg-white focus:outline-none dark:border-[#1f2435] dark:bg-[#1a1e2c] dark:text-white dark:placeholder-gray-500 dark:focus:border-[#303650] dark:focus:bg-[#1f2435]"
               />
               {searchTerm && (
@@ -150,26 +150,13 @@ export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete, on
             </div>
           </div>
 
-          {/* 사이트 타입 필터 */}
-          <div className="sm:w-40">
-            <CustomSelect
-              value={siteTypeFilter}
-              onChange={(value) => setSiteTypeFilter(value)}
-              options={[
-                { value: '', label: '전체 타입' },
-                ...siteTypeOptions,
-              ]}
-              placeholder="전체 타입"
-            />
-          </div>
-
           {/* 추가 버튼 */}
           {onAdd && (
             <button
               onClick={onAdd}
               className="rounded border border-gray-300 bg-white px-2 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:text-gray-300 dark:hover:bg-[#1a1e2c] sm:shrink-0"
             >
-              새 사이트 추가
+              새 아이콘 추가
             </button>
           )}
         </div>
@@ -177,7 +164,7 @@ export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete, on
 
       {/* 목록 영역 */}
       <div className="cmn-cd-scroll flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-50 p-1.5 dark:bg-[#0f1119] sm:p-2">
-        {filteredSites.length === 0 ? (
+        {filteredIcons.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <EmptyState
               icon={
@@ -186,24 +173,17 @@ export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete, on
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
                   />
                 </svg>
               }
-              message={searchTerm || siteTypeFilter ? '검색 조건에 맞는 사이트가 없습니다.' : '등록된 사이트가 없습니다.'}
+              message={searchTerm ? '검색 조건에 맞는 아이콘이 없습니다.' : '등록된 아이콘이 없습니다.'}
             />
           </div>
         ) : (
           <div className="space-y-1">
-            {filteredSites.map((site) => (
-              <SiteItem
-                key={site.id}
-                site={site}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onToggleEnabled={onToggleEnabled}
-                siteTypeOptions={siteTypeOptions}
-              />
+            {filteredIcons.map((icon) => (
+              <IconItem key={icon.id} icon={icon} onEdit={onEdit} onDelete={onDelete} onToggleEnabled={onToggleEnabled} />
             ))}
           </div>
         )}
@@ -211,3 +191,4 @@ export default function SiteList({ sites, isLoading, onAdd, onEdit, onDelete, on
     </div>
   );
 }
+

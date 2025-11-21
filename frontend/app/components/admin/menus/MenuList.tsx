@@ -6,6 +6,7 @@ import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
 import ToggleSwitch from '../ToggleSwitch';
 import FormField from '../FormField';
+import CustomSelect from '../CustomSelect';
 
 interface Menu {
   id: string;
@@ -24,6 +25,14 @@ interface Site {
   siteName: string;
 }
 
+interface Icon {
+  id: string;
+  iconId: string;
+  name: string;
+  svgCode: string;
+  enabled?: boolean;
+}
+
 interface MenuListProps {
   menus: Menu[];
   isLoading: boolean;
@@ -35,6 +44,7 @@ interface MenuListProps {
   onToggleEnabled?: (menu: Menu, enabled: boolean) => void;
   onReorder?: (reorderedMenus: Array<{ id: string; parentId: string | null; displayOrder: number }>) => void;
   sites?: Site[];
+  icons?: Icon[];
   selectedSiteId?: string;
   isSubmitting?: boolean;
   selectedMenuId?: string | null;
@@ -143,7 +153,7 @@ function MenuTreeNode({ menu, level = 0, index, isSelected, onSelect, onAddChild
   );
 }
 
-export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, onSubmit, onDelete, onToggleEnabled, onReorder, sites = [], selectedSiteId, isSubmitting = false, selectedMenuId, onSelectMenu }: MenuListProps) {
+export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, onSubmit, onDelete, onToggleEnabled, onReorder, sites = [], icons = [], selectedSiteId, isSubmitting = false, selectedMenuId, onSelectMenu }: MenuListProps) {
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
   const [formData, setFormData] = useState<{
     name: string;
@@ -647,15 +657,28 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, 
                 />
 
                 {/* 아이콘 */}
-                <FormField
-                  label="아이콘"
-                  name="icon"
-                  type="text"
-                  placeholder="아이콘 SVG path를 입력하세요 (선택사항)"
-                  value={formData.icon}
-                  onChange={(value) => setFormData({ ...formData, icon: value })}
-                  helperText="SVG path 데이터를 입력하세요. 예: M4 6h16M4 12h16M4 18h16"
-                />
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    아이콘
+                  </label>
+                  <CustomSelect
+                    value={formData.icon}
+                    onChange={(value) => setFormData({ ...formData, icon: value })}
+                    options={[
+                      { value: '', label: '아이콘 없음' },
+                      ...icons
+                        .filter((icon) => icon.enabled !== false)
+                        .map((icon) => ({
+                          value: icon.iconId,
+                          label: icon.name,
+                        })),
+                    ]}
+                    placeholder="아이콘을 선택하세요 (선택사항)"
+                  />
+                  <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
+                    DB에 등록된 아이콘을 선택하세요.
+                  </p>
+                </div>
 
                 {/* 순서 (표시 순서) */}
                 <FormField

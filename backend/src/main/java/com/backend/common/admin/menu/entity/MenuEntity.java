@@ -27,7 +27,7 @@ public class MenuEntity {
 	private String url;
 	
 	@Column(length = 100)
-	@Comment("메뉴 아이콘 (예: M4 6h16M4 12h16M4 18h16)")
+	@Comment("메뉴 아이콘 ID (icons 테이블의 icon_id 참조)")
 	private String icon;
 	
 	@Column(nullable = false)

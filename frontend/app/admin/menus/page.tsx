@@ -28,10 +28,19 @@ interface Site {
   enabled?: boolean;
 }
 
+interface Icon {
+  id: string;
+  iconId: string;
+  name: string;
+  svgCode: string;
+  enabled?: boolean;
+}
+
 function MenusPageContent() {
   const router = useRouter();
   const [menus, setMenus] = useState<Menu[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
+  const [icons, setIcons] = useState<Icon[]>([]);
   const [selectedSiteId, setSelectedSiteId] = useState<string>('');
   const [selectedMenuId, setSelectedMenuId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -114,9 +123,40 @@ function MenusPageContent() {
     }
   };
 
+  // 아이콘 목록 조회
+  const fetchIcons = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        return;
+      }
+
+      const response = await fetchWithTokenRefresh('http://localhost:8080/api/v1/icon', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setIcons(data.data || []);
+      }
+    } catch (error) {
+      console.error('아이콘 목록 조회 실패:', error);
+    }
+  };
+
   useEffect(() => {
     fetchSites();
     fetchMenus();
+    fetchIcons();
   }, []);
 
   // 다음 표시 순서 계산 (같은 레벨의 메뉴 중 최대값 + 1)
@@ -586,6 +626,7 @@ function MenusPageContent() {
           onToggleEnabled={handleToggleEnabled}
           onReorder={handleReorder}
           sites={sites}
+          icons={icons}
           selectedSiteId={selectedSiteId}
           isSubmitting={isSubmitting}
           selectedMenuId={selectedMenuId}

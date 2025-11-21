@@ -140,6 +140,7 @@ CREATE TABLE menus (
     site_id VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     url VARCHAR(500),
+    icon VARCHAR(100),
     display_order INTEGER NOT NULL,
     parent_id VARCHAR(255),
     enabled BOOLEAN NOT NULL
@@ -150,6 +151,7 @@ COMMENT ON COLUMN menus.id IS '메뉴 고유 식별자 (UUID 형식)';
 COMMENT ON COLUMN menus.site_id IS '사이트 ID (sites 테이블 참조)';
 COMMENT ON COLUMN menus.name IS '메뉴명';
 COMMENT ON COLUMN menus.url IS '메뉴 URL';
+COMMENT ON COLUMN menus.icon IS '메뉴 아이콘 ID (icons 테이블의 icon_id 참조)';
 COMMENT ON COLUMN menus.display_order IS '표시 순서';
 COMMENT ON COLUMN menus.parent_id IS '부모 메뉴 ID (계층 구조용, 최상위 메뉴는 NULL)';
 COMMENT ON COLUMN menus.enabled IS '활성화 여부 (기본값: true)';
@@ -163,6 +165,7 @@ COMMENT ON COLUMN menus.enabled IS '활성화 여부 (기본값: true)';
 | `site_id` | VARCHAR(255) | NOT NULL | 사이트 ID (sites 테이블 참조) |
 | `name` | VARCHAR(255) | NOT NULL | 메뉴명 |
 | `url` | VARCHAR(500) | NULL | 메뉴 URL |
+| `icon` | VARCHAR(100) | NULL | 메뉴 아이콘 ID (icons 테이블의 icon_id 참조) |
 | `display_order` | INTEGER | NOT NULL | 표시 순서 (기본값: 0) |
 | `parent_id` | VARCHAR(255) | NULL | 부모 메뉴 ID (NULL이면 최상위 메뉴) |
 | `enabled` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
@@ -171,6 +174,43 @@ COMMENT ON COLUMN menus.enabled IS '활성화 여부 (기본값: true)';
 
 - `site_id` 컬럼에 인덱스가 생성되어 사이트별 메뉴 조회 성능이 향상됩니다.
 - `parent_id` 컬럼에 인덱스가 생성되어 계층 구조 조회 성능이 향상됩니다.
+
+### icons 테이블
+
+**테이블 코멘트**: 아이콘 정보를 저장하는 테이블
+
+#### 스키마
+
+```sql
+CREATE TABLE icons (
+    id VARCHAR(255) PRIMARY KEY,
+    icon_id VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    svg_code TEXT NOT NULL,
+    enabled BOOLEAN NOT NULL
+);
+
+COMMENT ON TABLE icons IS '아이콘 정보를 저장하는 테이블';
+COMMENT ON COLUMN icons.id IS '아이콘 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN icons.icon_id IS '아이콘 ID (고유 식별자)';
+COMMENT ON COLUMN icons.name IS '아이콘명';
+COMMENT ON COLUMN icons.svg_code IS 'SVG 코드';
+COMMENT ON COLUMN icons.enabled IS '활성화 여부 (기본값: true)';
+```
+
+#### 컬럼 설명
+
+| 컬럼명 | 타입 | 제약조건 | 설명 |
+|--------|------|----------|------|
+| `id` | VARCHAR(255) | PRIMARY KEY, UUID | 아이콘 고유 식별자 (UUID 형식) |
+| `icon_id` | VARCHAR(255) | NOT NULL, UNIQUE | 아이콘 ID (고유 식별자) |
+| `name` | VARCHAR(255) | NOT NULL | 아이콘명 |
+| `svg_code` | TEXT | NOT NULL | SVG 코드 |
+| `enabled` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
+
+#### 인덱스
+
+- `icon_id` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
 
 ### cmn_cd 테이블
 
