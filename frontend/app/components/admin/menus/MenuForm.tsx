@@ -9,6 +9,7 @@ interface Menu {
   siteId: string;
   name: string;
   url?: string;
+  icon?: string;
   displayOrder: number;
   parentId?: string;
   enabled?: boolean;

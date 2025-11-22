@@ -198,7 +198,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       />
       <div className="flex flex-1 flex-col min-w-0">
         <AdminHeader onMenuClick={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-6 scrollbar-hide">{children}</main>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden border-t border-x border-gray-200 dark:border-gray-800 scrollbar-hide">{children}</main>
       </div>
     </div>
   );

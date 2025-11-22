@@ -6,38 +6,39 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "users")
+@Table(name = "USERS")
 @org.hibernate.annotations.Comment("사용자 및 관리자 정보를 저장하는 테이블")
 public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "USER_ID")
 	@Comment("사용자 고유 식별자 (UUID 형식)")
 	private String id;
 	
 	@NotBlank
-	@Column(unique = true, nullable = false)
+	@Column(name = "USER_NM", unique = true, nullable = false)
 	@Comment("사용자명 (로그인 ID)")
 	private String username;
 	
 	@NotBlank
-	@Column(nullable = false)
+	@Column(name = "PASSWORD", nullable = false)
 	@Comment("암호화된 비밀번호 (BCrypt 해시)")
 	private String password;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(name = "ROLE", nullable = false)
 	@Comment("사용자 역할 (USER: 관리자, MEMBER: 사용자)")
 	private Role role;
 	
-	@Column
+	@Column(name = "NAME")
 	@Comment("사용자 이름")
 	private String name;
 	
-	@Column
+	@Column(name = "EMAIL")
 	@Comment("이메일 주소")
 	private String email;
 	
-	@Column
+	@Column(name = "AVATAR_URL")
 	@Comment("아바타 이미지 URL")
 	private String avatarUrl;
 	

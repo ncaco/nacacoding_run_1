@@ -37,12 +37,15 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+      naming:
+        physical-strategy: com.backend.config.UppercaseNamingStrategy
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        globally_quoted_identifiers: true  # 모든 식별자를 따옴표로 감싸서 대소문자 구분
 
 # 서버 설정
 server:

@@ -36,6 +36,7 @@ export default function CustomSelect({
       ...provided,
       minHeight: '32px',
       height: '32px',
+      borderRadius: '8px', // rounded-lg
       borderColor: state.isFocused
         ? 'rgb(156 163 175)' // gray-400
         : 'rgb(209 213 219)', // gray-300
@@ -116,6 +117,7 @@ export default function CustomSelect({
       ...provided,
       minHeight: '32px',
       height: '32px',
+      borderRadius: '8px', // rounded-lg
       borderColor: state.isFocused
         ? 'rgb(48 54 80)' // #303650
         : 'rgb(31 36 53)', // #1f2435

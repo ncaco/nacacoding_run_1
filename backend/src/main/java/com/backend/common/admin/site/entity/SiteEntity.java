@@ -6,38 +6,39 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "sites")
+@Table(name = "SITES")
 @org.hibernate.annotations.Comment("사이트 정보를 저장하는 테이블")
 public class SiteEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "SITE_ID")
 	@Comment("사이트 고유 식별자 (UUID 형식)")
 	private String id;
 	
 	@NotBlank
-	@Column(nullable = false)
+	@Column(name = "SITE_TYPE_CD", nullable = false)
 	@Comment("사이트 타입 (공통코드 P001의 하위코드 사용)")
 	private String siteType;
 	
 	@NotBlank
-	@Column(nullable = false)
+	@Column(name = "SITE_NM", nullable = false)
 	@Comment("사이트명")
 	private String siteName;
 	
-	@Column(length = 1000)
+	@Column(name = "SITE_DESC", length = 1000)
 	@Comment("사이트 설명")
 	private String description;
 	
 	@NotNull
-	@Column(nullable = false, unique = true)
-	@Comment("Context Path (빈 값 = root, 예: 'admin' = /admin, 공백 문자열도 허용)")
+	@Column(name = "CONTEXT_PATH", nullable = false, unique = true)
+	@Comment("Context Path (빈 값 = root, 예: admin = /admin, 공백 문자열도 허용)")
 	private String contextPath;
 	
-	@Column(nullable = false)
+	@Column(name = "VERSION", nullable = false)
 	@Comment("사이트 버전")
 	private String version;
 	
-	@Column(nullable = false)
+	@Column(name = "USE_YN", nullable = false)
 	@Comment("활성화 여부 (기본값: true)")
 	private Boolean enabled = true;
 	

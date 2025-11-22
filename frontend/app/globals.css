@@ -41,8 +41,20 @@ html.dark .text-gray-900,
 html.dark h1.text-gray-900,
 html.dark h2.text-gray-900,
 html.dark h3.text-gray-900,
-html.dark span.text-gray-900 {
+html.dark h4.text-gray-900,
+html.dark span.text-gray-900,
+html.dark p.text-gray-900,
+html.dark div.text-gray-900 {
   color: rgb(255 255 255) !important;
+}
+
+html.dark .text-gray-800,
+html.dark h1.text-gray-800,
+html.dark h2.text-gray-800,
+html.dark h3.text-gray-800,
+html.dark span.text-gray-800,
+html.dark p.text-gray-800 {
+  color: rgb(243 244 246) !important; /* gray-100 */
 }
 
 html.dark .text-gray-700,
@@ -60,12 +72,113 @@ html.dark p.text-gray-500 {
   color: rgb(156 163 175) !important; /* gray-400 */
 }
 
+/* Slate 색상 다크모드 강제 적용 */
+html.dark .text-slate-900,
+html.dark h1.text-slate-900,
+html.dark h2.text-slate-900,
+html.dark h3.text-slate-900,
+html.dark span.text-slate-900,
+html.dark p.text-slate-900 {
+  color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark .text-slate-700,
+html.dark a.text-slate-700 {
+  color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+html.dark .text-slate-600,
+html.dark p.text-slate-600 {
+  color: rgb(203 213 225) !important; /* slate-300 */
+}
+
+html.dark .text-slate-500,
+html.dark p.text-slate-500 {
+  color: rgb(203 213 225) !important; /* slate-300 */
+}
+
 html.dark .border-gray-200 {
   border-color: rgb(31 41 55) !important; /* gray-800 */
 }
 
 html.dark .border-gray-300 {
   border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+html.dark .border-slate-200 {
+  border-color: rgb(51 65 85) !important; /* slate-700 */
+}
+
+html.dark .border-slate-300 {
+  border-color: rgb(71 85 105) !important; /* slate-600 */
+}
+
+/* 버튼 다크모드 강제 적용 */
+html.dark button.bg-slate-900,
+html.dark button.bg-slate-800 {
+  background-color: rgb(71 85 105) !important; /* slate-600 */
+  color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark button.bg-slate-900:hover,
+html.dark button.bg-slate-800:hover {
+  background-color: rgb(100 116 139) !important; /* slate-500 */
+}
+
+html.dark button.bg-white {
+  background-color: rgb(30 41 59) !important; /* slate-800 */
+  color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark button.bg-white:hover {
+  background-color: rgb(51 65 85) !important; /* slate-700 */
+}
+
+html.dark button.text-slate-700 {
+  color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark button.text-gray-700 {
+  color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+html.dark button.text-gray-300 {
+  color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark button.text-gray-400 {
+  color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+/* 링크 및 앵커 태그 다크모드 강제 적용 */
+html.dark a.text-gray-900,
+html.dark a.text-gray-800,
+html.dark a.text-gray-700 {
+  color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark a.text-gray-600,
+html.dark a.text-gray-500 {
+  color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+/* span 태그 다크모드 강제 적용 */
+html.dark span.text-gray-900,
+html.dark span.text-gray-800,
+html.dark span.text-gray-700 {
+  color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark span.text-gray-600,
+html.dark span.text-gray-500 {
+  color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+/* div 태그 다크모드 강제 적용 */
+html.dark div.text-gray-900,
+html.dark div.text-gray-800,
+html.dark div.text-gray-700 {
+  color: rgb(255 255 255) !important; /* white */
 }
 
 /* 다크모드에서 탭 active 밑줄 강제 적용 */

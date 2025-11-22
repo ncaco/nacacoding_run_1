@@ -19,12 +19,12 @@ export default function FormActions({
   };
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+    <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
       {onCancel && (
         <button
           type="button"
           onClick={handleCancel}
-          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-[#1f2435] dark:bg-[#0f1119] dark:text-gray-300 dark:hover:bg-[#1a1e2c] sm:w-auto"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-all hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:border-slate-500 dark:hover:bg-slate-700 sm:w-auto"
         >
           {cancelLabel}
         </button>
@@ -33,7 +33,7 @@ export default function FormActions({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-lg bg-gradient-to-r from-green-500 to-green-600 px-3 py-1.5 text-xs font-medium text-white transition-all hover:from-green-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
+          className="w-full rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-600 dark:hover:bg-slate-500 sm:w-auto"
         >
           {isLoading ? '처리 중...' : submitLabel}
         </button>

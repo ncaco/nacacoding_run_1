@@ -13,48 +13,48 @@
 
 ## 테이블 구조
 
-### users 테이블
+### USERS 테이블
 
 **테이블 코멘트**: 사용자 및 관리자 정보를 저장하는 테이블
 
 #### 스키마
 
 ```sql
-CREATE TABLE users (
-    id VARCHAR(255) PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(255) NOT NULL,
-    name VARCHAR(255),
-    email VARCHAR(255),
-    avatar_url VARCHAR(255)
+CREATE TABLE USERS (
+    USER_ID VARCHAR(255) PRIMARY KEY,
+    USER_NM VARCHAR(255) NOT NULL UNIQUE,
+    PASSWORD VARCHAR(255) NOT NULL,
+    ROLE VARCHAR(255) NOT NULL,
+    NAME VARCHAR(255),
+    EMAIL VARCHAR(255),
+    AVATAR_URL VARCHAR(255)
 );
 
-COMMENT ON TABLE users IS '사용자 및 관리자 정보를 저장하는 테이블';
-COMMENT ON COLUMN users.id IS '사용자 고유 식별자 (UUID 형식)';
-COMMENT ON COLUMN users.username IS '사용자명 (로그인 ID)';
-COMMENT ON COLUMN users.password IS '암호화된 비밀번호 (BCrypt 해시)';
-COMMENT ON COLUMN users.role IS '사용자 역할 (USER: 관리자, MEMBER: 사용자)';
-COMMENT ON COLUMN users.name IS '사용자 이름';
-COMMENT ON COLUMN users.email IS '이메일 주소';
-COMMENT ON COLUMN users.avatar_url IS '아바타 이미지 URL';
+COMMENT ON TABLE USERS IS '사용자 및 관리자 정보를 저장하는 테이블';
+COMMENT ON COLUMN USERS.USER_ID IS '사용자 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN USERS.USER_NM IS '사용자명 (로그인 ID)';
+COMMENT ON COLUMN USERS.PASSWORD IS '암호화된 비밀번호 (BCrypt 해시)';
+COMMENT ON COLUMN USERS.ROLE IS '사용자 역할 (USER: 관리자, MEMBER: 사용자)';
+COMMENT ON COLUMN USERS.NAME IS '사용자 이름';
+COMMENT ON COLUMN USERS.EMAIL IS '이메일 주소';
+COMMENT ON COLUMN USERS.AVATAR_URL IS '아바타 이미지 URL';
 ```
 
 #### 컬럼 설명
 
 | 컬럼명 | 타입 | 제약조건 | 설명 |
 |--------|------|----------|------|
-| `id` | VARCHAR(255) | PRIMARY KEY, UUID | 사용자 고유 식별자 (UUID 형식) |
-| `username` | VARCHAR(255) | NOT NULL, UNIQUE | 사용자명 (로그인 ID) |
-| `password` | VARCHAR(255) | NOT NULL | 암호화된 비밀번호 (BCrypt 해시) |
-| `role` | VARCHAR(255) | NOT NULL | 사용자 역할 (USER: 관리자, MEMBER: 사용자) |
-| `name` | VARCHAR(255) | NULL | 사용자 이름 |
-| `email` | VARCHAR(255) | NULL | 이메일 주소 |
-| `avatar_url` | VARCHAR(255) | NULL | 아바타 이미지 URL |
+| `USER_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 사용자 고유 식별자 (UUID 형식) |
+| `USER_NM` | VARCHAR(255) | NOT NULL, UNIQUE | 사용자명 (로그인 ID) |
+| `PASSWORD` | VARCHAR(255) | NOT NULL | 암호화된 비밀번호 (BCrypt 해시) |
+| `ROLE` | VARCHAR(255) | NOT NULL | 사용자 역할 (USER: 관리자, MEMBER: 사용자) |
+| `NAME` | VARCHAR(255) | NULL | 사용자 이름 |
+| `EMAIL` | VARCHAR(255) | NULL | 이메일 주소 |
+| `AVATAR_URL` | VARCHAR(255) | NULL | 아바타 이미지 URL |
 
 #### 인덱스
 
-- `username` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
+- `USER_NM` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
 
 #### 역할 (Role) Enum
 
@@ -79,48 +79,48 @@ public enum Role {
    - password: `member123` (BCrypt 해시됨)
    - role: `MEMBER`
 
-### sites 테이블
+### SITES 테이블
 
 **테이블 코멘트**: 사이트 정보를 저장하는 테이블
 
 #### 스키마
 
 ```sql
-CREATE TABLE sites (
-    id VARCHAR(255) PRIMARY KEY,
-    site_type VARCHAR(255) NOT NULL,
-    site_name VARCHAR(255) NOT NULL,
-    description VARCHAR(1000),
-    context_path VARCHAR(255) NOT NULL UNIQUE,
-    version VARCHAR(255) NOT NULL,
-    enabled BOOLEAN NOT NULL
+CREATE TABLE SITES (
+    SITE_ID VARCHAR(255) PRIMARY KEY,
+    SITE_TYPE_CD VARCHAR(255) NOT NULL,
+    SITE_NM VARCHAR(255) NOT NULL,
+    SITE_DESC VARCHAR(1000),
+    CONTEXT_PATH VARCHAR(255) NOT NULL UNIQUE,
+    VERSION VARCHAR(255) NOT NULL,
+    USE_YN BOOLEAN NOT NULL
 );
 
-COMMENT ON TABLE sites IS '사이트 정보를 저장하는 테이블';
-COMMENT ON COLUMN sites.id IS '사이트 고유 식별자 (UUID 형식)';
-COMMENT ON COLUMN sites.site_type IS '사이트 타입 (공통코드 P001의 하위코드 사용)';
-COMMENT ON COLUMN sites.site_name IS '사이트명';
-COMMENT ON COLUMN sites.description IS '사이트 설명';
-COMMENT ON COLUMN sites.context_path IS 'Context Path (빈 값 = root, 예: ''admin'' = /admin)';
-COMMENT ON COLUMN sites.version IS '사이트 버전';
-COMMENT ON COLUMN sites.enabled IS '활성화 여부 (기본값: true)';
+COMMENT ON TABLE SITES IS '사이트 정보를 저장하는 테이블';
+COMMENT ON COLUMN SITES.SITE_ID IS '사이트 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN SITES.SITE_TYPE_CD IS '사이트 타입 (공통코드 P001의 하위코드 사용)';
+COMMENT ON COLUMN SITES.SITE_NM IS '사이트명';
+COMMENT ON COLUMN SITES.SITE_DESC IS '사이트 설명';
+COMMENT ON COLUMN SITES.CONTEXT_PATH IS 'Context Path (빈 값 = root, 예: ''admin'' = /admin)';
+COMMENT ON COLUMN SITES.VERSION IS '사이트 버전';
+COMMENT ON COLUMN SITES.USE_YN IS '활성화 여부 (기본값: true)';
 ```
 
 #### 컬럼 설명
 
 | 컬럼명 | 타입 | 제약조건 | 설명 |
 |--------|------|----------|------|
-| `id` | VARCHAR(255) | PRIMARY KEY, UUID | 사이트 고유 식별자 (UUID 형식) |
-| `site_type` | VARCHAR(255) | NOT NULL | 사이트 타입 (공통코드 P001의 하위코드 사용) |
-| `site_name` | VARCHAR(255) | NOT NULL | 사이트명 |
-| `description` | VARCHAR(1000) | NULL | 사이트 설명 |
-| `context_path` | VARCHAR(255) | NOT NULL, UNIQUE | Context Path (빈 값 = root, 예: 'admin' = /admin) |
-| `version` | VARCHAR(255) | NOT NULL | 사이트 버전 |
-| `enabled` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
+| `SITE_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 사이트 고유 식별자 (UUID 형식) |
+| `SITE_TYPE_CD` | VARCHAR(255) | NOT NULL | 사이트 타입 (공통코드 P001의 하위코드 사용) |
+| `SITE_NM` | VARCHAR(255) | NOT NULL | 사이트명 |
+| `SITE_DESC` | VARCHAR(1000) | NULL | 사이트 설명 |
+| `CONTEXT_PATH` | VARCHAR(255) | NOT NULL, UNIQUE | Context Path (빈 값 = root, 예: 'admin' = /admin) |
+| `VERSION` | VARCHAR(255) | NOT NULL | 사이트 버전 |
+| `USE_YN` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
 
 #### 인덱스
 
-- `context_path` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
+- `CONTEXT_PATH` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
 
 #### 사이트 타입 (SiteType) Enum
 
@@ -131,130 +131,130 @@ public enum SiteType {
 }
 ```
 
-### menus 테이블
+### MENUS 테이블
 
 **테이블 코멘트**: 메뉴 정보를 저장하는 테이블 (사이트에 속하며 계층 구조 지원)
 
 #### 스키마
 
 ```sql
-CREATE TABLE menus (
-    id VARCHAR(255) PRIMARY KEY,
-    site_id VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    url VARCHAR(500),
-    icon VARCHAR(100),
-    display_order INTEGER NOT NULL,
-    parent_id VARCHAR(255),
-    enabled BOOLEAN NOT NULL
+CREATE TABLE MENUS (
+    MENU_ID VARCHAR(255) PRIMARY KEY,
+    SITE_ID VARCHAR(255) NOT NULL,
+    MENU_NM VARCHAR(255) NOT NULL,
+    MENU_URL VARCHAR(500),
+    ICON_ID VARCHAR(100),
+    DISP_ORD INTEGER NOT NULL,
+    PARENT_ID VARCHAR(255),
+    USE_YN BOOLEAN NOT NULL
 );
 
-COMMENT ON TABLE menus IS '메뉴 정보를 저장하는 테이블 (사이트에 속하며 계층 구조 지원)';
-COMMENT ON COLUMN menus.id IS '메뉴 고유 식별자 (UUID 형식)';
-COMMENT ON COLUMN menus.site_id IS '사이트 ID (sites 테이블 참조)';
-COMMENT ON COLUMN menus.name IS '메뉴명';
-COMMENT ON COLUMN menus.url IS '메뉴 URL';
-COMMENT ON COLUMN menus.icon IS '메뉴 아이콘 ID (icons 테이블의 icon_id 참조)';
-COMMENT ON COLUMN menus.display_order IS '표시 순서';
-COMMENT ON COLUMN menus.parent_id IS '부모 메뉴 ID (계층 구조용, 최상위 메뉴는 NULL)';
-COMMENT ON COLUMN menus.enabled IS '활성화 여부 (기본값: true)';
+COMMENT ON TABLE MENUS IS '메뉴 정보를 저장하는 테이블 (사이트에 속하며 계층 구조 지원)';
+COMMENT ON COLUMN MENUS.MENU_ID IS '메뉴 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN MENUS.SITE_ID IS '사이트 ID (SITES 테이블 참조)';
+COMMENT ON COLUMN MENUS.MENU_NM IS '메뉴명';
+COMMENT ON COLUMN MENUS.MENU_URL IS '메뉴 URL';
+COMMENT ON COLUMN MENUS.ICON_ID IS '메뉴 아이콘 ID (ICONS 테이블의 ICON_CD 참조)';
+COMMENT ON COLUMN MENUS.DISP_ORD IS '표시 순서';
+COMMENT ON COLUMN MENUS.PARENT_ID IS '부모 메뉴 ID (계층 구조용, 최상위 메뉴는 NULL)';
+COMMENT ON COLUMN MENUS.USE_YN IS '활성화 여부 (기본값: true)';
 ```
 
 #### 컬럼 설명
 
 | 컬럼명 | 타입 | 제약조건 | 설명 |
 |--------|------|----------|------|
-| `id` | VARCHAR(255) | PRIMARY KEY, UUID | 메뉴 고유 식별자 (UUID 형식) |
-| `site_id` | VARCHAR(255) | NOT NULL | 사이트 ID (sites 테이블 참조) |
-| `name` | VARCHAR(255) | NOT NULL | 메뉴명 |
-| `url` | VARCHAR(500) | NULL | 메뉴 URL |
-| `icon` | VARCHAR(100) | NULL | 메뉴 아이콘 ID (icons 테이블의 icon_id 참조) |
-| `display_order` | INTEGER | NOT NULL | 표시 순서 (기본값: 0) |
-| `parent_id` | VARCHAR(255) | NULL | 부모 메뉴 ID (NULL이면 최상위 메뉴) |
-| `enabled` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
+| `MENU_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 메뉴 고유 식별자 (UUID 형식) |
+| `SITE_ID` | VARCHAR(255) | NOT NULL | 사이트 ID (SITES 테이블 참조) |
+| `MENU_NM` | VARCHAR(255) | NOT NULL | 메뉴명 |
+| `MENU_URL` | VARCHAR(500) | NULL | 메뉴 URL |
+| `ICON_ID` | VARCHAR(100) | NULL | 메뉴 아이콘 ID (ICONS 테이블의 ICON_CD 참조) |
+| `DISP_ORD` | INTEGER | NOT NULL | 표시 순서 (기본값: 0) |
+| `PARENT_ID` | VARCHAR(255) | NULL | 부모 메뉴 ID (NULL이면 최상위 메뉴) |
+| `USE_YN` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
 
 #### 인덱스
 
-- `site_id` 컬럼에 인덱스가 생성되어 사이트별 메뉴 조회 성능이 향상됩니다.
-- `parent_id` 컬럼에 인덱스가 생성되어 계층 구조 조회 성능이 향상됩니다.
+- `SITE_ID` 컬럼에 인덱스가 생성되어 사이트별 메뉴 조회 성능이 향상됩니다.
+- `PARENT_ID` 컬럼에 인덱스가 생성되어 계층 구조 조회 성능이 향상됩니다.
 
-### icons 테이블
+### ICONS 테이블
 
 **테이블 코멘트**: 아이콘 정보를 저장하는 테이블
 
 #### 스키마
 
 ```sql
-CREATE TABLE icons (
-    id VARCHAR(255) PRIMARY KEY,
-    icon_id VARCHAR(255) NOT NULL UNIQUE,
-    name VARCHAR(255) NOT NULL,
-    svg_code TEXT NOT NULL,
-    enabled BOOLEAN NOT NULL
+CREATE TABLE ICONS (
+    ICON_ID VARCHAR(255) PRIMARY KEY,
+    ICON_CD VARCHAR(255) NOT NULL UNIQUE,
+    ICON_NM VARCHAR(255) NOT NULL,
+    SVG_CODE TEXT NOT NULL,
+    USE_YN BOOLEAN NOT NULL
 );
 
-COMMENT ON TABLE icons IS '아이콘 정보를 저장하는 테이블';
-COMMENT ON COLUMN icons.id IS '아이콘 고유 식별자 (UUID 형식)';
-COMMENT ON COLUMN icons.icon_id IS '아이콘 ID (고유 식별자)';
-COMMENT ON COLUMN icons.name IS '아이콘명';
-COMMENT ON COLUMN icons.svg_code IS 'SVG 코드';
-COMMENT ON COLUMN icons.enabled IS '활성화 여부 (기본값: true)';
+COMMENT ON TABLE ICONS IS '아이콘 정보를 저장하는 테이블';
+COMMENT ON COLUMN ICONS.ICON_ID IS '아이콘 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN ICONS.ICON_CD IS '아이콘 코드 (고유 식별자)';
+COMMENT ON COLUMN ICONS.ICON_NM IS '아이콘명';
+COMMENT ON COLUMN ICONS.SVG_CODE IS 'SVG 코드';
+COMMENT ON COLUMN ICONS.USE_YN IS '활성화 여부 (기본값: true)';
 ```
 
 #### 컬럼 설명
 
 | 컬럼명 | 타입 | 제약조건 | 설명 |
 |--------|------|----------|------|
-| `id` | VARCHAR(255) | PRIMARY KEY, UUID | 아이콘 고유 식별자 (UUID 형식) |
-| `icon_id` | VARCHAR(255) | NOT NULL, UNIQUE | 아이콘 ID (고유 식별자) |
-| `name` | VARCHAR(255) | NOT NULL | 아이콘명 |
-| `svg_code` | TEXT | NOT NULL | SVG 코드 |
-| `enabled` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
+| `ICON_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 아이콘 고유 식별자 (UUID 형식) |
+| `ICON_CD` | VARCHAR(255) | NOT NULL, UNIQUE | 아이콘 코드 (고유 식별자) |
+| `ICON_NM` | VARCHAR(255) | NOT NULL | 아이콘명 |
+| `SVG_CODE` | TEXT | NOT NULL | SVG 코드 |
+| `USE_YN` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
 
 #### 인덱스
 
-- `icon_id` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
+- `ICON_CD` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
 
-### cmn_cd 테이블
+### CMN_CD 테이블
 
 **테이블 코멘트**: 공통코드 정보를 저장하는 테이블 (부모-자식 계층 구조 지원)
 
 #### 스키마
 
 ```sql
-CREATE TABLE cmn_cd (
-    id VARCHAR(255) PRIMARY KEY,
-    cd VARCHAR(4) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(1000),
-    enabled BOOLEAN NOT NULL,
-    parent_cd VARCHAR(4),
-    UNIQUE(parent_cd, cd)
+CREATE TABLE CMN_CD (
+    CMN_CD_ID VARCHAR(255) PRIMARY KEY,
+    CD VARCHAR(4) NOT NULL,
+    CD_NM VARCHAR(255) NOT NULL,
+    CD_DESC VARCHAR(1000),
+    USE_YN BOOLEAN NOT NULL,
+    PARENT_CD VARCHAR(4),
+    UNIQUE(PARENT_CD, CD)
 );
 
-COMMENT ON TABLE cmn_cd IS '공통코드 정보를 저장하는 테이블 (부모-자식 계층 구조 지원)';
-COMMENT ON COLUMN cmn_cd.id IS '공통코드 고유 식별자 (UUID 형식)';
-COMMENT ON COLUMN cmn_cd.cd IS '공통코드 (P001~P999: 부모코드, C001~C999: 자식코드)';
-COMMENT ON COLUMN cmn_cd.name IS '공통코드명';
-COMMENT ON COLUMN cmn_cd.description IS '공통코드 설명';
-COMMENT ON COLUMN cmn_cd.enabled IS '활성화 여부 (기본값: true)';
-COMMENT ON COLUMN cmn_cd.parent_cd IS '부모 코드 (부모코드인 경우 NULL)';
+COMMENT ON TABLE CMN_CD IS '공통코드 정보를 저장하는 테이블 (부모-자식 계층 구조 지원)';
+COMMENT ON COLUMN CMN_CD.CMN_CD_ID IS '공통코드 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN CMN_CD.CD IS '공통코드 (P001~P999: 부모코드, C001~C999: 자식코드)';
+COMMENT ON COLUMN CMN_CD.CD_NM IS '공통코드명';
+COMMENT ON COLUMN CMN_CD.CD_DESC IS '공통코드 설명';
+COMMENT ON COLUMN CMN_CD.USE_YN IS '활성화 여부 (기본값: true)';
+COMMENT ON COLUMN CMN_CD.PARENT_CD IS '부모 코드 (부모코드인 경우 NULL)';
 ```
 
 #### 컬럼 설명
 
 | 컬럼명 | 타입 | 제약조건 | 설명 |
 |--------|------|----------|------|
-| `id` | VARCHAR(255) | PRIMARY KEY, UUID | 공통코드 고유 식별자 (UUID 형식) |
-| `cd` | VARCHAR(4) | NOT NULL | 공통코드 (P001~P999: 부모코드, C001~C999: 자식코드) |
-| `name` | VARCHAR(255) | NOT NULL | 공통코드명 |
-| `description` | VARCHAR(1000) | NULL | 공통코드 설명 |
-| `enabled` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
-| `parent_cd` | VARCHAR(4) | NULL | 부모 코드 (부모코드인 경우 NULL) |
+| `CMN_CD_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 공통코드 고유 식별자 (UUID 형식) |
+| `CD` | VARCHAR(4) | NOT NULL | 공통코드 (P001~P999: 부모코드, C001~C999: 자식코드) |
+| `CD_NM` | VARCHAR(255) | NOT NULL | 공통코드명 |
+| `CD_DESC` | VARCHAR(1000) | NULL | 공통코드 설명 |
+| `USE_YN` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
+| `PARENT_CD` | VARCHAR(4) | NULL | 부모 코드 (부모코드인 경우 NULL) |
 
 #### 제약조건
 
-- `(parent_cd, cd)` 조합에 UNIQUE 제약조건이 있어 동일한 부모 코드 하위에 중복된 코드가 생성되지 않습니다.
+- `(PARENT_CD, CD)` 조합에 UNIQUE 제약조건이 있어 동일한 부모 코드 하위에 중복된 코드가 생성되지 않습니다.
 - 코드 형식: `P001~P999` (부모코드), `C001~C999` (자식코드)
 
 ## 엔티티 매핑
@@ -263,36 +263,37 @@ COMMENT ON COLUMN cmn_cd.parent_cd IS '부모 코드 (부모코드인 경우 NUL
 
 ```java
 @Entity
-@Table(name = "users")
+@Table(name = "USERS")
 @org.hibernate.annotations.Comment("사용자 및 관리자 정보를 저장하는 테이블")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "USER_ID")
     @Comment("사용자 고유 식별자 (UUID 형식)")
     private String id;
     
-    @Column(unique = true, nullable = false)
+    @Column(name = "USER_NM", unique = true, nullable = false)
     @Comment("사용자명 (로그인 ID)")
     private String username;
     
-    @Column(nullable = false)
+    @Column(name = "PASSWORD", nullable = false)
     @Comment("암호화된 비밀번호 (BCrypt 해시)")
     private String password;
     
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "ROLE", nullable = false)
     @Comment("사용자 역할 (USER: 관리자, MEMBER: 사용자)")
     private Role role;
     
-    @Column
+    @Column(name = "NAME")
     @Comment("사용자 이름")
     private String name;
     
-    @Column
+    @Column(name = "EMAIL")
     @Comment("이메일 주소")
     private String email;
     
-    @Column
+    @Column(name = "AVATAR_URL")
     @Comment("아바타 이미지 URL")
     private String avatarUrl;
 }
@@ -302,32 +303,36 @@ public class UserEntity {
 
 ```java
 @Entity
-@Table(name = "sites")
+@Table(name = "SITES")
 @org.hibernate.annotations.Comment("사이트 정보를 저장하는 테이블")
 public class SiteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "SITE_ID")
     @Comment("사이트 고유 식별자 (UUID 형식)")
     private String id;
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
-    @Comment("사이트 타입 (ADMIN: 통합관리사이트, PORTAL: 메인포털사이트)")
-    private SiteType siteType;
+    @Column(name = "SITE_TYPE_CD", nullable = false)
+    @Comment("사이트 타입 (공통코드 P001의 하위코드 사용)")
+    private String siteType;
     
-    @Column(nullable = false)
+    @Column(name = "SITE_NM", nullable = false)
     @Comment("사이트명")
     private String siteName;
     
-    @Column(length = 1000)
+    @Column(name = "SITE_DESC", length = 1000)
     @Comment("사이트 설명")
     private String description;
     
-    @Column(nullable = false)
+    @Column(name = "CONTEXT_PATH", nullable = false, unique = true)
+    @Comment("Context Path (빈 값 = root, 예: 'admin' = /admin)")
+    private String contextPath;
+    
+    @Column(name = "VERSION", nullable = false)
     @Comment("사이트 버전")
     private String version;
     
-    @Column(nullable = false)
+    @Column(name = "USE_YN", nullable = false)
     @Comment("활성화 여부 (기본값: true)")
     private Boolean enabled = true;
 }
@@ -337,35 +342,71 @@ public class SiteEntity {
 
 ```java
 @Entity
-@Table(name = "menus")
+@Table(name = "MENUS")
 @org.hibernate.annotations.Comment("메뉴 정보를 저장하는 테이블 (사이트에 속하며 계층 구조 지원)")
 public class MenuEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "MENU_ID")
     @Comment("메뉴 고유 식별자 (UUID 형식)")
     private String id;
     
-    @Column(nullable = false)
-    @Comment("사이트 ID (sites 테이블 참조)")
+    @Column(name = "SITE_ID", nullable = false)
+    @Comment("사이트 ID (SITES 테이블 참조)")
     private String siteId;
     
-    @Column(nullable = false)
+    @Column(name = "MENU_NM", nullable = false)
     @Comment("메뉴명")
     private String name;
     
-    @Column(length = 500)
+    @Column(name = "MENU_URL", length = 500)
     @Comment("메뉴 URL")
     private String url;
     
-    @Column(nullable = false)
+    @Column(name = "ICON_ID", length = 100)
+    @Comment("메뉴 아이콘 ID (ICONS 테이블의 ICON_CD 참조)")
+    private String icon;
+    
+    @Column(name = "DISP_ORD", nullable = false)
     @Comment("표시 순서")
     private Integer displayOrder = 0;
     
-    @Column
+    @Column(name = "PARENT_ID")
     @Comment("부모 메뉴 ID (계층 구조용, 최상위 메뉴는 NULL)")
     private String parentId;
     
-    @Column(nullable = false)
+    @Column(name = "USE_YN", nullable = false)
+    @Comment("활성화 여부 (기본값: true)")
+    private Boolean enabled = true;
+}
+```
+
+### IconEntity
+
+```java
+@Entity
+@Table(name = "ICONS")
+@org.hibernate.annotations.Comment("아이콘 정보를 저장하는 테이블")
+public class IconEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ICON_ID")
+    @Comment("아이콘 고유 식별자 (UUID 형식)")
+    private String id;
+    
+    @Column(name = "ICON_CD", nullable = false, unique = true)
+    @Comment("아이콘 코드 (고유 식별자)")
+    private String iconId;
+    
+    @Column(name = "ICON_NM", nullable = false)
+    @Comment("아이콘명")
+    private String name;
+    
+    @Column(name = "SVG_CODE", nullable = false, columnDefinition = "TEXT")
+    @Comment("SVG 코드")
+    private String svgCode;
+    
+    @Column(name = "USE_YN", nullable = false)
     @Comment("활성화 여부 (기본값: true)")
     private Boolean enabled = true;
 }
@@ -375,33 +416,34 @@ public class MenuEntity {
 
 ```java
 @Entity
-@Table(name = "cmn_cd", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"parentCd", "cd"})
+@Table(name = "CMN_CD", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"PARENT_CD", "CD"})
 })
 @org.hibernate.annotations.Comment("공통코드 정보를 저장하는 테이블 (부모-자식 계층 구조 지원)")
 public class CmnCdEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "CMN_CD_ID")
     @Comment("공통코드 고유 식별자 (UUID 형식)")
     private String id;
     
-    @Column(nullable = false, length = 4)
+    @Column(name = "CD", nullable = false, length = 4)
     @Comment("공통코드 (P001~P999: 부모코드, C001~C999: 자식코드)")
     private String cd;
     
-    @Column(nullable = false)
+    @Column(name = "CD_NM", nullable = false)
     @Comment("공통코드명")
     private String name;
     
-    @Column(length = 1000)
+    @Column(name = "CD_DESC", length = 1000)
     @Comment("공통코드 설명")
     private String description;
     
-    @Column(nullable = false)
+    @Column(name = "USE_YN", nullable = false)
     @Comment("활성화 여부 (기본값: true)")
     private Boolean enabled = true;
     
-    @Column(length = 4)
+    @Column(name = "PARENT_CD", length = 4)
     @Comment("부모 코드 (부모코드인 경우 NULL)")
     private String parentCd;
 }
@@ -544,14 +586,16 @@ public interface CmnCdRepository extends JpaRepository<CmnCdEntity, String> {
 
 ## 관계 및 제약조건
 
-- 현재 프로젝트는 `users`, `sites`, `menus`, `cmn_cd` 테이블을 사용합니다.
-- `Member`는 별도의 테이블이 아닌 `users` 테이블에서 `role = 'MEMBER'`인 레코드를 조회하여 사용합니다.
-- `User`는 `users` 테이블에서 `role = 'USER'`인 레코드를 조회하여 사용합니다.
-- `sites` 테이블은 사이트 정보를 관리하며, `site_type`은 UNIQUE 제약조건이 있어 동일한 타입의 사이트는 하나만 존재할 수 있습니다.
-- `menus` 테이블은 메뉴 정보를 관리하며, `site_id`를 통해 사이트에 속합니다.
-- `menus` 테이블은 `parent_id`를 통해 계층 구조를 지원합니다 (부모-하위 메뉴 관계).
-- `cmn_cd` 테이블은 공통코드를 관리하며, `parent_cd`를 통해 계층 구조를 지원합니다.
-- `cmn_cd` 테이블은 `(parent_cd, cd)` 조합에 UNIQUE 제약조건이 있습니다.
+- 현재 프로젝트는 `USERS`, `SITES`, `MENUS`, `ICONS`, `CMN_CD` 테이블을 사용합니다.
+- `Member`는 별도의 테이블이 아닌 `USERS` 테이블에서 `ROLE = 'MEMBER'`인 레코드를 조회하여 사용합니다.
+- `User`는 `USERS` 테이블에서 `ROLE = 'USER'`인 레코드를 조회하여 사용합니다.
+- `SITES` 테이블은 사이트 정보를 관리하며, `CONTEXT_PATH`는 UNIQUE 제약조건이 있어 동일한 Context Path는 하나만 존재할 수 있습니다.
+- `MENUS` 테이블은 메뉴 정보를 관리하며, `SITE_ID`를 통해 사이트에 속합니다.
+- `MENUS` 테이블은 `PARENT_ID`를 통해 계층 구조를 지원합니다 (부모-하위 메뉴 관계).
+- `MENUS` 테이블의 `ICON_ID`는 `ICONS` 테이블의 `ICON_CD`를 참조합니다.
+- `ICONS` 테이블은 아이콘 정보를 관리하며, `ICON_CD`는 UNIQUE 제약조건이 있어 동일한 아이콘 코드는 하나만 존재할 수 있습니다.
+- `CMN_CD` 테이블은 공통코드를 관리하며, `PARENT_CD`를 통해 계층 구조를 지원합니다.
+- `CMN_CD` 테이블은 `(PARENT_CD, CD)` 조합에 UNIQUE 제약조건이 있습니다.
 
 ## 보안 고려사항
 

@@ -5,30 +5,31 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "icons")
+@Table(name = "ICONS")
 @org.hibernate.annotations.Comment("아이콘 정보를 저장하는 테이블")
 public class IconEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "ICON_ID")
 	@Comment("아이콘 고유 식별자 (UUID 형식)")
 	private String id;
 	
 	@NotBlank
-	@Column(nullable = false, unique = true)
-	@Comment("아이콘 ID (고유 식별자)")
+	@Column(name = "ICON_CD", nullable = false, unique = true)
+	@Comment("아이콘 코드 (고유 식별자)")
 	private String iconId;
 	
 	@NotBlank
-	@Column(nullable = false)
+	@Column(name = "ICON_NM", nullable = false)
 	@Comment("아이콘명")
 	private String name;
 	
 	@NotBlank
-	@Column(nullable = false, columnDefinition = "TEXT")
+	@Column(name = "SVG_CODE", nullable = false, columnDefinition = "text")
 	@Comment("SVG 코드")
 	private String svgCode;
 	
-	@Column(nullable = false)
+	@Column(name = "USE_YN", nullable = false)
 	@Comment("활성화 여부 (기본값: true)")
 	private Boolean enabled = true;
 	
