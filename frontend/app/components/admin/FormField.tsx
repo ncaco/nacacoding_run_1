@@ -9,6 +9,7 @@ export default function FormField({
   type = 'text',
   placeholder,
   required = false,
+  disabled = false,
   options,
   rows = 3,
   value,
@@ -51,6 +52,7 @@ export default function FormField({
           onChange={(val) => onChange && onChange(val)}
           options={options || []}
           placeholder="선택하세요"
+          isDisabled={disabled}
         />
       ) : type === 'checkbox' ? (
         <div className="flex items-center">
@@ -60,7 +62,8 @@ export default function FormField({
             type="checkbox"
             checked={value as boolean}
             onChange={handleChange}
-            className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 dark:border-[#1f2435] dark:bg-[#1a1e2c]"
+            disabled={disabled}
+            className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 dark:border-[#1f2435] dark:bg-[#1a1e2c] disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <label htmlFor={name} className="ml-2 block text-xs text-gray-900 dark:text-gray-300">
             {placeholder || label}
@@ -73,9 +76,10 @@ export default function FormField({
           type={type}
           placeholder={placeholder}
           required={required}
+          disabled={disabled}
           value={value as string | number}
           onChange={handleChange}
-          className={baseInputClasses}
+          className={`${baseInputClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         />
       )}
       {helperText && (

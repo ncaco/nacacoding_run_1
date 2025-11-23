@@ -43,6 +43,7 @@ export interface FormFieldProps {
   type?: 'text' | 'password' | 'email' | 'number' | 'textarea' | 'select' | 'checkbox';
   placeholder?: string;
   required?: boolean;
+  disabled?: boolean;
   options?: { value: string; label: string }[];
   rows?: number;
   value?: string | number | boolean;
