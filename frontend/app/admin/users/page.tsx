@@ -186,14 +186,34 @@ function UsersPageContent() {
       }
 
       // 역할에 따라 다른 API 엔드포인트 사용
-      // 현재는 관리자(USER)만 생성 가능하므로 USER 역할인 경우에만 생성 API 사용
       if (isEditMode) {
-        // 수정은 아직 API가 없을 수 있으므로 에러 처리
-        toast.error('사용자 수정 기능은 아직 구현되지 않았습니다.');
-        setIsSubmitting(false);
-        return;
+        // 수정
+        const endpoint = editingUser.role === 'USER' ? `/users/${editingUser.id}` : `/members/${editingUser.id}`;
+        const response = await fetchWithTokenRefresh(getApiUrl(endpoint), {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name || '',
+            email: formData.email || '',
+          }),
+        });
+
+        if (response.status === 401) {
+          logout(router);
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || '사용자 수정에 실패했습니다.');
+        }
+
+        toast.success('사용자가 성공적으로 수정되었습니다.');
       } else {
-        // 생성: 관리자(USER)만 생성 가능
+        // 생성
         if (formData.role === 'USER') {
           // 관리자 생성
           const response = await fetchWithTokenRefresh(getApiUrl('/users'), {
@@ -205,6 +225,8 @@ function UsersPageContent() {
               username: formData.username,
               password: formData.password,
               role: formData.role,
+              name: formData.name || '',
+              email: formData.email || '',
             }),
           });
 
@@ -221,10 +243,32 @@ function UsersPageContent() {
 
           toast.success('사용자가 성공적으로 생성되었습니다.');
         } else {
-          // 사용자(MEMBER) 생성은 아직 API가 없을 수 있음
-          toast.error('사용자(MEMBER) 생성 기능은 아직 구현되지 않았습니다.');
-          setIsSubmitting(false);
-          return;
+          // 사용자(MEMBER) 생성
+          const response = await fetchWithTokenRefresh(getApiUrl('/members'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: formData.username,
+              password: formData.password,
+              name: formData.name || '',
+              email: formData.email || '',
+            }),
+          });
+
+          if (response.status === 401) {
+            logout(router);
+            return;
+          }
+
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            throw new Error(data.message || '사용자 생성에 실패했습니다.');
+          }
+
+          toast.success('사용자가 성공적으로 생성되었습니다.');
         }
       }
 
