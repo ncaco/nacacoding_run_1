@@ -10,28 +10,28 @@ import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import { fetchWithTokenRefresh, logout } from '../../utils/auth';
 import { getApiUrl } from '../../utils/api';
 
-interface User {
+interface Admin {
   id: string;
   username: string;
-  role: 'MEMBER';
+  role: 'USER';
   name?: string;
   email?: string;
   avatarUrl?: string;
 }
 
-function UsersPageContent() {
+function AdminsPageContent() {
   const router = useRouter();
-  const [users, setUsers] = useState<User[]>([]);
+  const [admins, setAdmins] = useState<Admin[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; user: User | null }>({
+  const [editingAdmin, setEditingAdmin] = useState<Admin | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; admin: Admin | null }>({
     isOpen: false,
-    user: null,
+    admin: null,
   });
 
-  // 사용자 목록 조회 (사용자만)
-  const fetchUsers = async () => {
+  // 관리자 목록 조회
+  const fetchAdmins = async () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
@@ -39,8 +39,7 @@ function UsersPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      // 사용자(MEMBER) 목록만 조회
-      const response = await fetchWithTokenRefresh(getApiUrl('/members'), {
+      const response = await fetchWithTokenRefresh(getApiUrl('/users'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -55,25 +54,24 @@ function UsersPageContent() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || '사용자 목록 조회에 실패했습니다.');
+        throw new Error(data.message || '관리자 목록 조회에 실패했습니다.');
       }
 
-      // 사용자(MEMBER)만 매핑
-      const members: User[] = (data.data || []).map((member: any) => ({
-        id: member.id,
-        username: member.username,
-        role: 'MEMBER' as const,
-        name: member.name,
-        email: member.email,
-        avatarUrl: member.avatarUrl,
+      const adminsList: Admin[] = (data.data || []).map((admin: any) => ({
+        id: admin.id,
+        username: admin.username,
+        role: 'USER' as const,
+        name: admin.name,
+        email: admin.email,
+        avatarUrl: admin.avatarUrl,
       }));
 
-      setUsers(members);
+      setAdmins(adminsList);
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message || '사용자 목록 조회에 실패했습니다.');
+        toast.error(error.message || '관리자 목록 조회에 실패했습니다.');
       } else {
-        toast.error('사용자 목록 조회에 실패했습니다. 다시 시도해주세요.');
+        toast.error('관리자 목록 조회에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
@@ -81,30 +79,30 @@ function UsersPageContent() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchAdmins();
   }, []);
 
   const handleAdd = () => {
-    setEditingUser({} as User);
+    setEditingAdmin({} as Admin);
   };
 
-  const handleEdit = (user: User) => {
-    if (!user.id) {
-      toast.error('사용자 ID가 없습니다.');
+  const handleEdit = (admin: Admin) => {
+    if (!admin.id) {
+      toast.error('관리자 ID가 없습니다.');
       return;
     }
-    setEditingUser(user);
+    setEditingAdmin(admin);
   };
 
-  const handleDelete = (user: User) => {
-    setDeleteDialog({ isOpen: true, user });
+  const handleDelete = (admin: Admin) => {
+    setDeleteDialog({ isOpen: true, admin });
   };
 
   const handleConfirmDelete = async () => {
-    if (!deleteDialog.user) return;
+    if (!deleteDialog.admin) return;
 
-    const user = deleteDialog.user;
-    setDeleteDialog({ isOpen: false, user: null });
+    const admin = deleteDialog.admin;
+    setDeleteDialog({ isOpen: false, admin: null });
     setIsLoading(true);
 
     try {
@@ -113,8 +111,7 @@ function UsersPageContent() {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      // 사용자(MEMBER) 삭제
-      const response = await fetchWithTokenRefresh(getApiUrl(`/members/${user.id}`), {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/users/${admin.id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -129,16 +126,16 @@ function UsersPageContent() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || '사용자 삭제에 실패했습니다.');
+        throw new Error(data.message || '관리자 삭제에 실패했습니다.');
       }
 
-      toast.success('사용자가 성공적으로 삭제되었습니다.');
-      fetchUsers();
+      toast.success('관리자가 성공적으로 삭제되었습니다.');
+      fetchAdmins();
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message || '사용자 삭제에 실패했습니다.');
+        toast.error(error.message || '관리자 삭제에 실패했습니다.');
       } else {
-        toast.error('사용자 삭제에 실패했습니다. 다시 시도해주세요.');
+        toast.error('관리자 삭제에 실패했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
@@ -155,16 +152,15 @@ function UsersPageContent() {
       }
 
       // 수정 모드 확인
-      const isEditMode = !!(editingUser && editingUser.id && editingUser.id.trim() !== '');
+      const isEditMode = !!(editingAdmin && editingAdmin.id && editingAdmin.id.trim() !== '');
       
-      if (isEditMode && !editingUser?.id) {
-        throw new Error('사용자 ID가 없습니다. 다시 시도해주세요.');
+      if (isEditMode && !editingAdmin?.id) {
+        throw new Error('관리자 ID가 없습니다. 다시 시도해주세요.');
       }
 
-      // 사용자(MEMBER)만 처리
       if (isEditMode) {
         // 수정
-        const response = await fetchWithTokenRefresh(getApiUrl(`/members/${editingUser.id}`), {
+        const response = await fetchWithTokenRefresh(getApiUrl(`/users/${editingAdmin.id}`), {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -183,13 +179,13 @@ function UsersPageContent() {
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-          throw new Error(data.message || '사용자 수정에 실패했습니다.');
+          throw new Error(data.message || '관리자 수정에 실패했습니다.');
         }
 
-        toast.success('사용자가 성공적으로 수정되었습니다.');
+        toast.success('관리자가 성공적으로 수정되었습니다.');
       } else {
-        // 생성 - 사용자(MEMBER)만 생성
-        const response = await fetchWithTokenRefresh(getApiUrl('/members'), {
+        // 생성
+        const response = await fetchWithTokenRefresh(getApiUrl('/users'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -197,6 +193,7 @@ function UsersPageContent() {
           body: JSON.stringify({
             username: formData.username,
             password: formData.password,
+            role: 'USER',
             name: formData.name || '',
             email: formData.email || '',
           }),
@@ -210,22 +207,22 @@ function UsersPageContent() {
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-          throw new Error(data.message || '사용자 생성에 실패했습니다.');
+          throw new Error(data.message || '관리자 생성에 실패했습니다.');
         }
 
-        toast.success('사용자가 성공적으로 생성되었습니다.');
+        toast.success('관리자가 성공적으로 생성되었습니다.');
       }
 
       setTimeout(() => {
-        setEditingUser(null);
-        fetchUsers();
+        setEditingAdmin(null);
+        fetchAdmins();
       }, 1500);
     } catch (error) {
-      const isEditMode = editingUser && editingUser.id;
+      const isEditMode = editingAdmin && editingAdmin.id;
       if (error instanceof Error) {
-        toast.error(error.message || `사용자 ${isEditMode ? '수정' : '생성'}에 실패했습니다.`);
+        toast.error(error.message || `관리자 ${isEditMode ? '수정' : '생성'}에 실패했습니다.`);
       } else {
-        toast.error(`사용자 ${isEditMode ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
+        toast.error(`관리자 ${isEditMode ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
       }
     } finally {
       setIsSubmitting(false);
@@ -235,24 +232,24 @@ function UsersPageContent() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        {editingUser ? (
+        {editingAdmin ? (
           <UserForm
             onSubmit={handleSubmit}
             onCancel={() => {
-              setEditingUser(null);
+              setEditingAdmin(null);
             }}
-            initialData={editingUser.id ? {
-              id: editingUser.id,
-              username: editingUser.username,
-              role: 'MEMBER',
-              name: editingUser.name,
-              email: editingUser.email,
+            initialData={editingAdmin.id ? {
+              id: editingAdmin.id,
+              username: editingAdmin.username,
+              role: 'USER',
+              name: editingAdmin.name,
+              email: editingAdmin.email,
             } : undefined}
             isLoading={isSubmitting}
           />
         ) : (
           <UserList
-            users={users}
+            users={admins}
             isLoading={isLoading}
             onAdd={handleAdd}
             onEdit={handleEdit}
@@ -263,10 +260,10 @@ function UsersPageContent() {
 
       <ConfirmDialog
         isOpen={deleteDialog.isOpen}
-        onClose={() => setDeleteDialog({ isOpen: false, user: null })}
+        onClose={() => setDeleteDialog({ isOpen: false, admin: null })}
         onConfirm={handleConfirmDelete}
-        title="사용자 삭제"
-        message={`정말로 "${deleteDialog.user?.name || deleteDialog.user?.username}" 사용자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        title="관리자 삭제"
+        message={`정말로 "${deleteDialog.admin?.name || deleteDialog.admin?.username}" 관리자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
         confirmLabel="삭제"
         cancelLabel="취소"
         variant="danger"
@@ -276,7 +273,7 @@ function UsersPageContent() {
   );
 }
 
-export default function UsersPage() {
+export default function AdminsPage() {
   return (
     <Suspense fallback={
       <AdminLayout>
@@ -306,7 +303,8 @@ export default function UsersPage() {
         </div>
       </AdminLayout>
     }>
-      <UsersPageContent />
+      <AdminsPageContent />
     </Suspense>
   );
 }
+
