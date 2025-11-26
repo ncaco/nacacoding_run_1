@@ -79,6 +79,42 @@ public enum Role {
    - password: `member123` (BCrypt 해시됨)
    - role: `MEMBER`
 
+### MEMBERS 테이블
+
+**테이블 코멘트**: 사용자(MEMBER) 정보를 저장하는 테이블
+
+#### 스키마
+
+```sql
+CREATE TABLE MEMBERS (
+    MEMBER_ID VARCHAR(255) PRIMARY KEY,
+    USER_NM VARCHAR(255) NOT NULL UNIQUE,
+    PASSWORD VARCHAR(255) NOT NULL,
+    NAME VARCHAR(255),
+    EMAIL VARCHAR(255),
+    AVATAR_URL VARCHAR(255)
+);
+
+COMMENT ON TABLE MEMBERS IS '사용자(MEMBER) 정보를 저장하는 테이블';
+COMMENT ON COLUMN MEMBERS.MEMBER_ID IS '사용자(MEMBER) 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN MEMBERS.USER_NM IS '사용자명 (로그인 ID)';
+COMMENT ON COLUMN MEMBERS.PASSWORD IS '암호화된 비밀번호 (BCrypt 해시)';
+COMMENT ON COLUMN MEMBERS.NAME IS '사용자 이름';
+COMMENT ON COLUMN MEMBERS.EMAIL IS '이메일 주소';
+COMMENT ON COLUMN MEMBERS.AVATAR_URL IS '아바타 이미지 URL';
+```
+
+#### 컬럼 설명
+
+| 컬럼명 | 타입 | 제약조건 | 설명 |
+|--------|------|----------|------|
+| `MEMBER_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 사용자(MEMBER) 고유 식별자 (UUID 형식) |
+| `USER_NM` | VARCHAR(255) | NOT NULL, UNIQUE | 사용자명 (로그인 ID) |
+| `PASSWORD` | VARCHAR(255) | NOT NULL | 암호화된 비밀번호 (BCrypt 해시) |
+| `NAME` | VARCHAR(255) | NULL | 사용자 이름 |
+| `EMAIL` | VARCHAR(255) | NULL | 이메일 주소 |
+| `AVATAR_URL` | VARCHAR(255) | NULL | 아바타 이미지 URL |
+
 ### SITES 테이블
 
 **테이블 코멘트**: 사이트 정보를 저장하는 테이블
@@ -495,6 +531,15 @@ public interface CmnCdRepository extends JpaRepository<CmnCdEntity, String> {
 }
 ```
 
+### MemberRepository
+
+```java
+public interface MemberRepository extends JpaRepository<MemberEntity, String> {
+    Optional<MemberEntity> findByUsername(String username);
+    boolean existsByUsername(String username);
+}
+```
+
 ## 주요 쿼리
 
 ### UserRepository 주요 쿼리
@@ -512,6 +557,18 @@ public interface CmnCdRepository extends JpaRepository<CmnCdEntity, String> {
 3. **역할별 필터링**
    - 관리자 목록: `role = 'USER'`
    - 멤버 목록: `role = 'MEMBER'`
+
+### MemberRepository 주요 쿼리
+
+1. **사용자명으로 조회**
+   ```java
+   memberRepository.findByUsername(username)
+   ```
+
+2. **사용자명 존재 여부 확인**
+   ```java
+   memberRepository.existsByUsername(username)
+   ```
 
 ### SiteRepository 주요 쿼리
 
@@ -586,9 +643,9 @@ public interface CmnCdRepository extends JpaRepository<CmnCdEntity, String> {
 
 ## 관계 및 제약조건
 
-- 현재 프로젝트는 `USERS`, `SITES`, `MENUS`, `ICONS`, `CMN_CD` 테이블을 사용합니다.
-- `Member`는 별도의 테이블이 아닌 `USERS` 테이블에서 `ROLE = 'MEMBER'`인 레코드를 조회하여 사용합니다.
+- 현재 프로젝트는 `USERS`, `MEMBERS`, `SITES`, `MENUS`, `ICONS`, `CMN_CD` 테이블을 사용합니다.
 - `User`는 `USERS` 테이블에서 `ROLE = 'USER'`인 레코드를 조회하여 사용합니다.
+- `Member`는 `MEMBERS` 테이블의 데이터를 기반으로 사용자 관리 화면과 API에서 사용하며, 로그인/권한 처리를 위해 `USERS` 테이블에도 `ROLE = 'MEMBER'` 계정을 함께 생성/삭제하여 동기화합니다.
 - `SITES` 테이블은 사이트 정보를 관리하며, `CONTEXT_PATH`는 UNIQUE 제약조건이 있어 동일한 Context Path는 하나만 존재할 수 있습니다.
 - `MENUS` 테이블은 메뉴 정보를 관리하며, `SITE_ID`를 통해 사이트에 속합니다.
 - `MENUS` 테이블은 `PARENT_ID`를 통해 계층 구조를 지원합니다 (부모-하위 메뉴 관계).
