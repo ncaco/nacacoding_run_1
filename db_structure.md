@@ -293,6 +293,67 @@ COMMENT ON COLUMN CMN_CD.PARENT_CD IS '부모 코드 (부모코드인 경우 NUL
 - `(PARENT_CD, CD)` 조합에 UNIQUE 제약조건이 있어 동일한 부모 코드 하위에 중복된 코드가 생성되지 않습니다.
 - 코드 형식: `P001~P999` (부모코드), `C001~C999` (자식코드)
 
+### USER_ROLE 테이블
+
+**테이블 코멘트**: 사용자 역할 정보를 저장하는 테이블
+
+#### 스키마
+
+```sql
+CREATE TABLE USER_ROLE (
+    USER_ROLE_ID VARCHAR(255) PRIMARY KEY,
+    ROLE_CD VARCHAR(50) NOT NULL UNIQUE,
+    ROLE_NM VARCHAR(255) NOT NULL,
+    ROLE_DESC VARCHAR(1000),
+    USE_YN BOOLEAN NOT NULL
+);
+
+COMMENT ON TABLE USER_ROLE IS '사용자 역할 정보를 저장하는 테이블';
+COMMENT ON COLUMN USER_ROLE.USER_ROLE_ID IS '사용자 역할 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN USER_ROLE.ROLE_CD IS '역할 코드 (예: ADMIN, MANAGER, OPERATOR, MEMBER)';
+COMMENT ON COLUMN USER_ROLE.ROLE_NM IS '역할명';
+COMMENT ON COLUMN USER_ROLE.ROLE_DESC IS '역할 설명';
+COMMENT ON COLUMN USER_ROLE.USE_YN IS '활성화 여부 (기본값: true)';
+```
+
+#### 컬럼 설명
+
+| 컬럼명 | 타입 | 제약조건 | 설명 |
+|--------|------|----------|------|
+| `USER_ROLE_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 사용자 역할 고유 식별자 (UUID 형식) |
+| `ROLE_CD` | VARCHAR(50) | NOT NULL, UNIQUE | 역할 코드 (예: ADMIN, MANAGER, OPERATOR, MEMBER) |
+| `ROLE_NM` | VARCHAR(255) | NOT NULL | 역할명 |
+| `ROLE_DESC` | VARCHAR(1000) | NULL | 역할 설명 |
+| `USE_YN` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
+
+#### 인덱스
+
+- `ROLE_CD` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
+
+#### 초기 데이터
+
+애플리케이션 시작 시 다음 역할이 자동으로 생성됩니다:
+
+1. **최고 관리자**
+   - roleCd: `ADMIN`
+   - roleNm: `최고 관리자`
+   - roleDesc: `모든 권한을 가진 최고 관리자`
+
+2. **관리자**
+   - roleCd: `MANAGER`
+   - roleNm: `관리자`
+   - roleDesc: `사이트, 메뉴, 사용자 관리 권한`
+
+3. **운영자**
+   - roleCd: `OPERATOR`
+   - roleNm: `운영자`
+   - roleDesc: `파일, 로그 관리 권한`
+
+4. **일반 사용자**
+   - roleCd: `MEMBER`
+   - roleNm: `일반 사용자`
+   - roleDesc: `일반 사용자 권한`
+
 ## 엔티티 매핑
 
 ### UserEntity
@@ -485,6 +546,37 @@ public class CmnCdEntity {
 }
 ```
 
+### UserRoleEntity
+
+```java
+@Entity
+@Table(name = "USER_ROLE")
+@org.hibernate.annotations.Comment("사용자 역할 정보를 저장하는 테이블")
+public class UserRoleEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "USER_ROLE_ID")
+    @Comment("사용자 역할 고유 식별자 (UUID 형식)")
+    private String id;
+    
+    @Column(name = "ROLE_CD", nullable = false, unique = true, length = 50)
+    @Comment("역할 코드 (예: ADMIN, MANAGER, OPERATOR, MEMBER)")
+    private String roleCd;
+    
+    @Column(name = "ROLE_NM", nullable = false)
+    @Comment("역할명")
+    private String roleNm;
+    
+    @Column(name = "ROLE_DESC", length = 1000)
+    @Comment("역할 설명")
+    private String roleDesc;
+    
+    @Column(name = "USE_YN", nullable = false)
+    @Comment("활성화 여부 (기본값: true)")
+    private Boolean enabled = true;
+}
+```
+
 ## Repository 인터페이스
 
 ### UserRepository
@@ -537,6 +629,17 @@ public interface CmnCdRepository extends JpaRepository<CmnCdEntity, String> {
 public interface MemberRepository extends JpaRepository<MemberEntity, String> {
     Optional<MemberEntity> findByUsername(String username);
     boolean existsByUsername(String username);
+}
+```
+
+### UserRoleRepository
+
+```java
+public interface UserRoleRepository extends JpaRepository<UserRoleEntity, String> {
+    Optional<UserRoleEntity> findByRoleCd(String roleCd);
+    boolean existsByRoleCd(String roleCd);
+    List<UserRoleEntity> findByEnabledTrueOrderByRoleCdAsc();
+    List<UserRoleEntity> findAllByOrderByRoleCdAsc();
 }
 ```
 
@@ -641,9 +744,31 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
    cmnCdRepository.findAllByOrderByCdAsc()
    ```
 
+### UserRoleRepository 주요 쿼리
+
+1. **역할 코드로 조회**
+   ```java
+   userRoleRepository.findByRoleCd(roleCd)
+   ```
+
+2. **역할 코드 존재 여부 확인**
+   ```java
+   userRoleRepository.existsByRoleCd(roleCd)
+   ```
+
+3. **활성화된 역할 목록 조회**
+   ```java
+   userRoleRepository.findByEnabledTrueOrderByRoleCdAsc()
+   ```
+
+4. **전체 역할 목록 조회 (역할 코드 순)**
+   ```java
+   userRoleRepository.findAllByOrderByRoleCdAsc()
+   ```
+
 ## 관계 및 제약조건
 
-- 현재 프로젝트는 `USERS`, `MEMBERS`, `SITES`, `MENUS`, `ICONS`, `CMN_CD` 테이블을 사용합니다.
+- 현재 프로젝트는 `USERS`, `MEMBERS`, `SITES`, `MENUS`, `ICONS`, `CMN_CD`, `USER_ROLE` 테이블을 사용합니다.
 - `User`는 `USERS` 테이블에서 `ROLE = 'USER'`인 레코드를 조회하여 사용합니다.
 - `Member`는 `MEMBERS` 테이블의 데이터를 기반으로 사용자 관리 화면과 API에서 사용하며, 로그인/권한 처리를 위해 `USERS` 테이블에도 `ROLE = 'MEMBER'` 계정을 함께 생성/삭제하여 동기화합니다.
 - `SITES` 테이블은 사이트 정보를 관리하며, `CONTEXT_PATH`는 UNIQUE 제약조건이 있어 동일한 Context Path는 하나만 존재할 수 있습니다.
