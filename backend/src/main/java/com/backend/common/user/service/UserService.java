@@ -47,6 +47,10 @@ public class UserService {
 	}
 
 	public User createUser(String username, String password, Role role, String name, String email) {
+		return createUser(username, password, role, name, email, null);
+	}
+	
+	public User createUser(String username, String password, Role role, String name, String email, String userRoleId) {
 		if (userRepository.existsByUsername(username)) {
 			throw new IllegalArgumentException("Username already exists: " + username);
 		}
@@ -56,6 +60,9 @@ public class UserService {
 			entity = new UserEntity(username, encoded, role, name, email);
 		} else {
 			entity = new UserEntity(username, encoded, role);
+		}
+		if (userRoleId != null && !userRoleId.isEmpty()) {
+			entity.setUserRoleId(userRoleId);
 		}
 		UserEntity saved = userRepository.save(entity);
 		return toUser(saved);
@@ -76,11 +83,18 @@ public class UserService {
 	}
 
 	public User updateUser(String id, String name, String email) {
+		return updateUser(id, name, email, null);
+	}
+	
+	public User updateUser(String id, String name, String email, String userRoleId) {
 		UserEntity entity = userRepository.findById(id)
 				.filter(u -> u.getRole() == Role.USER)
 				.orElseThrow(() -> new IllegalArgumentException("관리자를 찾을 수 없습니다: " + id));
 		entity.setName(name);
 		entity.setEmail(email);
+		if (userRoleId != null) {
+			entity.setUserRoleId(userRoleId);
+		}
 		UserEntity saved = userRepository.save(entity);
 		return toUser(saved);
 	}
@@ -136,7 +150,8 @@ public class UserService {
 			entity.getRole(),
 			entity.getName(),
 			entity.getEmail(),
-			entity.getAvatarUrl()
+			entity.getAvatarUrl(),
+			entity.getUserRoleId()
 		);
 	}
 }

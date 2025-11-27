@@ -5,6 +5,8 @@ import com.backend.common.admin.cmnCd.dto.CmnCdUpdateRequest;
 import com.backend.common.admin.cmnCd.entity.CmnCdEntity;
 import com.backend.common.admin.cmnCd.model.CmnCd;
 import com.backend.common.admin.cmnCd.repository.CmnCdRepository;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,40 @@ public class CmnCdService {
 
 	public CmnCdService(CmnCdRepository cmnCdRepository) {
 		this.cmnCdRepository = cmnCdRepository;
+	}
+
+	@EventListener(ApplicationReadyEvent.class)
+	public void init() {
+		// P001: 사이트구분코드
+		if (!cmnCdRepository.existsByParentCdIsNullAndCd("P001")) {
+			CmnCdEntity p001 = new CmnCdEntity("P001", "사이트구분코드", "사이트 구분을 나타내는 코드", null);
+			cmnCdRepository.save(p001);
+			
+			// P001의 하위코드
+			if (!cmnCdRepository.existsByParentCdAndCd("P001", "C001")) {
+				cmnCdRepository.save(new CmnCdEntity("C001", "관리자", "관리자 사이트", "P001"));
+			}
+			if (!cmnCdRepository.existsByParentCdAndCd("P001", "C002")) {
+				cmnCdRepository.save(new CmnCdEntity("C002", "사용자", "사용자 사이트", "P001"));
+			}
+		}
+
+		// P002: 권한역할코드
+		if (!cmnCdRepository.existsByParentCdIsNullAndCd("P002")) {
+			CmnCdEntity p002 = new CmnCdEntity("P002", "권한역할코드", "사용자 권한 역할을 나타내는 코드", null);
+			cmnCdRepository.save(p002);
+			
+			// P002의 하위코드
+			if (!cmnCdRepository.existsByParentCdAndCd("P002", "C001")) {
+				cmnCdRepository.save(new CmnCdEntity("C001", "ADMIN", "최고 관리자 권한", "P002"));
+			}
+			if (!cmnCdRepository.existsByParentCdAndCd("P002", "C002")) {
+				cmnCdRepository.save(new CmnCdEntity("C002", "MANAGER", "관리자 권한", "P002"));
+			}
+			if (!cmnCdRepository.existsByParentCdAndCd("P002", "C003")) {
+				cmnCdRepository.save(new CmnCdEntity("C003", "OPERATOR", "운영자 권한", "P002"));
+			}
+		}
 	}
 
 	/**

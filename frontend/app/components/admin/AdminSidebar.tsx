@@ -4,8 +4,10 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { getApiUrl } from '../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../utils/auth';
 
 interface SubMenuItem {
+  id?: string;
   name: string;
   href: string;
   description?: string;
@@ -20,160 +22,103 @@ interface MenuItem {
   subItems?: SubMenuItem[];
 }
 
-const menuItems: MenuItem[] = [
-  {
-    name: '대시보드',
-    href: '/admin',
-    description: '시스템 개요 및 통계를 확인하세요.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '사이트 관리',
-    href: '/admin/sites',
-    description: '사이트를 생성, 수정, 삭제할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '메뉴 관리',
-    href: '/admin/menus',
-    description: '메뉴를 생성, 수정, 삭제할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4 6h16M4 12h16M4 18h16"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '관리자 관리',
-    href: '/admin/admins',
-    description: '관리자를 생성, 수정, 삭제할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '사용자 관리',
-    href: '/admin/users',
-    description: '사용자를 생성, 수정, 삭제할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '공통코드 관리',
-    href: '/admin/cmn-cd',
-    description: '공통코드를 생성, 수정, 삭제할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '관리자 권한 관리',
-    href: '/admin/user-roles',
-    description: '사용자 역할을 생성, 수정, 삭제할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '아이콘 관리',
-    href: '/admin/icons',
-    description: '아이콘을 생성, 수정, 삭제할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '파일 관리',
-    href: '/admin/files',
-    description: '파일을 업로드, 다운로드, 삭제할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: '로그 관리',
-    href: '/admin/logs',
-    description: '로그를 조회하고 추가할 수 있습니다.',
-    icon: (
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-        />
-      </svg>
-    ),
-  },
-];
+interface Menu {
+  id: string;
+  siteId: string;
+  name: string;
+  url?: string;
+  icon?: string;
+  displayOrder: number;
+  parentId?: string;
+  enabled?: boolean;
+}
 
-export { menuItems };
+interface Site {
+  id: string;
+  siteType: string;
+  siteName: string;
+  contextPath?: string;
+  enabled?: boolean;
+}
+
+interface Icon {
+  id: string;
+  iconId: string;
+  name: string;
+  svgCode: string;
+  enabled?: boolean;
+}
+
+// 기본 아이콘 (아이콘이 없을 때 사용) - 사각형 박스
+const DefaultIcon = (
+  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M5 5h14v14H5z"
+    />
+  </svg>
+);
+
+// SVG 코드를 React 컴포넌트로 변환
+const renderIcon = (svgCode?: string): React.ReactNode => {
+  if (!svgCode) {
+    return DefaultIcon;
+  }
+
+  // SVG path 데이터인 경우 (일반적인 SVG path 패턴)
+  if (svgCode.match(/^[MLHVCSQTAZmlhvcsqtaz0-9\s,.-]+$/)) {
+    return (
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d={svgCode} />
+      </svg>
+    );
+  }
+
+  // 전체 SVG 코드인 경우 (dangerouslySetInnerHTML 사용)
+  try {
+    return <div className="h-4 w-4" dangerouslySetInnerHTML={{ __html: svgCode }} />;
+  } catch {
+    return DefaultIcon;
+  }
+};
+
+// 메뉴를 계층 구조로 변환
+const buildMenuHierarchy = (menus: Menu[], iconsMap: Map<string, Icon>): MenuItem[] => {
+  // displayOrder로 정렬
+  const sortedMenus = [...menus].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  
+  // 부모 메뉴와 자식 메뉴 분리
+  const parentMenus = sortedMenus.filter((menu) => !menu.parentId);
+  const childMenus = sortedMenus.filter((menu) => menu.parentId);
+
+  // MenuItem으로 변환
+  const menuItems: MenuItem[] = parentMenus.map((menu) => {
+    const subItems = childMenus
+      .filter((child) => child.parentId === menu.id)
+      .map((child) => ({
+        id: child.id,
+        name: child.name,
+        href: child.url || '#',
+        description: undefined,
+      }));
+
+    // 메뉴의 icon 필드(ICON_CD)로 아이콘 찾기
+    const icon = menu.icon ? iconsMap.get(menu.icon) : null;
+    const iconSvgCode = icon?.svgCode;
+
+    return {
+      name: menu.name,
+      href: menu.url || '#',
+      icon: renderIcon(iconSvgCode),
+      description: undefined,
+      subItems: subItems.length > 0 ? subItems : undefined,
+    };
+  });
+
+  return menuItems;
+};
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -191,7 +136,97 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
   const [hoveredMenuItem, setHoveredMenuItem] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [showSearch, setShowSearch] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [isLoadingMenus, setIsLoadingMenus] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // 메뉴 목록 가져오기
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        setIsLoadingMenus(true);
+        
+        // 1. 사이트 목록 조회
+        const sitesResponse = await fetchWithTokenRefresh(getApiUrl('/site'), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (sitesResponse.status === 401) {
+          logout(router);
+          return;
+        }
+
+        const sitesData = await sitesResponse.json();
+        if (!sitesResponse.ok || !sitesData.success) {
+          console.error('사이트 목록 조회 실패:', sitesData.message);
+          return;
+        }
+
+        const sites: Site[] = sitesData.data || [];
+        // contextPath가 "admin"인 사이트 찾기
+        const adminSite = sites.find((site) => site.contextPath === 'admin');
+        
+        if (!adminSite) {
+          console.error('관리자 사이트를 찾을 수 없습니다.');
+          return;
+        }
+
+        // 2. 아이콘 목록 조회 (병렬 처리)
+        const iconsResponse = await fetchWithTokenRefresh(getApiUrl('/icon/enabled'), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        let iconsMap = new Map<string, Icon>();
+        if (iconsResponse.status !== 401) {
+          const iconsData = await iconsResponse.json();
+          if (iconsResponse.ok && iconsData.success) {
+            const icons: Icon[] = iconsData.data || [];
+            // iconId(ICON_CD)를 키로 하는 맵 생성
+            iconsMap = new Map(icons.map((icon) => [icon.iconId, icon]));
+          }
+        }
+
+        // 3. 활성화된 메뉴 목록 조회
+        const menusResponse = await fetchWithTokenRefresh(
+          getApiUrl(`/menu/site/${adminSite.id}/enabled`),
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (menusResponse.status === 401) {
+          logout(router);
+          return;
+        }
+
+        const menusData = await menusResponse.json();
+        if (!menusResponse.ok || !menusData.success) {
+          console.error('메뉴 목록 조회 실패:', menusData.message);
+          return;
+        }
+
+        const menus: Menu[] = menusData.data || [];
+        // 메뉴를 계층 구조로 변환 (아이콘 맵 전달)
+        const menuItemsData = buildMenuHierarchy(menus, iconsMap);
+        setMenuItems(menuItemsData);
+      } catch (error) {
+        console.error('메뉴 목록 가져오기 실패:', error);
+      } finally {
+        setIsLoadingMenus(false);
+      }
+    };
+
+    fetchMenus();
+  }, [router]);
 
   // ⌘K 단축키로 검색 열기
   useEffect(() => {
@@ -418,7 +453,16 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
 
           {/* Menu Items */}
           <nav className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-2 py-2 scrollbar-hide">
-            {filteredMenuItems.map((item) => {
+            {isLoadingMenus ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-gray-400"></div>
+              </div>
+            ) : filteredMenuItems.length === 0 ? (
+              <div className="py-8 text-center text-xs text-gray-500 dark:text-gray-400">
+                메뉴가 없습니다.
+              </div>
+            ) : (
+              filteredMenuItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
               const hasSubItems = item.subItems && item.subItems.length > 0;
               const isExpanded = expandedMenus.includes(item.name);
@@ -484,7 +528,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                                 const isSubActive = pathname === subItem.href;
                                 return (
                                   <Link
-                                    key={subItem.href}
+                                    key={subItem.id || subItem.href}
                                     href={subItem.href}
                                     onClick={handleLinkClick}
                                     className={`block rounded-lg px-2.5 py-2 text-xs transition-all duration-200 sidebar-menu-item ${
@@ -555,7 +599,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                           const isSubActive = pathname === subItem.href;
                           return (
                             <Link
-                              key={subItem.href}
+                              key={subItem.id || subItem.href}
                               href={subItem.href}
                               onClick={() => {
                                 handleLinkClick();
@@ -576,7 +620,8 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                   )}
                 </div>
               );
-            })}
+              })
+            )}
           </nav>
 
           {/* Support Section */}

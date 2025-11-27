@@ -17,6 +17,15 @@ interface Admin {
   name?: string;
   email?: string;
   avatarUrl?: string;
+  userRoleId?: string;
+}
+
+interface UserRole {
+  id: string;
+  roleCd: string;
+  roleNm: string;
+  roleDesc?: string;
+  enabled?: boolean;
 }
 
 function AdminsPageContent() {
@@ -29,6 +38,7 @@ function AdminsPageContent() {
     isOpen: false,
     admin: null,
   });
+  const [userRoleOptions, setUserRoleOptions] = useState<Array<{ value: string; label: string }>>([]);
 
   // 관리자 목록 조회
   const fetchAdmins = async () => {
@@ -64,6 +74,7 @@ function AdminsPageContent() {
         name: admin.name,
         email: admin.email,
         avatarUrl: admin.avatarUrl,
+        userRoleId: admin.userRoleId,
       }));
 
       setAdmins(adminsList);
@@ -78,7 +89,53 @@ function AdminsPageContent() {
     }
   };
 
+  // USER_ROLE 목록 조회
+  const fetchUserRoleOptions = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      const response = await fetchWithTokenRefresh(getApiUrl('/user-roles'), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '역할 목록 조회에 실패했습니다.');
+      }
+
+      const userRoles: UserRole[] = data.data || [];
+      // 활성화된 역할만 옵션으로 변환
+      const options = userRoles
+        .filter((role) => role.enabled !== false)
+        .map((role) => ({
+          value: role.id,
+          label: `${role.roleNm} (${role.roleCd})`,
+        }));
+      setUserRoleOptions(options);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || '역할 목록 조회에 실패했습니다.');
+      } else {
+        toast.error('역할 목록 조회에 실패했습니다. 다시 시도해주세요.');
+      }
+      setUserRoleOptions([]);
+    }
+  };
+
   useEffect(() => {
+    fetchUserRoleOptions();
     fetchAdmins();
   }, []);
 
@@ -168,6 +225,7 @@ function AdminsPageContent() {
           body: JSON.stringify({
             name: formData.name || '',
             email: formData.email || '',
+            userRoleId: formData.userRoleId || '',
           }),
         });
 
@@ -196,6 +254,7 @@ function AdminsPageContent() {
             role: 'USER',
             name: formData.name || '',
             email: formData.email || '',
+            userRoleId: formData.userRoleId || '',
           }),
         });
 
@@ -244,8 +303,11 @@ function AdminsPageContent() {
               role: 'USER',
               name: editingAdmin.name,
               email: editingAdmin.email,
+              userRoleId: editingAdmin.userRoleId,
             } : undefined}
             isLoading={isSubmitting}
+            userRoleOptions={userRoleOptions}
+            isAdminPage={true}
           />
         ) : (
           <UserList

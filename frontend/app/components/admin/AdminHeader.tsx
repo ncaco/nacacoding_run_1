@@ -6,7 +6,31 @@ import { useRouter, usePathname } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
 import { isTokenExpired, logout, fetchWithTokenRefresh } from '../../utils/auth';
 import { getApiUrl } from '../../utils/api';
-import { menuItems } from './AdminSidebar';
+
+interface MenuItem {
+  name: string;
+  href: string;
+  subItems?: { name: string; href: string }[];
+}
+
+interface Menu {
+  id: string;
+  siteId: string;
+  name: string;
+  url?: string;
+  icon?: string;
+  displayOrder: number;
+  parentId?: string;
+  enabled?: boolean;
+}
+
+interface Site {
+  id: string;
+  siteType: string;
+  siteName: string;
+  contextPath?: string;
+  enabled?: boolean;
+}
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -23,9 +47,101 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const profileRef = useRef<HTMLDivElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
+  // 메뉴 목록 가져오기
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        // 1. 사이트 목록 조회
+        const sitesResponse = await fetchWithTokenRefresh(getApiUrl('/site'), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (sitesResponse.status === 401) {
+          logout(router);
+          return;
+        }
+
+        const sitesData = await sitesResponse.json();
+        if (!sitesResponse.ok || !sitesData.success) {
+          console.error('사이트 목록 조회 실패:', sitesData.message);
+          return;
+        }
+
+        const sites: Site[] = sitesData.data || [];
+        // contextPath가 "admin"인 사이트 찾기
+        const adminSite = sites.find((site) => site.contextPath === 'admin');
+        
+        if (!adminSite) {
+          console.error('관리자 사이트를 찾을 수 없습니다.');
+          return;
+        }
+
+        // 2. 활성화된 메뉴 목록 조회
+        const menusResponse = await fetchWithTokenRefresh(
+          getApiUrl(`/menu/site/${adminSite.id}/enabled`),
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (menusResponse.status === 401) {
+          logout(router);
+          return;
+        }
+
+        const menusData = await menusResponse.json();
+        if (!menusResponse.ok || !menusData.success) {
+          console.error('메뉴 목록 조회 실패:', menusData.message);
+          return;
+        }
+
+        const menus: Menu[] = menusData.data || [];
+        // displayOrder로 정렬
+        const sortedMenus = [...menus].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+        
+        // 부모 메뉴와 자식 메뉴 분리
+        const parentMenus = sortedMenus.filter((menu) => !menu.parentId);
+        const childMenus = sortedMenus.filter((menu) => menu.parentId);
+
+        // MenuItem으로 변환
+        const menuItemsData: MenuItem[] = parentMenus.map((menu) => {
+          const subItems = childMenus
+            .filter((child) => child.parentId === menu.id)
+            .map((child) => ({
+              name: child.name,
+              href: child.url || '#',
+            }));
+
+          return {
+            name: menu.name,
+            href: menu.url || '#',
+            subItems: subItems.length > 0 ? subItems : undefined,
+          };
+        });
+
+        setMenuItems(menuItemsData);
+      } catch (error) {
+        console.error('메뉴 목록 가져오기 실패:', error);
+      }
+    };
+
+    fetchMenus();
+  }, [router]);
 
   // 현재 경로에 맞는 메뉴 정보 찾기
   const findCurrentMenu = () => {
+    if (menuItems.length === 0) {
+      return null;
+    }
+
     // 먼저 서브메뉴에서 찾기
     for (const item of menuItems) {
       if (item.subItems) {

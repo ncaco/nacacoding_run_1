@@ -354,6 +354,58 @@ COMMENT ON COLUMN USER_ROLE.USE_YN IS '활성화 여부 (기본값: true)';
    - roleNm: `일반 사용자`
    - roleDesc: `일반 사용자 권한`
 
+### USER_ROLE_MENU 테이블
+
+**테이블 코멘트**: 사용자 역할별 메뉴 권한 정보를 저장하는 테이블
+
+#### 스키마
+
+```sql
+CREATE TABLE USER_ROLE_MENU (
+    USER_ROLE_MENU_ID VARCHAR(255) PRIMARY KEY,
+    USER_ROLE_ID VARCHAR(255) NOT NULL,
+    MENU_ID VARCHAR(255) NOT NULL,
+    PERM_READ VARCHAR(1) NOT NULL,
+    PERM_CREATE VARCHAR(1) NOT NULL,
+    PERM_UPDATE VARCHAR(1) NOT NULL,
+    PERM_DELETE VARCHAR(1) NOT NULL,
+    PERM_DOWNLOAD VARCHAR(1) NOT NULL,
+    PERM_ALL VARCHAR(1) NOT NULL,
+    USE_YN VARCHAR(1) NOT NULL
+);
+
+COMMENT ON TABLE USER_ROLE_MENU IS '사용자 역할별 메뉴 권한 정보를 저장하는 테이블';
+COMMENT ON COLUMN USER_ROLE_MENU.USER_ROLE_MENU_ID IS '사용자 역할 메뉴 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN USER_ROLE_MENU.USER_ROLE_ID IS '사용자 역할 ID (USER_ROLE 테이블 참조)';
+COMMENT ON COLUMN USER_ROLE_MENU.MENU_ID IS '메뉴 ID (MENUS 테이블 참조)';
+COMMENT ON COLUMN USER_ROLE_MENU.PERM_READ IS '읽기 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN USER_ROLE_MENU.PERM_CREATE IS '등록 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN USER_ROLE_MENU.PERM_UPDATE IS '수정 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN USER_ROLE_MENU.PERM_DELETE IS '삭제 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN USER_ROLE_MENU.PERM_DOWNLOAD IS '다운로드 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN USER_ROLE_MENU.PERM_ALL IS '전체 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN USER_ROLE_MENU.USE_YN IS '활성화 여부 (Y/N, 기본값: Y)';
+```
+
+#### 컬럼 설명
+
+| 컬럼명 | 타입 | 제약조건 | 설명 |
+|--------|------|----------|------|
+| `USER_ROLE_MENU_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 사용자 역할 메뉴 고유 식별자 (UUID 형식) |
+| `USER_ROLE_ID` | VARCHAR(255) | NOT NULL | 사용자 역할 ID (USER_ROLE 테이블 참조) |
+| `MENU_ID` | VARCHAR(255) | NOT NULL | 메뉴 ID (MENUS 테이블 참조) |
+| `PERM_READ` | VARCHAR(1) | NOT NULL | 읽기 권한 (Y/N, 기본값: N) |
+| `PERM_CREATE` | VARCHAR(1) | NOT NULL | 등록 권한 (Y/N, 기본값: N) |
+| `PERM_UPDATE` | VARCHAR(1) | NOT NULL | 수정 권한 (Y/N, 기본값: N) |
+| `PERM_DELETE` | VARCHAR(1) | NOT NULL | 삭제 권한 (Y/N, 기본값: N) |
+| `PERM_DOWNLOAD` | VARCHAR(1) | NOT NULL | 다운로드 권한 (Y/N, 기본값: N) |
+| `PERM_ALL` | VARCHAR(1) | NOT NULL | 전체 권한 (Y/N, 기본값: N) |
+| `USE_YN` | VARCHAR(1) | NOT NULL | 활성화 여부 (Y/N, 기본값: Y) |
+
+#### 인덱스
+
+- `USER_ROLE_ID`와 `MENU_ID` 조합에 대한 인덱스가 권장됩니다.
+
 ## 엔티티 매핑
 
 ### UserEntity
@@ -577,6 +629,57 @@ public class UserRoleEntity {
 }
 ```
 
+### UserRoleMenuEntity
+
+```java
+@Entity
+@Table(name = "USER_ROLE_MENU")
+@org.hibernate.annotations.Comment("사용자 역할별 메뉴 권한 정보를 저장하는 테이블")
+public class UserRoleMenuEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "USER_ROLE_MENU_ID")
+    @Comment("사용자 역할 메뉴 고유 식별자 (UUID 형식)")
+    private String id;
+    
+    @Column(name = "USER_ROLE_ID", nullable = false)
+    @Comment("사용자 역할 ID (USER_ROLE 테이블 참조)")
+    private String userRoleId;
+    
+    @Column(name = "MENU_ID", nullable = false)
+    @Comment("메뉴 ID (MENUS 테이블 참조)")
+    private String menuId;
+    
+    @Column(name = "PERM_READ", nullable = false)
+    @Comment("읽기 권한 (기본값: false)")
+    private Boolean permRead = false;
+    
+    @Column(name = "PERM_CREATE", nullable = false)
+    @Comment("등록 권한 (기본값: false)")
+    private Boolean permCreate = false;
+    
+    @Column(name = "PERM_UPDATE", nullable = false)
+    @Comment("수정 권한 (기본값: false)")
+    private Boolean permUpdate = false;
+    
+    @Column(name = "PERM_DELETE", nullable = false)
+    @Comment("삭제 권한 (기본값: false)")
+    private Boolean permDelete = false;
+    
+    @Column(name = "PERM_DOWNLOAD", nullable = false)
+    @Comment("다운로드 권한 (기본값: false)")
+    private Boolean permDownload = false;
+    
+    @Column(name = "PERM_ALL", nullable = false)
+    @Comment("전체 권한 (기본값: false)")
+    private Boolean permAll = false;
+    
+    @Column(name = "USE_YN", nullable = false)
+    @Comment("활성화 여부 (기본값: true)")
+    private Boolean enabled = true;
+}
+```
+
 ## Repository 인터페이스
 
 ### UserRepository
@@ -640,6 +743,19 @@ public interface UserRoleRepository extends JpaRepository<UserRoleEntity, String
     boolean existsByRoleCd(String roleCd);
     List<UserRoleEntity> findByEnabledTrueOrderByRoleCdAsc();
     List<UserRoleEntity> findAllByOrderByRoleCdAsc();
+}
+```
+
+### UserRoleMenuRepository
+
+```java
+public interface UserRoleMenuRepository extends JpaRepository<UserRoleMenuEntity, String> {
+    List<UserRoleMenuEntity> findByUserRoleId(String userRoleId);
+    List<UserRoleMenuEntity> findByUserRoleIdAndEnabledTrue(String userRoleId);
+    List<UserRoleMenuEntity> findByMenuId(String menuId);
+    Optional<UserRoleMenuEntity> findByUserRoleIdAndMenuId(String userRoleId, String menuId);
+    boolean existsByUserRoleIdAndMenuId(String userRoleId, String menuId);
+    void deleteByUserRoleId(String userRoleId);
 }
 ```
 

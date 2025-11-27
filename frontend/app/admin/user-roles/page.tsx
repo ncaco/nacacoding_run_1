@@ -18,6 +18,16 @@ interface UserRole {
   enabled?: boolean;
 }
 
+interface CmnCd {
+  id: string;
+  cd: string;
+  name: string;
+  description?: string;
+  enabled?: boolean;
+  parentCd?: string;
+  children?: CmnCd[];
+}
+
 function UserRolePageContent() {
   const router = useRouter();
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
@@ -28,6 +38,7 @@ function UserRolePageContent() {
     isOpen: false,
     userRole: null,
   });
+  const [roleCdOptions, setRoleCdOptions] = useState<Array<{ value: string; label: string }>>([]);
 
   // 역할 목록 조회
   const fetchUserRoles = async () => {
@@ -68,15 +79,73 @@ function UserRolePageContent() {
     }
   };
 
+  // 공통코드에서 권한역할코드 옵션 조회 (P002의 하위코드)
+  const fetchRoleCdOptions = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
+
+      const response = await fetchWithTokenRefresh(getApiUrl('/cmn-cd'), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 401) {
+        logout(router);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '공통코드 조회에 실패했습니다.');
+      }
+
+      const cmnCds: CmnCd[] = data.data || [];
+      // P002 찾기
+      const p002 = cmnCds.find((cd) => cd.cd === 'P002');
+      
+      if (p002 && p002.children) {
+        // P002의 하위코드들을 옵션으로 변환
+        const options = p002.children
+          .filter((child) => child.enabled !== false) // 활성화된 것만
+          .map((child) => ({
+            value: child.cd, // C001, C002, C003
+            label: `${child.name} (${child.cd})`, // ADMIN (C001), MANAGER (C002), OPERATOR (C003)
+          }));
+        setRoleCdOptions(options);
+      } else {
+        // P002가 없거나 하위코드가 없는 경우 빈 배열
+        setRoleCdOptions([]);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || '권한역할코드 옵션 조회에 실패했습니다.');
+      } else {
+        toast.error('권한역할코드 옵션 조회에 실패했습니다. 다시 시도해주세요.');
+      }
+      setRoleCdOptions([]);
+    }
+  };
+
   useEffect(() => {
+    fetchRoleCdOptions();
     fetchUserRoles();
   }, []);
 
   const handleAdd = () => {
-    setEditingUserRole(null);
+    setEditingUserRole({} as UserRole);
   };
 
   const handleEdit = (userRole: UserRole) => {
+    if (!userRole.id) {
+      toast.error('역할 ID가 없습니다.');
+      return;
+    }
     setEditingUserRole(userRole);
   };
 
@@ -87,13 +156,17 @@ function UserRolePageContent() {
   const handleConfirmDelete = async () => {
     if (!deleteDialog.userRole) return;
 
+    const userRole = deleteDialog.userRole;
+    setDeleteDialog({ isOpen: false, userRole: null });
+    setIsLoading(true);
+
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const response = await fetchWithTokenRefresh(getApiUrl(`/user-roles/${deleteDialog.userRole.id}`), {
+      const response = await fetchWithTokenRefresh(getApiUrl(`/user-roles/${userRole.id}`), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -111,8 +184,7 @@ function UserRolePageContent() {
         throw new Error(data.message || '역할 삭제에 실패했습니다.');
       }
 
-      toast.success('역할이 삭제되었습니다.');
-      setDeleteDialog({ isOpen: false, userRole: null });
+      toast.success('역할이 성공적으로 삭제되었습니다.');
       fetchUserRoles();
     } catch (error) {
       if (error instanceof Error) {
@@ -120,22 +192,34 @@ function UserRolePageContent() {
       } else {
         toast.error('역할 삭제에 실패했습니다. 다시 시도해주세요.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = async (formData: any) => {
     setIsSubmitting(true);
+
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
         throw new Error('인증 토큰이 없습니다.');
       }
 
-      const isEdit = !!editingUserRole;
-      const url = isEdit ? getApiUrl(`/user-roles/${editingUserRole!.id}`) : getApiUrl('/user-roles');
-      const method = isEdit ? 'PUT' : 'POST';
+      // 수정 모드 확인: editingUserRole가 있고 id가 있어야 함
+      const isEditMode = !!(editingUserRole && editingUserRole.id && editingUserRole.id.trim() !== '');
+      
+      // 수정 모드일 때는 반드시 id가 있어야 함
+      if (isEditMode && !editingUserRole?.id) {
+        throw new Error('역할 ID가 없습니다. 다시 시도해주세요.');
+      }
+      
+      const url = isEditMode
+        ? getApiUrl(`/user-roles/${editingUserRole!.id}`)
+        : getApiUrl('/user-roles');
+      const method = isEditMode ? 'PUT' : 'POST';
 
-      const requestBody = isEdit
+      const requestBody = isEditMode
         ? {
             roleNm: formData.roleNm,
             roleDesc: formData.roleDesc,
@@ -164,17 +248,20 @@ function UserRolePageContent() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || `${isEdit ? '역할 수정' : '역할 생성'}에 실패했습니다.`);
+        throw new Error(data.message || `${isEditMode ? '수정' : '생성'}에 실패했습니다.`);
       }
 
-      toast.success(`역할이 ${isEdit ? '수정' : '생성'}되었습니다.`);
-      setEditingUserRole(null);
-      fetchUserRoles();
+      toast.success(`역할이 성공적으로 ${isEditMode ? '수정' : '생성'}되었습니다.`);
+      setTimeout(() => {
+        setEditingUserRole(null);
+        fetchUserRoles();
+      }, 1500);
     } catch (error) {
+      const isEditMode = editingUserRole && editingUserRole.id;
       if (error instanceof Error) {
-        toast.error(error.message || `${editingUserRole ? '역할 수정' : '역할 생성'}에 실패했습니다.`);
+        toast.error(error.message || `역할 ${isEditMode ? '수정' : '생성'}에 실패했습니다.`);
       } else {
-        toast.error(`${editingUserRole ? '역할 수정' : '역할 생성'}에 실패했습니다. 다시 시도해주세요.`);
+        toast.error(`역할 ${isEditMode ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
       }
     } finally {
       setIsSubmitting(false);
@@ -226,13 +313,24 @@ function UserRolePageContent() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-white sm:text-xl">관리자 권한 관리</h1>
-          <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">사용자 역할을 생성, 수정, 삭제할 수 있습니다.</p>
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-2">
+      <div className="space-y-3">
+        {editingUserRole ? (
+          <UserRoleForm
+            onSubmit={handleSubmit}
+            onCancel={() => {
+              setEditingUserRole(null);
+            }}
+            initialData={editingUserRole.id ? {
+              id: editingUserRole.id,
+              roleCd: editingUserRole.roleCd,
+              roleNm: editingUserRole.roleNm,
+              roleDesc: editingUserRole.roleDesc,
+              enabled: editingUserRole.enabled,
+            } : undefined}
+            isLoading={isSubmitting}
+            roleCdOptions={roleCdOptions}
+          />
+        ) : (
           <UserRoleList
             userRoles={userRoles}
             isLoading={isLoading}
@@ -241,32 +339,54 @@ function UserRolePageContent() {
             onDelete={handleDelete}
             onToggleEnabled={handleToggleEnabled}
           />
-
-          {editingUserRole !== null && (
-            <UserRoleForm
-              initialData={editingUserRole}
-              onSubmit={handleSubmit}
-              onCancel={() => setEditingUserRole(null)}
-              isLoading={isSubmitting}
-            />
-          )}
-        </div>
-
-        <ConfirmDialog
-          isOpen={deleteDialog.isOpen}
-          title="역할 삭제"
-          message={`정말로 "${deleteDialog.userRole?.roleNm}" 역할을 삭제하시겠습니까?`}
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setDeleteDialog({ isOpen: false, userRole: null })}
-        />
+        )}
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={() => setDeleteDialog({ isOpen: false, userRole: null })}
+        onConfirm={handleConfirmDelete}
+        title="역할 삭제"
+        message={`정말로 "${deleteDialog.userRole?.roleNm}" 역할을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        confirmLabel="삭제"
+        cancelLabel="취소"
+        variant="danger"
+        isLoading={isLoading}
+      />
     </AdminLayout>
   );
 }
 
 export default function UserRolePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <AdminLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <svg
+              className="mx-auto h-8 w-8 animate-spin text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">로딩 중...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    }>
       <UserRolePageContent />
     </Suspense>
   );

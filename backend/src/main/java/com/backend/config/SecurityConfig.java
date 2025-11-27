@@ -75,6 +75,7 @@ public class SecurityConfig {
 					.requestMatchers("/api/v1/menu/**").hasRole("USER")
 					.requestMatchers("/api/v1/cmn-cd/**").hasRole("USER")
 					.requestMatchers("/api/v1/user-roles/**").hasRole("USER")
+					.requestMatchers("/api/v1/user-role-menu/**").hasRole("USER")
 					.anyRequest().authenticated()
 			)
 			.exceptionHandling(exceptions -> exceptions

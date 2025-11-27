@@ -5,7 +5,11 @@ import com.backend.common.admin.menu.dto.MenuUpdateRequest;
 import com.backend.common.admin.menu.entity.MenuEntity;
 import com.backend.common.admin.menu.model.Menu;
 import com.backend.common.admin.menu.repository.MenuRepository;
+import com.backend.common.admin.site.entity.SiteEntity;
 import com.backend.common.admin.site.repository.SiteRepository;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,41 @@ public class MenuService {
 	public MenuService(MenuRepository menuRepository, SiteRepository siteRepository) {
 		this.menuRepository = menuRepository;
 		this.siteRepository = siteRepository;
+	}
+
+	@EventListener(ApplicationReadyEvent.class)
+	@Order(100) // SiteService(기본값 0)보다 나중에 실행되도록 설정
+	public void init() {
+		// 관리자 사이트 찾기 (contextPath가 'admin'인 사이트)
+		Optional<SiteEntity> adminSiteOpt = siteRepository.findByContextPath("admin");
+		
+		// 사이트가 없으면 생성 (SiteService가 실행되지 않았을 수 있음)
+		SiteEntity adminSite;
+		if (adminSiteOpt.isEmpty()) {
+			// 통합관리시스템 사이트 생성
+			adminSite = siteRepository.save(new SiteEntity("C001", "통합관리시스템", "통합 관리 시스템", "admin", "1.0.0"));
+		} else {
+			adminSite = adminSiteOpt.get();
+		}
+		
+		String adminSiteId = adminSite.getId();
+		
+		// 이미 메뉴가 있으면 초기화하지 않음
+		if (menuRepository.existsBySiteId(adminSiteId)) {
+			return;
+		}
+		
+		// 관리자 사이트 메뉴 초기 데이터 생성
+		menuRepository.save(new MenuEntity(adminSiteId, "대시보드", "/admin", null, 1, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "사이트 관리", "/admin/sites", null, 2, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "메뉴 관리", "/admin/menus", null, 3, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "관리자 관리", "/admin/admins", null, 4, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "사용자 관리", "/admin/users", null, 5, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "공통코드 관리", "/admin/cmn-cd", null, 6, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "관리자 권한 관리", "/admin/user-roles", null, 7, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "아이콘 관리", "/admin/icons", null, 8, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "파일 관리", "/admin/files", null, 9, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "로그 관리", "/admin/logs", null, 10, null));
 	}
 
 	public List<Menu> listMenus() {

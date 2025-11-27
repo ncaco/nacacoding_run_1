@@ -5,6 +5,8 @@ import com.backend.common.admin.site.dto.SiteUpdateRequest;
 import com.backend.common.admin.site.entity.SiteEntity;
 import com.backend.common.admin.site.model.Site;
 import com.backend.common.admin.site.repository.SiteRepository;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,19 @@ public class SiteService {
 
 	public SiteService(SiteRepository siteRepository) {
 		this.siteRepository = siteRepository;
+	}
+
+	@EventListener(ApplicationReadyEvent.class)
+	public void init() {
+		// 통합관리시스템 (admin)
+		if (!siteRepository.existsByContextPath("admin")) {
+			siteRepository.save(new SiteEntity("C001", "통합관리시스템", "통합 관리 시스템", "admin", "1.0.0"));
+		}
+
+		// 통합홈페이지 (root)
+		if (!siteRepository.existsByContextPath("")) {
+			siteRepository.save(new SiteEntity("C002", "통합홈페이지", "통합 홈페이지", "", "1.0.0"));
+		}
 	}
 
 	public List<Site> listSites() {

@@ -12,6 +12,7 @@ public class User {
 	private String name;
 	private String email;
 	private String avatarUrl;
+	private String userRoleId;
 
 	public User() {}
 
@@ -40,6 +41,17 @@ public class User {
 		this.email = email;
 		this.avatarUrl = avatarUrl;
 	}
+	
+	public User(String id, String username, String password, Role role, String name, String email, String avatarUrl, String userRoleId) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.role = role;
+		this.name = name;
+		this.email = email;
+		this.avatarUrl = avatarUrl;
+		this.userRoleId = userRoleId;
+	}
 
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
@@ -55,6 +67,8 @@ public class User {
 	public void setEmail(String email) { this.email = email; }
 	public String getAvatarUrl() { return avatarUrl; }
 	public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+	public String getUserRoleId() { return userRoleId; }
+	public void setUserRoleId(String userRoleId) { this.userRoleId = userRoleId; }
 }
 
 

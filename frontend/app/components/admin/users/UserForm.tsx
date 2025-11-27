@@ -14,11 +14,14 @@ interface UserFormProps {
     role?: 'MEMBER' | 'USER';
     name?: string;
     email?: string;
+    userRoleId?: string;
   };
   isLoading?: boolean;
+  userRoleOptions?: Array<{ value: string; label: string }>;
+  isAdminPage?: boolean;
 }
 
-export default function UserForm({ onSubmit, onCancel, initialData, isLoading = false }: UserFormProps) {
+export default function UserForm({ onSubmit, onCancel, initialData, isLoading = false, userRoleOptions = [], isAdminPage = false }: UserFormProps) {
   const isEditMode = !!(initialData?.id);
   
   const [formData, setFormData] = useState({
@@ -27,6 +30,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
     role: initialData?.role || 'MEMBER',
     name: initialData?.name || '',
     email: initialData?.email || '',
+    userRoleId: initialData?.userRoleId || '',
   });
 
   // initialData가 변경되면 formData 업데이트
@@ -38,6 +42,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
         role: initialData.role || 'MEMBER',
         name: initialData.name || '',
         email: initialData.email || '',
+        userRoleId: initialData.userRoleId || '',
       });
     } else {
       // initialData가 없으면 (새로 생성하는 경우) 초기화
@@ -47,6 +52,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
         role: 'MEMBER',
         name: '',
         email: '',
+        userRoleId: '',
       });
     }
   }, [initialData]);
@@ -105,19 +111,35 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
             />
           )}
 
-          <FormField
-            label="역할"
-            name="role"
-            type="select"
-            required
-            value={formData.role}
-            onChange={(value) => setFormData({ ...formData, role: value as 'MEMBER' | 'USER' })}
-            options={[
-              { value: 'MEMBER', label: '사용자 (MEMBER)' },
-              { value: 'USER', label: '관리자 (USER)' },
-            ]}
-            helperText="MEMBER: 일반 사용자, USER: 관리자"
-          />
+          {isAdminPage ? (
+            <FormField
+              label="역할"
+              name="userRoleId"
+              type="select"
+              required={!isEditMode}
+              value={formData.userRoleId}
+              onChange={(value) => setFormData({ ...formData, userRoleId: value })}
+              options={[
+                { value: '', label: '선택하세요' },
+                ...userRoleOptions,
+              ]}
+              helperText="USER_ROLE 테이블에서 역할을 선택합니다."
+            />
+          ) : (
+            <FormField
+              label="역할"
+              name="role"
+              type="select"
+              required
+              value={formData.role}
+              onChange={(value) => setFormData({ ...formData, role: value as 'MEMBER' | 'USER' })}
+              options={[
+                { value: 'MEMBER', label: '사용자 (MEMBER)' },
+                { value: 'USER', label: '관리자 (USER)' },
+              ]}
+              helperText="MEMBER: 일반 사용자, USER: 관리자"
+            />
+          )}
 
           <FormField
             label="이름"

@@ -42,6 +42,10 @@ public class UserEntity {
 	@Comment("아바타 이미지 URL")
 	private String avatarUrl;
 	
+	@Column(name = "USER_ROLE_ID")
+	@Comment("사용자 역할 ID (USER_ROLE 테이블 참조)")
+	private String userRoleId;
+	
 	public UserEntity() {}
 	
 	public UserEntity(String username, String password, Role role) {
@@ -72,5 +76,7 @@ public class UserEntity {
 	public void setEmail(String email) { this.email = email; }
 	public String getAvatarUrl() { return avatarUrl; }
 	public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+	public String getUserRoleId() { return userRoleId; }
+	public void setUserRoleId(String userRoleId) { this.userRoleId = userRoleId; }
 }
 

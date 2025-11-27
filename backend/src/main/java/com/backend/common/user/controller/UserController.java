@@ -54,7 +54,8 @@ public class UserController {
 			request.getPassword(),
 			request.getRole() != null ? request.getRole() : Role.USER,
 			request.getName(),
-			request.getEmail()
+			request.getEmail(),
+			request.getUserRoleId()
 		)));
 	}
 
@@ -71,7 +72,7 @@ public class UserController {
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse<User>> update(@PathVariable String id,
 	                                                @RequestBody UpdateUserRequest request) {
-		return ResponseEntity.ok(ApiResponse.ok(userService.updateUser(id, request.getName(), request.getEmail())));
+		return ResponseEntity.ok(ApiResponse.ok(userService.updateUser(id, request.getName(), request.getEmail(), request.getUserRoleId())));
 	}
 
 	@Operation(summary = "관리자 삭제", description = "관리자(USER)를 삭제합니다. USER 권한이 필요합니다.")
@@ -98,6 +99,7 @@ public class UserController {
 		private Role role;
 		private String name;
 		private String email;
+		private String userRoleId;
 
 		public String getUsername() { return username; }
 		public void setUsername(String username) { this.username = username; }
@@ -109,16 +111,21 @@ public class UserController {
 		public void setName(String name) { this.name = name; }
 		public String getEmail() { return email; }
 		public void setEmail(String email) { this.email = email; }
+		public String getUserRoleId() { return userRoleId; }
+		public void setUserRoleId(String userRoleId) { this.userRoleId = userRoleId; }
 	}
 
 	public static class UpdateUserRequest {
 		private String name;
 		private String email;
+		private String userRoleId;
 
 		public String getName() { return name; }
 		public void setName(String name) { this.name = name; }
 		public String getEmail() { return email; }
 		public void setEmail(String email) { this.email = email; }
+		public String getUserRoleId() { return userRoleId; }
+		public void setUserRoleId(String userRoleId) { this.userRoleId = userRoleId; }
 	}
 }
 
