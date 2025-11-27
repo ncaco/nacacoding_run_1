@@ -1,11 +1,18 @@
 package com.backend.common.user.service;
 
+import com.backend.common.admin.menu.entity.MenuEntity;
+import com.backend.common.admin.menu.repository.MenuRepository;
+import com.backend.common.admin.userRole.entity.UserRoleEntity;
+import com.backend.common.admin.userRole.repository.UserRoleRepository;
+import com.backend.common.admin.userRoleMenu.entity.UserRoleMenuEntity;
+import com.backend.common.admin.userRoleMenu.repository.UserRoleMenuRepository;
 import com.backend.common.user.entity.UserEntity;
 import com.backend.common.user.model.Role;
 import com.backend.common.user.model.User;
 import com.backend.common.user.repository.UserRepository;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,21 +26,73 @@ import java.util.stream.Collectors;
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final UserRoleRepository userRoleRepository;
+	private final MenuRepository menuRepository;
+	private final UserRoleMenuRepository userRoleMenuRepository;
 
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public UserService(
+		UserRepository userRepository, 
+		PasswordEncoder passwordEncoder,
+		UserRoleRepository userRoleRepository,
+		MenuRepository menuRepository,
+		UserRoleMenuRepository userRoleMenuRepository
+	) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.userRoleRepository = userRoleRepository;
+		this.menuRepository = menuRepository;
+		this.userRoleMenuRepository = userRoleMenuRepository;
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
+	@Order(200) // UserRoleService(기본값 0), MenuService(100)보다 나중에 실행되도록 설정
 	public void init() {
 		// 초기 계정 생성 (이미 존재하면 생성하지 않음)
 		// ApplicationReadyEvent를 사용하여 모든 빈이 준비된 후 실행
+		
+		// 관리자 계정 생성
 		if (!userRepository.existsByUsername("admin")) {
-			createUser("admin", "admin123", Role.USER); // 관리자
+			// 최고관리자 역할 찾기
+			Optional<UserRoleEntity> adminRoleOpt = userRoleRepository.findByRoleCd("ADMIN");
+			String adminRoleId = null;
+			if (adminRoleOpt.isPresent()) {
+				adminRoleId = adminRoleOpt.get().getId();
+			}
+			
+			createUser("admin", "admin123", Role.USER, "관리자", "admin@example.com", adminRoleId);
+			
+			// 최고관리자 역할이 있으면 모든 메뉴에 대한 권한 부여
+			if (adminRoleId != null) {
+				grantAllPermissionsToRole(adminRoleId);
+			}
 		}
+		
+		// 사용자 계정 생성
 		if (!userRepository.existsByUsername("member")) {
 			createUser("member", "member123", Role.MEMBER); // 사용자
+		}
+	}
+	
+	/**
+	 * 특정 역할에 모든 메뉴에 대한 전체 권한 부여
+	 */
+	private void grantAllPermissionsToRole(String userRoleId) {
+		// 모든 활성화된 메뉴 조회
+		List<MenuEntity> allMenus = menuRepository.findAll().stream()
+			.filter(menu -> menu.getEnabled() != null && menu.getEnabled())
+			.collect(Collectors.toList());
+		
+		// 각 메뉴에 대해 전체 권한 부여
+		for (MenuEntity menu : allMenus) {
+			UserRoleMenuEntity permission = new UserRoleMenuEntity(userRoleId, menu.getId());
+			permission.setPermRead("Y");
+			permission.setPermCreate("Y");
+			permission.setPermUpdate("Y");
+			permission.setPermDelete("Y");
+			permission.setPermDownload("Y");
+			permission.setPermAll("Y");
+			permission.setEnabled("Y");
+			userRoleMenuRepository.save(permission);
 		}
 	}
 

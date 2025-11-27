@@ -75,10 +75,10 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
         </div>
         <div>
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-            {isEditMode ? '사용자 수정' : '새 사용자 생성'}
+            {isEditMode ? (isAdminPage ? '관리자 수정' : '사용자 수정') : (isAdminPage ? '새 관리자 생성' : '새 사용자 생성')}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-300">
-            {isEditMode ? '사용자 정보를 수정합니다' : '새로운 사용자를 생성합니다'}
+            {isEditMode ? (isAdminPage ? '관리자 정보를 수정합니다' : '사용자 정보를 수정합니다') : (isAdminPage ? '새로운 관리자를 생성합니다' : '새로운 사용자를 생성합니다')}
           </p>
         </div>
       </div>

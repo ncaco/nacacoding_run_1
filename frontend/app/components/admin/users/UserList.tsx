@@ -20,6 +20,7 @@ interface UserListProps {
   onAdd?: () => void;
   onEdit?: (user: User) => void;
   onDelete?: (user: User) => void;
+  isAdminPage?: boolean;
 }
 
 function UserItem({ user, onEdit, onDelete }: { user: User; onEdit?: (user: User) => void; onDelete?: (user: User) => void }) {
@@ -104,7 +105,7 @@ function UserItem({ user, onEdit, onDelete }: { user: User; onEdit?: (user: User
   );
 }
 
-export default function UserList({ users, isLoading, onAdd, onEdit, onDelete }: UserListProps) {
+export default function UserList({ users, isLoading, onAdd, onEdit, onDelete, isAdminPage = false }: UserListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('');
 
@@ -127,7 +128,7 @@ export default function UserList({ users, isLoading, onAdd, onEdit, onDelete }: 
           <svg className="h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-50">사용자 목록</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-50">{isAdminPage ? '관리자 목록' : '사용자 목록'}</h3>
         </div>
         <div className="p-4">
           <LoadingState />
@@ -147,9 +148,9 @@ export default function UserList({ users, isLoading, onAdd, onEdit, onDelete }: 
             </svg>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">사용자 목록</h3>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">{isAdminPage ? '관리자 목록' : '사용자 목록'}</h3>
             <p className="text-xs text-slate-500 dark:text-slate-300">
-              {filteredUsers.length}명의 사용자
+              {filteredUsers.length}명의 {isAdminPage ? '관리자' : '사용자'}
             </p>
           </div>
         </div>
@@ -161,7 +162,7 @@ export default function UserList({ users, isLoading, onAdd, onEdit, onDelete }: 
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            새 사용자 추가
+            {isAdminPage ? '새 관리자 추가' : '새 사용자 추가'}
           </button>
         )}
       </div>
@@ -230,10 +231,10 @@ export default function UserList({ users, isLoading, onAdd, onEdit, onDelete }: 
                 </svg>
               </div>
               <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-1">
-                {searchTerm || roleFilter ? '검색 결과가 없습니다' : '등록된 사용자가 없습니다'}
+                {searchTerm || roleFilter ? '검색 결과가 없습니다' : `등록된 ${isAdminPage ? '관리자' : '사용자'}가 없습니다`}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-300 mb-3">
-                {searchTerm || roleFilter ? '다른 검색어를 시도해보세요' : '새 사용자를 추가하여 시작하세요'}
+                {searchTerm || roleFilter ? '다른 검색어를 시도해보세요' : `새 ${isAdminPage ? '관리자' : '사용자'}를 추가하여 시작하세요`}
               </p>
               {onAdd && !searchTerm && !roleFilter && (
                 <button

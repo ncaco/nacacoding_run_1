@@ -316,6 +316,7 @@ function AdminsPageContent() {
             onAdd={handleAdd}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            isAdminPage={true}
           />
         )}
       </div>
