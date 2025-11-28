@@ -415,7 +415,7 @@ function MenuPermissionPageContent() {
     const hasChildren = menu.children && menu.children.length > 0;
 
     return (
-      <tr key={menu.menuId} className="border-b border-gray-200 dark:border-[#1f2435] hover:bg-gray-50 dark:hover:bg-[#1a1e2c]">
+      <tr key={menu.menuId} className="group border-b border-gray-200 dark:border-[#1f2435] hover:bg-gray-50 dark:hover:bg-[#252a3a]">
         <td className="px-4 py-2.5">
           <div className="flex items-center gap-1.5" style={{ paddingLeft: `${level * 16}px` }}>
             {hasChildren ? (
@@ -443,7 +443,7 @@ function MenuPermissionPageContent() {
             ) : (
               <div className="h-3.5 w-3.5" />
             )}
-            <span className="text-xs text-gray-900 dark:text-white dark:hover:text-white">{menu.menuName}</span>
+            <span className="text-xs text-gray-900 dark:text-white dark:group-hover:text-gray-300">{menu.menuName}</span>
           </div>
         </td>
         <td className="px-4 py-2.5 text-center">

@@ -410,7 +410,7 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, 
 
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
+      <div className="border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
         <div className="border-b border-gray-200 px-3 py-2 dark:border-[#1f2435]">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">메뉴 목록</h3>
         </div>
@@ -422,7 +422,7 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, 
   }
 
   return (
-    <div className="flex h-[calc(100vh-180px)] flex-col rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119] overflow-visible">
+    <div className="flex h-[calc(100vh-180px)] flex-col border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119] overflow-visible">
       {/* 헤더 */}
       <div className="border-b border-gray-200 px-3 py-2 dark:border-[#1f2435]">
         <div className="flex items-center justify-between">

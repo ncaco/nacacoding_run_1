@@ -591,7 +591,7 @@ function MenusPageContent() {
         {sites.length > 0 && (() => {
           const selectedIndex = sites.findIndex(s => s.id === selectedSiteId);
           return (
-            <div className="rounded-lg border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
+            <div className="border border-gray-200 bg-white dark:border-[#1f2435] dark:bg-[#0f1119]">
               <Tab.Group 
                 selectedIndex={selectedIndex >= 0 ? selectedIndex : 0} 
                 onChange={(index) => setSelectedSiteId(sites[index]?.id || '')}
