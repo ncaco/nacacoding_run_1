@@ -5,11 +5,13 @@ import com.backend.common.admin.menu.dto.MenuCreateRequest;
 import com.backend.common.admin.menu.dto.MenuUpdateRequest;
 import com.backend.common.admin.menu.model.Menu;
 import com.backend.common.admin.menu.service.MenuService;
+import com.backend.common.auth.security.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +23,11 @@ import java.util.List;
 @Tag(name = "07_메뉴", description = "메뉴 CRUD 관리 API")
 public class MenuController {
 	private final MenuService menuService;
+	private final JwtUtil jwtUtil;
 
-	public MenuController(MenuService menuService) {
+	public MenuController(MenuService menuService, JwtUtil jwtUtil) {
 		this.menuService = menuService;
+		this.jwtUtil = jwtUtil;
 	}
 
 	@Operation(summary = "메뉴 목록 조회", description = "전체 메뉴 목록을 조회합니다. 관리자(USER) 권한이 필요합니다.")
@@ -63,6 +67,26 @@ public class MenuController {
 	@GetMapping("/site/{siteId}/enabled")
 	public ResponseEntity<ApiResponse<List<Menu>>> listEnabledBySiteId(@PathVariable("siteId") String siteId) {
 		return ResponseEntity.ok(ApiResponse.ok(menuService.listEnabledMenusBySiteId(siteId)));
+	}
+
+	@Operation(summary = "권한 기반 활성화된 메뉴 목록 조회", description = "현재 로그인한 사용자의 권한에 따라 특정 사이트의 활성화된 메뉴 목록을 조회합니다. 읽기 권한이 있는 메뉴만 반환됩니다. 관리자(USER) 권한이 필요합니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "권한 부족")
+	})
+	@SecurityRequirement(name = "bearerAuth")
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping("/site/{siteId}/enabled/with-permissions")
+	public ResponseEntity<ApiResponse<List<Menu>>> listEnabledBySiteIdWithPermissions(
+			@PathVariable("siteId") String siteId,
+			@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+		if (authorization == null || !authorization.startsWith("Bearer ")) {
+			throw new IllegalArgumentException("인증 토큰이 필요합니다.");
+		}
+		String token = authorization.substring(7);
+		String username = jwtUtil.getUsername(token);
+		return ResponseEntity.ok(ApiResponse.ok(menuService.listEnabledMenusBySiteIdWithPermissions(siteId, username)));
 	}
 
 	@Operation(summary = "메뉴 조회", description = "ID로 메뉴 정보를 조회합니다. 관리자(USER) 권한이 필요합니다.")

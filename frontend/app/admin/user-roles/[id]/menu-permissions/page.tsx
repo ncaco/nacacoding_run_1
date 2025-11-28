@@ -245,30 +245,49 @@ function MenuPermissionPageContent() {
     setMenus((prevMenus) =>
       prevMenus.map((menu) => {
         if (menu.menuId === menuId) {
-          return {
+          const updatedMenu = {
             ...menu,
             [permissionType]: value,
-            // 전체 권한이 체크되면 모든 권한 활성화
-            ...(permissionType === 'permAll' && value
-              ? {
-                  permRead: true,
-                  permCreate: true,
-                  permUpdate: true,
-                  permDelete: true,
-                  permDownload: true,
-                }
-              : {}),
-            // 전체 권한이 해제되면 모든 권한 비활성화
-            ...(permissionType === 'permAll' && !value
-              ? {
-                  permRead: false,
-                  permCreate: false,
-                  permUpdate: false,
-                  permDelete: false,
-                  permDownload: false,
-                }
-              : {}),
           };
+
+          // 전체 권한이 체크되면 모든 권한 활성화
+          if (permissionType === 'permAll' && value) {
+            updatedMenu.permRead = true;
+            updatedMenu.permCreate = true;
+            updatedMenu.permUpdate = true;
+            updatedMenu.permDelete = true;
+            updatedMenu.permDownload = true;
+          }
+          // 전체 권한이 해제되면 모든 권한 비활성화
+          else if (permissionType === 'permAll' && !value) {
+            updatedMenu.permRead = false;
+            updatedMenu.permCreate = false;
+            updatedMenu.permUpdate = false;
+            updatedMenu.permDelete = false;
+            updatedMenu.permDownload = false;
+          }
+          // 전체가 아닌 다른 권한이 변경될 때
+          else if (permissionType !== 'permAll') {
+            // 권한이 해제되면 전체 권한도 해제
+            if (!value) {
+              updatedMenu.permAll = false;
+            } else {
+              // 권한이 체크되면, 모든 권한(읽기, 등록, 수정, 삭제, 다운로드)이 체크되어 있는지 확인
+              const allPermissionsChecked = 
+                updatedMenu.permRead === true &&
+                updatedMenu.permCreate === true &&
+                updatedMenu.permUpdate === true &&
+                updatedMenu.permDelete === true &&
+                updatedMenu.permDownload === true;
+              
+              // 모든 권한이 체크되어 있으면 전체 권한도 활성화
+              if (allPermissionsChecked) {
+                updatedMenu.permAll = true;
+              }
+            }
+          }
+
+          return updatedMenu;
         }
         return menu;
       })

@@ -7,6 +7,10 @@ import com.backend.common.admin.menu.model.Menu;
 import com.backend.common.admin.menu.repository.MenuRepository;
 import com.backend.common.admin.site.entity.SiteEntity;
 import com.backend.common.admin.site.repository.SiteRepository;
+import com.backend.common.admin.userRoleMenu.entity.UserRoleMenuEntity;
+import com.backend.common.admin.userRoleMenu.repository.UserRoleMenuRepository;
+import com.backend.common.user.model.User;
+import com.backend.common.user.service.UserService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,10 +27,19 @@ import java.util.stream.Collectors;
 public class MenuService {
 	private final MenuRepository menuRepository;
 	private final SiteRepository siteRepository;
+	private final UserService userService;
+	private final UserRoleMenuRepository userRoleMenuRepository;
 
-	public MenuService(MenuRepository menuRepository, SiteRepository siteRepository) {
+	public MenuService(
+		MenuRepository menuRepository, 
+		SiteRepository siteRepository,
+		UserService userService,
+		UserRoleMenuRepository userRoleMenuRepository
+	) {
 		this.menuRepository = menuRepository;
 		this.siteRepository = siteRepository;
+		this.userService = userService;
+		this.userRoleMenuRepository = userRoleMenuRepository;
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
@@ -77,6 +91,52 @@ public class MenuService {
 
 	public List<Menu> listEnabledMenusBySiteId(String siteId) {
 		return menuRepository.findBySiteIdAndEnabledTrue(siteId).stream()
+				.map(this::toMenu)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * 현재 로그인한 사용자의 권한에 따라 활성화된 메뉴 목록 조회
+	 * 읽기 권한이 있는 메뉴만 반환합니다.
+	 */
+	public List<Menu> listEnabledMenusBySiteIdWithPermissions(String siteId, String username) {
+		// 활성화된 메뉴 목록 조회
+		List<MenuEntity> allMenus = menuRepository.findBySiteIdAndEnabledTrue(siteId);
+		
+		// 현재 사용자 정보 조회
+		Optional<User> userOpt = userService.findByUsername(username);
+		if (userOpt.isEmpty()) {
+			// 사용자를 찾을 수 없으면 빈 목록 반환
+			return List.of();
+		}
+		
+		User user = userOpt.get();
+		String userRoleId = user.getUserRoleId();
+		
+		// userRoleId가 없으면 빈 목록 반환 (권한이 없으면 메뉴 접근 불가)
+		if (userRoleId == null || userRoleId.isEmpty()) {
+			return List.of();
+		}
+		
+		// 해당 역할의 메뉴 권한 조회 (활성화된 권한만)
+		List<UserRoleMenuEntity> permissions = userRoleMenuRepository.findByUserRoleIdAndEnabled(userRoleId, "Y");
+		
+		// 권한 맵 생성 (menuId -> UserRoleMenuEntity)
+		Map<String, UserRoleMenuEntity> permissionMap = permissions.stream()
+				.collect(Collectors.toMap(UserRoleMenuEntity::getMenuId, perm -> perm));
+		
+		// 읽기 권한이 있는 메뉴만 필터링
+		// 권한 레코드가 있고, 읽기 권한 또는 전체 권한이 "Y"인 경우만 허용
+		return allMenus.stream()
+				.filter(menu -> {
+					UserRoleMenuEntity permission = permissionMap.get(menu.getId());
+					// 권한 레코드가 없으면 접근 불가
+					if (permission == null) {
+						return false;
+					}
+					// 읽기 권한 또는 전체 권한이 "Y"인 경우만 허용
+					return "Y".equals(permission.getPermRead()) || "Y".equals(permission.getPermAll());
+				})
 				.map(this::toMenu)
 				.collect(Collectors.toList());
 	}

@@ -161,7 +161,6 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
 
         const sitesData = await sitesResponse.json();
         if (!sitesResponse.ok || !sitesData.success) {
-          console.error('사이트 목록 조회 실패:', sitesData.message);
           return;
         }
 
@@ -170,7 +169,6 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
         const adminSite = sites.find((site) => site.contextPath === 'admin');
         
         if (!adminSite) {
-          console.error('관리자 사이트를 찾을 수 없습니다.');
           return;
         }
 
@@ -192,9 +190,9 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
           }
         }
 
-        // 3. 활성화된 메뉴 목록 조회
+        // 3. 백엔드에서 권한 기반으로 필터링된 활성화된 메뉴 목록 조회
         const menusResponse = await fetchWithTokenRefresh(
-          getApiUrl(`/menu/site/${adminSite.id}/enabled`),
+          getApiUrl(`/menu/site/${adminSite.id}/enabled/with-permissions`),
           {
             method: 'GET',
             headers: {
@@ -210,16 +208,17 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
 
         const menusData = await menusResponse.json();
         if (!menusResponse.ok || !menusData.success) {
-          console.error('메뉴 목록 조회 실패:', menusData.message);
           return;
         }
 
         const menus: Menu[] = menusData.data || [];
-        // 메뉴를 계층 구조로 변환 (아이콘 맵 전달)
+
+        // 4. 메뉴를 계층 구조로 변환 (아이콘 맵 전달)
         const menuItemsData = buildMenuHierarchy(menus, iconsMap);
         setMenuItems(menuItemsData);
       } catch (error) {
-        console.error('메뉴 목록 가져오기 실패:', error);
+        // 에러 발생 시 빈 메뉴 목록 설정
+        setMenuItems([]);
       } finally {
         setIsLoadingMenus(false);
       }
