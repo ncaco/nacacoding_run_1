@@ -462,6 +462,11 @@ COMMENT ON COLUMN MEMBER_ROLE.USE_YN IS '활성화 여부 (기본값: true)';
    - roleNm: `일반 회원`
    - roleDesc: `일반 회원 권한`
 
+4. **비회원**
+   - roleCd: `GUEST`
+   - roleNm: `비회원`
+   - roleDesc: `비회원 권한`
+
 ### MEMBER_ROLE_MENU 테이블
 
 **테이블 코멘트**: 사용자 역할별 메뉴 권한 정보를 저장하는 테이블

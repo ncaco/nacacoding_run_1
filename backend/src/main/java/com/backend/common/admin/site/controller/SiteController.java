@@ -26,14 +26,10 @@ public class SiteController {
 		this.siteService = siteService;
 	}
 
-	@Operation(summary = "사이트 목록 조회", description = "전체 사이트 목록을 조회합니다. 관리자(USER) 권한이 필요합니다.")
+	@Operation(summary = "사이트 목록 조회", description = "전체 사이트 목록을 조회합니다. 인증은 선택사항입니다.")
 	@ApiResponses(value = {
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "권한 부족 (USER 권한 필요)")
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공")
 	})
-	@SecurityRequirement(name = "bearerAuth")
-	@PreAuthorize("hasRole('USER')")
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<Site>>> list() {
 		return ResponseEntity.ok(ApiResponse.ok(siteService.listSites()));
@@ -69,6 +65,20 @@ public class SiteController {
 		return siteService.findBySiteType(siteType)
 				.map(site -> ResponseEntity.ok(ApiResponse.ok(site)))
 				.orElseThrow(() -> new IllegalArgumentException("사이트를 찾을 수 없습니다: " + siteType));
+	}
+
+	@Operation(summary = "Context Path로 사이트 조회", description = "Context Path로 사이트 정보를 조회합니다. 인증은 선택사항입니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "사이트를 찾을 수 없음")
+	})
+	@GetMapping("/context-path/{contextPath}")
+	public ResponseEntity<ApiResponse<Site>> getByContextPath(@PathVariable("contextPath") String contextPath) {
+		// 빈 문자열인 경우 URL 인코딩된 값으로 처리
+		String decodedContextPath = contextPath.equals("root") ? "" : contextPath;
+		return siteService.findByContextPath(decodedContextPath)
+				.map(site -> ResponseEntity.ok(ApiResponse.ok(site)))
+				.orElseThrow(() -> new IllegalArgumentException("사이트를 찾을 수 없습니다: " + contextPath));
 	}
 
 	@Operation(summary = "사이트 생성", description = "새로운 사이트를 생성합니다. 관리자(USER) 권한이 필요합니다.")

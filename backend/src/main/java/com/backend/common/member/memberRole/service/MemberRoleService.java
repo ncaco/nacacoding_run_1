@@ -35,6 +35,9 @@ public class MemberRoleService {
 		if (!memberRoleRepository.existsByRoleCd("BASIC")) {
 			memberRoleRepository.save(new MemberRoleEntity("BASIC", "일반 회원", "일반 회원 권한"));
 		}
+		if (!memberRoleRepository.existsByRoleCd("GUEST")) {
+			memberRoleRepository.save(new MemberRoleEntity("GUEST", "비회원", "비회원 권한"));
+		}
 	}
 
 	public List<MemberRole> listMemberRoles() {

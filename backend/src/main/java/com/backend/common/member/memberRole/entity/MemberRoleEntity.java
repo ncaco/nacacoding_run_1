@@ -16,7 +16,7 @@ public class MemberRoleEntity {
 
 	@NotBlank
 	@Column(name = "ROLE_CD", nullable = false, unique = true, length = 50)
-	@Comment("역할 코드 (예: VIP, PREMIUM, BASIC)")
+	@Comment("역할 코드 (예: VIP, PREMIUM, BASIC, GUEST)")
 	private String roleCd;
 
 	@NotBlank

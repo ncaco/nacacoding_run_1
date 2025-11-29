@@ -52,6 +52,11 @@ public class SiteService {
 				.map(this::toSite);
 	}
 
+	public Optional<Site> findByContextPath(String contextPath) {
+		return siteRepository.findByContextPath(contextPath)
+				.map(this::toSite);
+	}
+
 	public Site createSite(SiteCreateRequest request) {
 		if (siteRepository.existsByContextPath(request.getContextPath())) {
 			throw new IllegalArgumentException("이미 존재하는 Context Path입니다: " + request.getContextPath());

@@ -3,9 +3,31 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
+import { getApiUrl } from '../utils/api';
 
-export default function Header() {
+interface Site {
+  id: string;
+  siteName: string;
+  siteType?: string;
+  contextPath?: string;
+}
+
+interface Menu {
+  id: string;
+  name: string;
+  url?: string;
+  parentId?: string;
+  displayOrder?: number;
+}
+
+interface HeaderProps {
+  onMenuLoadComplete?: () => void;
+}
+
+export default function Header({ onMenuLoadComplete }: HeaderProps = {} as HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuItems, setMenuItems] = useState<Menu[]>([]);
+  const [isLoadingMenus, setIsLoadingMenus] = useState(true);
 
   // 메뉴가 열릴 때 body 스크롤 방지
   useEffect(() => {
@@ -18,6 +40,80 @@ export default function Header() {
       document.body.style.overflow = 'unset';
     };
   }, [isMenuOpen]);
+
+  // 통합홈페이지 메뉴 목록 가져오기 (비회원 권한)
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        setIsLoadingMenus(true);
+        
+        // 1. contextPath로 통합홈페이지 조회 (빈 문자열은 "root"로 인코딩)
+        const contextPath = '';
+        const contextPathParam = contextPath === '' ? 'root' : encodeURIComponent(contextPath);
+        const siteResponse = await fetch(getApiUrl(`/site/context-path/${contextPathParam}`), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!siteResponse.ok) {
+          setIsLoadingMenus(false);
+          if (onMenuLoadComplete) onMenuLoadComplete();
+          return;
+        }
+
+        const siteData = await siteResponse.json();
+        if (!siteData.success || !siteData.data) {
+          setIsLoadingMenus(false);
+          if (onMenuLoadComplete) onMenuLoadComplete();
+          return;
+        }
+
+        const integratedHomepage: Site = siteData.data;
+
+        // 2. 비회원 권한으로 메뉴 목록 조회 (인증 헤더 없이 호출하면 비회원 권한으로 처리됨)
+        const menusResponse = await fetch(
+          getApiUrl(`/menu/site/${integratedHomepage.id}/enabled/with-permissions`),
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!menusResponse.ok) {
+          setIsLoadingMenus(false);
+          if (onMenuLoadComplete) onMenuLoadComplete();
+          return;
+        }
+
+        const menusData = await menusResponse.json();
+        if (!menusData.success) {
+          setIsLoadingMenus(false);
+          if (onMenuLoadComplete) onMenuLoadComplete();
+          return;
+        }
+
+        const menus: Menu[] = menusData.data || [];
+        // 부모 메뉴만 필터링 (displayOrder로 정렬)
+        const parentMenus = menus
+          .filter((menu) => !menu.parentId)
+          .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+        
+        setMenuItems(parentMenus);
+      } catch (error) {
+        // 에러 발생 시 빈 배열로 설정
+        setMenuItems([]);
+      } finally {
+        setIsLoadingMenus(false);
+        if (onMenuLoadComplete) onMenuLoadComplete();
+      }
+    };
+
+    fetchMenus();
+  }, [onMenuLoadComplete]);
 
   return (
     <>
@@ -59,48 +155,27 @@ export default function Header() {
           {/* Mobile Menu Content */}
           <nav className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide">
             <div className="px-3 py-4">
-              <div className="flex flex-col gap-1.5">
-                <Link
-                  href="/features"
-                  className="group flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium text-gray-700 transition-all hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <svg className="h-5 w-5 flex-shrink-0 text-gray-400 transition-colors group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>기능</span>
-                </Link>
-                <Link
-                  href="/docs"
-                  className="group flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium text-gray-700 transition-all hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <svg className="h-5 w-5 flex-shrink-0 text-gray-400 transition-colors group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  <span>문서</span>
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="group flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium text-gray-700 transition-all hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <svg className="h-5 w-5 flex-shrink-0 text-gray-400 transition-colors group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>가격</span>
-                </Link>
-                <Link
-                  href="/blog"
-                  className="group flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium text-gray-700 transition-all hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <svg className="h-5 w-5 flex-shrink-0 text-gray-400 transition-colors group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                  </svg>
-                  <span>블로그</span>
-                </Link>
-              </div>
+              {menuItems.length > 0 ? (
+                <div className="flex flex-col gap-1.5">
+                  {menuItems.map((menu) => (
+                    <Link
+                      key={menu.id}
+                      href={menu.url || '#'}
+                      className="group flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium text-gray-700 transition-all hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <svg className="h-5 w-5 flex-shrink-0 text-gray-400 transition-colors group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>{menu.name}</span>
+                    </Link>
+                  ))}
+                </div>
+              ) : isLoadingMenus ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-600 dark:border-t-gray-300"></div>
+                </div>
+              ) : null}
             </div>
 
             {/* Mobile Menu Footer */}
@@ -148,18 +223,21 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden items-center gap-8 md:flex">
-            <Link href="/features" className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-              기능
-            </Link>
-            <Link href="/docs" className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-              문서
-            </Link>
-            <Link href="/pricing" className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-              가격
-            </Link>
-            <Link href="/blog" className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-              블로그
-            </Link>
+            {menuItems.length > 0 ? (
+              menuItems.map((menu) => (
+                <Link
+                  key={menu.id}
+                  href={menu.url || '#'}
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+                >
+                  {menu.name}
+                </Link>
+              ))
+            ) : isLoadingMenus ? (
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-600 dark:border-t-gray-300"></div>
+              </div>
+            ) : null}
           </div>
 
           {/* Auth Buttons */}
