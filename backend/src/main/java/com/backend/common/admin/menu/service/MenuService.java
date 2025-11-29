@@ -72,9 +72,10 @@ public class MenuService {
 		menuRepository.save(new MenuEntity(adminSiteId, "사용자 관리", "/admin/users", null, 5, null));
 		menuRepository.save(new MenuEntity(adminSiteId, "공통코드 관리", "/admin/cmn-cd", null, 6, null));
 		menuRepository.save(new MenuEntity(adminSiteId, "관리자 권한 관리", "/admin/user-roles", null, 7, null));
-		menuRepository.save(new MenuEntity(adminSiteId, "아이콘 관리", "/admin/icons", null, 8, null));
-		menuRepository.save(new MenuEntity(adminSiteId, "파일 관리", "/admin/files", null, 9, null));
-		menuRepository.save(new MenuEntity(adminSiteId, "로그 관리", "/admin/logs", null, 10, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "사용자 권한 관리", "/admin/member-roles", null, 8, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "아이콘 관리", "/admin/icons", null, 9, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "파일 관리", "/admin/files", null, 10, null));
+		menuRepository.save(new MenuEntity(adminSiteId, "로그 관리", "/admin/logs", null, 11, null));
 	}
 
 	public List<Menu> listMenus() {

@@ -52,19 +52,23 @@ public class UserService {
 		
 		// 관리자 계정 생성
 		if (!userRepository.existsByUsername("admin")) {
-			// 최고관리자 역할 찾기
+			// 최고관리자 역할 찾기 (없으면 생성)
 			Optional<UserRoleEntity> adminRoleOpt = userRoleRepository.findByRoleCd("ADMIN");
-			String adminRoleId = null;
+			String adminRoleId;
 			if (adminRoleOpt.isPresent()) {
 				adminRoleId = adminRoleOpt.get().getId();
+			} else {
+				// 최고관리자 역할이 없으면 생성
+				UserRoleEntity adminRole = new UserRoleEntity("ADMIN", "최고 관리자", "모든 권한을 가진 최고 관리자");
+				UserRoleEntity savedRole = userRoleRepository.save(adminRole);
+				adminRoleId = savedRole.getId();
 			}
 			
+			// 최고관리자 역할 ID와 함께 사용자 생성
 			createUser("admin", "admin123", Role.USER, "관리자", "admin@example.com", adminRoleId);
 			
-			// 최고관리자 역할이 있으면 모든 메뉴에 대한 권한 부여
-			if (adminRoleId != null) {
-				grantAllPermissionsToRole(adminRoleId);
-			}
+			// 최고관리자 역할에 모든 메뉴에 대한 권한 부여
+			grantAllPermissionsToRole(adminRoleId);
 		}
 		
 		// 사용자 계정 생성

@@ -26,8 +26,8 @@ interface MenuPermissionItem {
 }
 
 interface MenuPermissionResponse {
-  userRoleId: string;
-  userRoleName: string;
+  memberRoleId: string;
+  memberRoleName: string;
   menus: MenuPermissionItem[];
 }
 
@@ -81,11 +81,11 @@ function HeaderCheckbox({
 function MenuPermissionPageContent() {
   const router = useRouter();
   const params = useParams();
-  const userRoleId = params?.id as string;
+  const memberRoleId = params?.id as string;
 
   const [menus, setMenus] = useState<MenuPermissionItem[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
-  const [userRoleName, setUserRoleName] = useState<string>('');
+  const [memberRoleName, setMemberRoleName] = useState<string>('');
   const [selectedSiteId, setSelectedSiteId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -95,12 +95,12 @@ function MenuPermissionPageContent() {
   useEffect(() => {
     const initialize = async () => {
       await fetchSites();
-      if (userRoleId) {
+      if (memberRoleId) {
         await fetchMenuPermissions();
       }
     };
     initialize();
-  }, [userRoleId]);
+  }, [memberRoleId]);
 
   const fetchSites = async () => {
     try {
@@ -119,8 +119,8 @@ function MenuPermissionPageContent() {
       const data = await response.json();
       if (response.ok && data.success) {
         const sitesData = data.data || [];
-        // C001 (관리자) 사이트만 필터링
-        const filteredSites = sitesData.filter((site: Site) => site.siteType === 'C001');
+        // C002 (사용자) 사이트만 필터링
+        const filteredSites = sitesData.filter((site: Site) => site.siteType === 'C002');
         setSites(filteredSites);
         // 첫 번째 사이트를 기본 선택
         if (filteredSites.length > 0 && !selectedSiteId) {
@@ -133,12 +133,12 @@ function MenuPermissionPageContent() {
   };
 
   const fetchMenuPermissions = async () => {
-    if (!userRoleId) return;
+    if (!memberRoleId) return;
     
     setIsLoading(true);
     try {
       const response = await fetchWithTokenRefresh(
-        getApiUrl(`/user-role-menu/role/${userRoleId}`),
+        getApiUrl(`/member-role-menu/role/${memberRoleId}`),
         {
           method: 'GET',
           headers: {
@@ -161,7 +161,7 @@ function MenuPermissionPageContent() {
       const permissionData: MenuPermissionResponse = data.data;
       const menusData = permissionData.menus || [];
       setMenus(menusData);
-      setUserRoleName(permissionData.userRoleName || '');
+      setMemberRoleName(permissionData.memberRoleName || '');
       
       // 모든 메뉴를 확장 상태로 설정
       const allMenuIds = menusData.map(m => m.menuId);
@@ -361,13 +361,13 @@ function MenuPermissionPageContent() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetchWithTokenRefresh(getApiUrl('/user-role-menu'), {
+      const response = await fetchWithTokenRefresh(getApiUrl('/member-role-menu'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userRoleId,
+          memberRoleId,
           menuPermissions: menus
             .filter((menu) => {
               // 권한이 하나라도 체크된 메뉴만 전송
@@ -402,7 +402,7 @@ function MenuPermissionPageContent() {
       }
 
       toast.success('메뉴 권한이 저장되었습니다.');
-      router.push('/admin/user-roles');
+      router.push('/admin/member-roles');
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message || '메뉴 권한 저장에 실패했습니다.');
@@ -413,22 +413,6 @@ function MenuPermissionPageContent() {
       setIsSaving(false);
     }
   };
-
-  // 평면화된 메뉴 목록 생성 (트리 구조를 유지하면서)
-  const flattenMenuTree = (nodes: MenuTreeNode[], level: number = 0): MenuTreeNode[] => {
-    const result: MenuTreeNode[] = [];
-    nodes.forEach((node) => {
-      result.push({ ...node, level });
-      if (node.children && node.children.length > 0) {
-        result.push(...flattenMenuTree(node.children, level + 1));
-      }
-    });
-    return result;
-  };
-
-  const flattenedMenus = useMemo(() => {
-    return flattenMenuTree(menuTree);
-  }, [menuTree]);
 
   // 메뉴 행 렌더링
   const renderMenuRow = (menu: MenuTreeNode & { level?: number }) => {
@@ -550,7 +534,7 @@ function MenuPermissionPageContent() {
               메뉴별 권한 관리
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {userRoleName}
+              {memberRoleName}
             </p>
           </div>
         </div>
@@ -674,7 +658,7 @@ function MenuPermissionPageContent() {
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-[#1f2435] dark:bg-[#0f1119]">
           <button
-            onClick={() => router.push('/admin/user-roles')}
+            onClick={() => router.push('/admin/member-roles')}
             className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-all hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:border-slate-500 dark:hover:bg-slate-700"
           >
             취소
@@ -726,3 +710,4 @@ export default function MenuPermissionPage() {
     </Suspense>
   );
 }
+

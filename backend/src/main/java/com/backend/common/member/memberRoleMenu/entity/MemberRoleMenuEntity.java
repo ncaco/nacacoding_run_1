@@ -1,21 +1,21 @@
-package com.backend.common.admin.userRoleMenu.entity;
+package com.backend.common.member.memberRoleMenu.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "USER_ROLE_MENU")
-@org.hibernate.annotations.Comment("관리자 역할별 메뉴 권한 정보를 저장하는 테이블")
-public class UserRoleMenuEntity {
+@Table(name = "MEMBER_ROLE_MENU")
+@org.hibernate.annotations.Comment("사용자 역할별 메뉴 권한 정보를 저장하는 테이블")
+public class MemberRoleMenuEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "USER_ROLE_MENU_ID")
-	@Comment("관리자 역할 메뉴 고유 식별자 (UUID 형식)")
+	@Column(name = "MEMBER_ROLE_MENU_ID")
+	@Comment("사용자 역할 메뉴 고유 식별자 (UUID 형식)")
 	private String id;
 
-	@Column(name = "USER_ROLE_ID", nullable = false)
-	@Comment("관리자 역할 ID (USER_ROLE 테이블 참조)")
-	private String userRoleId;
+	@Column(name = "MEMBER_ROLE_ID", nullable = false)
+	@Comment("사용자 역할 ID (MEMBER_ROLE 테이블 참조)")
+	private String memberRoleId;
 
 	@Column(name = "MENU_ID", nullable = false)
 	@Comment("메뉴 ID (MENUS 테이블 참조)")
@@ -49,10 +49,10 @@ public class UserRoleMenuEntity {
 	@Comment("활성화 여부 (Y/N, 기본값: Y)")
 	private String enabled = "Y";
 
-	public UserRoleMenuEntity() {}
+	public MemberRoleMenuEntity() {}
 
-	public UserRoleMenuEntity(String userRoleId, String menuId) {
-		this.userRoleId = userRoleId;
+	public MemberRoleMenuEntity(String memberRoleId, String menuId) {
+		this.memberRoleId = memberRoleId;
 		this.menuId = menuId;
 		this.permRead = "N";
 		this.permCreate = "N";
@@ -65,8 +65,8 @@ public class UserRoleMenuEntity {
 
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
-	public String getUserRoleId() { return userRoleId; }
-	public void setUserRoleId(String userRoleId) { this.userRoleId = userRoleId; }
+	public String getMemberRoleId() { return memberRoleId; }
+	public void setMemberRoleId(String memberRoleId) { this.memberRoleId = memberRoleId; }
 	public String getMenuId() { return menuId; }
 	public void setMenuId(String menuId) { this.menuId = menuId; }
 	public String getPermRead() { return permRead; }

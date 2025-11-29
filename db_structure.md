@@ -406,6 +406,114 @@ COMMENT ON COLUMN USER_ROLE_MENU.USE_YN IS '활성화 여부 (Y/N, 기본값: Y)
 
 - `USER_ROLE_ID`와 `MENU_ID` 조합에 대한 인덱스가 권장됩니다.
 
+### MEMBER_ROLE 테이블
+
+**테이블 코멘트**: 사용자 역할 정보를 저장하는 테이블
+
+#### 스키마
+
+```sql
+CREATE TABLE MEMBER_ROLE (
+    MEMBER_ROLE_ID VARCHAR(255) PRIMARY KEY,
+    ROLE_CD VARCHAR(50) NOT NULL UNIQUE,
+    ROLE_NM VARCHAR(255) NOT NULL,
+    ROLE_DESC VARCHAR(1000),
+    USE_YN BOOLEAN NOT NULL
+);
+
+COMMENT ON TABLE MEMBER_ROLE IS '사용자 역할 정보를 저장하는 테이블';
+COMMENT ON COLUMN MEMBER_ROLE.MEMBER_ROLE_ID IS '사용자 역할 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN MEMBER_ROLE.ROLE_CD IS '역할 코드 (예: VIP, PREMIUM, BASIC)';
+COMMENT ON COLUMN MEMBER_ROLE.ROLE_NM IS '역할명';
+COMMENT ON COLUMN MEMBER_ROLE.ROLE_DESC IS '역할 설명';
+COMMENT ON COLUMN MEMBER_ROLE.USE_YN IS '활성화 여부 (기본값: true)';
+```
+
+#### 컬럼 설명
+
+| 컬럼명 | 타입 | 제약조건 | 설명 |
+|--------|------|----------|------|
+| `MEMBER_ROLE_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 사용자 역할 고유 식별자 (UUID 형식) |
+| `ROLE_CD` | VARCHAR(50) | NOT NULL, UNIQUE | 역할 코드 (예: VIP, PREMIUM, BASIC) |
+| `ROLE_NM` | VARCHAR(255) | NOT NULL | 역할명 |
+| `ROLE_DESC` | VARCHAR(1000) | NULL | 역할 설명 |
+| `USE_YN` | BOOLEAN | NOT NULL | 활성화 여부 (기본값: true) |
+
+#### 인덱스
+
+- `ROLE_CD` 컬럼에 UNIQUE 제약조건이 있어 자동으로 인덱스가 생성됩니다.
+
+#### 초기 데이터
+
+애플리케이션 시작 시 다음 역할이 자동으로 생성됩니다:
+
+1. **VIP 회원**
+   - roleCd: `VIP`
+   - roleNm: `VIP 회원`
+   - roleDesc: `VIP 회원 권한`
+
+2. **프리미엄 회원**
+   - roleCd: `PREMIUM`
+   - roleNm: `프리미엄 회원`
+   - roleDesc: `프리미엄 회원 권한`
+
+3. **일반 회원**
+   - roleCd: `BASIC`
+   - roleNm: `일반 회원`
+   - roleDesc: `일반 회원 권한`
+
+### MEMBER_ROLE_MENU 테이블
+
+**테이블 코멘트**: 사용자 역할별 메뉴 권한 정보를 저장하는 테이블
+
+#### 스키마
+
+```sql
+CREATE TABLE MEMBER_ROLE_MENU (
+    MEMBER_ROLE_MENU_ID VARCHAR(255) PRIMARY KEY,
+    MEMBER_ROLE_ID VARCHAR(255) NOT NULL,
+    MENU_ID VARCHAR(255) NOT NULL,
+    PERM_READ VARCHAR(1) NOT NULL,
+    PERM_CREATE VARCHAR(1) NOT NULL,
+    PERM_UPDATE VARCHAR(1) NOT NULL,
+    PERM_DELETE VARCHAR(1) NOT NULL,
+    PERM_DOWNLOAD VARCHAR(1) NOT NULL,
+    PERM_ALL VARCHAR(1) NOT NULL,
+    USE_YN VARCHAR(1) NOT NULL
+);
+
+COMMENT ON TABLE MEMBER_ROLE_MENU IS '사용자 역할별 메뉴 권한 정보를 저장하는 테이블';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.MEMBER_ROLE_MENU_ID IS '사용자 역할 메뉴 고유 식별자 (UUID 형식)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.MEMBER_ROLE_ID IS '사용자 역할 ID (MEMBER_ROLE 테이블 참조)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.MENU_ID IS '메뉴 ID (MENUS 테이블 참조)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.PERM_READ IS '읽기 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.PERM_CREATE IS '등록 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.PERM_UPDATE IS '수정 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.PERM_DELETE IS '삭제 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.PERM_DOWNLOAD IS '다운로드 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.PERM_ALL IS '전체 권한 (Y/N, 기본값: N)';
+COMMENT ON COLUMN MEMBER_ROLE_MENU.USE_YN IS '활성화 여부 (Y/N, 기본값: Y)';
+```
+
+#### 컬럼 설명
+
+| 컬럼명 | 타입 | 제약조건 | 설명 |
+|--------|------|----------|------|
+| `MEMBER_ROLE_MENU_ID` | VARCHAR(255) | PRIMARY KEY, UUID | 사용자 역할 메뉴 고유 식별자 (UUID 형식) |
+| `MEMBER_ROLE_ID` | VARCHAR(255) | NOT NULL | 사용자 역할 ID (MEMBER_ROLE 테이블 참조) |
+| `MENU_ID` | VARCHAR(255) | NOT NULL | 메뉴 ID (MENUS 테이블 참조) |
+| `PERM_READ` | VARCHAR(1) | NOT NULL | 읽기 권한 (Y/N, 기본값: N) |
+| `PERM_CREATE` | VARCHAR(1) | NOT NULL | 등록 권한 (Y/N, 기본값: N) |
+| `PERM_UPDATE` | VARCHAR(1) | NOT NULL | 수정 권한 (Y/N, 기본값: N) |
+| `PERM_DELETE` | VARCHAR(1) | NOT NULL | 삭제 권한 (Y/N, 기본값: N) |
+| `PERM_DOWNLOAD` | VARCHAR(1) | NOT NULL | 다운로드 권한 (Y/N, 기본값: N) |
+| `PERM_ALL` | VARCHAR(1) | NOT NULL | 전체 권한 (Y/N, 기본값: N) |
+| `USE_YN` | VARCHAR(1) | NOT NULL | 활성화 여부 (Y/N, 기본값: Y) |
+
+#### 인덱스
+
+- `MEMBER_ROLE_ID`와 `MENU_ID` 조합에 대한 인덱스가 권장됩니다.
+
 ## 엔티티 매핑
 
 ### UserEntity
