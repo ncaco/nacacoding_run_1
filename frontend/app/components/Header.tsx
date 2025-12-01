@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
 import { getApiUrl } from '../utils/api';
+import { isTokenExpired } from '../utils/auth';
 
 interface Site {
   id: string;
@@ -25,9 +27,60 @@ interface HeaderProps {
 }
 
 export default function Header({ onMenuLoadComplete }: HeaderProps = {} as HeaderProps) {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuItems, setMenuItems] = useState<Menu[]>([]);
   const [isLoadingMenus, setIsLoadingMenus] = useState(true);
+  const [loggedInUsername, setLoggedInUsername] = useState<string | null>(null);
+
+  // 로그인 상태 초기화
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+
+    if (!token || isTokenExpired(token)) {
+      // 만료되었거나 없는 토큰은 정리
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userRole');
+      setLoggedInUsername(null);
+      return;
+    }
+
+    setLoggedInUsername(username || null);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token');
+
+      if (token) {
+        // 백엔드 로그아웃 호출 (토큰 블랙리스트 처리)
+        await fetch(getApiUrl('/auth/logout/user'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+    } catch (error) {
+      // 로그아웃 요청 실패는 무시하고 클라이언트 상태만 정리
+      console.error('포털 로그아웃 실패:', error);
+    } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userRole');
+      }
+      setLoggedInUsername(null);
+      router.push('/');
+    }
+  };
 
   // 메뉴가 열릴 때 body 스크롤 방지
   useEffect(() => {
@@ -41,7 +94,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
     };
   }, [isMenuOpen]);
 
-  // 통합홈페이지 메뉴 목록 가져오기 (비회원 권한)
+  // 통합홈페이지 메뉴 목록 가져오기 (로그인 시 MEMBER 권한, 아니면 비회원 권한)
   useEffect(() => {
     const fetchMenus = async () => {
       try {
@@ -72,14 +125,28 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
 
         const integratedHomepage: Site = siteData.data;
 
-        // 2. 비회원 권한으로 메뉴 목록 조회 (인증 헤더 없이 호출하면 비회원 권한으로 처리됨)
+        // 2. 로그인 여부에 따라 Authorization 헤더 포함하여 메뉴 목록 조회
+        let authToken: string | null = null;
+        if (typeof window !== 'undefined') {
+          const storedToken = localStorage.getItem('token');
+          if (storedToken && !isTokenExpired(storedToken)) {
+            authToken = storedToken;
+          }
+        }
+
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+
+        if (authToken) {
+          (headers as Record<string, string>).Authorization = `Bearer ${authToken}`;
+        }
+
         const menusResponse = await fetch(
           getApiUrl(`/menu/site/${integratedHomepage.id}/enabled/with-permissions`),
           {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers,
           }
         );
 
