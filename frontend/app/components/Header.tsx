@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
 import { getApiUrl } from '../utils/api';
@@ -32,6 +32,8 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
   const [menuItems, setMenuItems] = useState<Menu[]>([]);
   const [isLoadingMenus, setIsLoadingMenus] = useState(true);
   const [loggedInUsername, setLoggedInUsername] = useState<string | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement | null>(null);
 
   // 로그인 상태 초기화
   useEffect(() => {
@@ -93,6 +95,25 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
       document.body.style.overflow = 'unset';
     };
   }, [isMenuOpen]);
+
+  // 프로필 드롭다운 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    if (isProfileOpen) {
+      window.addEventListener('mousedown', handleClickOutside);
+    } else {
+      window.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProfileOpen]);
 
   // 통합홈페이지 메뉴 목록 가져오기 (로그인 시 MEMBER 권한, 아니면 비회원 권한)
   useEffect(() => {
@@ -252,26 +273,53 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">다크 모드</span>
                   <ThemeToggle />
                 </div>
-                <Link
-                  href="/login"
-                  className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  <span>로그인</span>
-                </Link>
-                <Link
-                  href="/signup"
-                  className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-md transition-all hover:from-green-500 hover:to-green-700 hover:shadow-lg"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  <span>시작하기</span>
-                </Link>
+                {loggedInUsername ? (
+                  <div className="flex items-center justify-between rounded-lg bg-white px-4 py-3 shadow-sm dark:bg-gray-800">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-sm font-semibold text-white">
+                        {loggedInUsername.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {loggedInUsername}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">포털 회원</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleLogout();
+                      }}
+                      className="ml-3 rounded-md px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700"
+                    >
+                      로그아웃
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>로그인</span>
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-md transition-all hover:from-green-500 hover:to-green-700 hover:shadow-lg"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span>시작하기</span>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </nav>
@@ -307,21 +355,88 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
             ) : null}
           </div>
 
-          {/* Auth Buttons */}
+          {/* Auth / Profile Area */}
           <div className="hidden items-center gap-4 md:flex">
             <ThemeToggle />
-            <Link
-              href="/login"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
-            >
-              로그인
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-2 text-sm font-medium text-white transition-all hover:from-green-500 hover:to-green-700"
-            >
-              시작하기
-            </Link>
+            {loggedInUsername ? (
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-sm font-semibold text-white shadow-sm hover:shadow-md transition-all"
+                  aria-label="Profile menu"
+                  aria-expanded={isProfileOpen}
+                >
+                  {loggedInUsername.charAt(0).toUpperCase()}
+                </button>
+
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900/95">
+                    <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-sm font-semibold text-white">
+                          {loggedInUsername.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                            {loggedInUsername}
+                          </p>
+                          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                            포털 회원
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        href="/profile"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                      >
+                        <svg
+                          className="h-4 w-4 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                        <span>마이페이지</span>
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-gray-200 px-4 py-2.5 dark:border-gray-700">
+                      <button
+                        onClick={handleLogout}
+                        className="flex w-full items-center justify-center rounded-md bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/40"
+                      >
+                        로그아웃
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+                >
+                  로그인
+                </Link>
+                <Link
+                  href="/signup"
+                  className="rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-2 text-sm font-medium text-white transition-all hover:from-green-500 hover:to-green-700"
+                >
+                  시작하기
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
