@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.Comment;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "MEMBERS")
 @org.hibernate.annotations.Comment("사용자(MEMBER) 정보를 저장하는 테이블")
@@ -36,14 +38,23 @@ public class MemberEntity {
 	@Comment("아바타 이미지 URL")
 	private String avatarUrl;
 
+	@Column(name = "CREATED_AT")
+	@Comment("가입 일시")
+	private LocalDateTime createdAt;
+
+	@Column(name = "LAST_LOGIN_AT")
+	@Comment("마지막 로그인 일시")
+	private LocalDateTime lastLoginAt;
+
 	public MemberEntity() {}
 
-	public MemberEntity(String username, String password, String name, String email, String avatarUrl) {
+	public MemberEntity(String username, String password, String name, String email, String avatarUrl, LocalDateTime createdAt) {
 		this.username = username;
 		this.password = password;
 		this.name = name;
 		this.email = email;
 		this.avatarUrl = avatarUrl;
+		this.createdAt = createdAt;
 	}
 
 	public String getId() { return id; }
@@ -58,6 +69,9 @@ public class MemberEntity {
 	public void setEmail(String email) { this.email = email; }
 	public String getAvatarUrl() { return avatarUrl; }
 	public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+	public LocalDateTime getCreatedAt() { return createdAt; }
+	public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+	public LocalDateTime getLastLoginAt() { return lastLoginAt; }
+	public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
 }
-
 

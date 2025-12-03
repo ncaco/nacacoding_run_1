@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -26,15 +25,21 @@ public class MemberController {
 		this.memberService = memberService;
 	}
 
-	@Operation(summary = "현재 사용자 정보 조회", description = "로그인한 사용자의 정보를 조회합니다.")
+	@Operation(summary = "현재 사용자 정보 조회", description = "로그인한 사용자의 정보를 MEMBERS 테이블 기준으로 조회합니다.")
 	@ApiResponses(value = {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
 	})
 	@SecurityRequirement(name = "bearerAuth")
 	@GetMapping("/me")
-	public ResponseEntity<ApiResponse<Map<String, Object>>> me(Authentication auth) {
-		return ResponseEntity.ok(ApiResponse.ok(Map.of("username", auth.getName())));
+	public ResponseEntity<ApiResponse<Member>> me(Authentication auth) {
+		String username = auth.getName();
+
+		Member member = memberService.findByUsername(username)
+				.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다: " + username));
+
+		return ResponseEntity.ok(ApiResponse.ok(member));
 	}
 
 	@Operation(summary = "사용자 목록 조회", description = "전체 사용자(MEMBER) 목록을 조회합니다.")
@@ -60,12 +65,15 @@ public class MemberController {
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Member>> create(@RequestBody CreateMemberRequest request) {
-		return ResponseEntity.ok(ApiResponse.ok(memberService.createMember(
-			request.getUsername(),
-			request.getPassword(),
-			request.getName(),
-			request.getEmail()
-		)));
+		return ResponseEntity.ok(ApiResponse.ok(
+			memberService.createMember(
+				request.getUsername(),
+				request.getPassword(),
+				request.getName(),
+				request.getEmail(),
+				request.getCreatedAt()
+			)
+		));
 	}
 
 	@Operation(summary = "사용자 수정", description = "사용자(MEMBER) 정보를 수정합니다. USER 권한이 필요합니다.")
@@ -107,6 +115,8 @@ public class MemberController {
 		private String password;
 		private String name;
 		private String email;
+		// 가입 일시 (관리자에서 직접 지정 가능, 미지정 시 서버에서 현재 시간으로 처리)
+		private java.time.LocalDateTime createdAt;
 
 		public String getUsername() { return username; }
 		public void setUsername(String username) { this.username = username; }
@@ -116,6 +126,8 @@ public class MemberController {
 		public void setName(String name) { this.name = name; }
 		public String getEmail() { return email; }
 		public void setEmail(String email) { this.email = email; }
+		public java.time.LocalDateTime getCreatedAt() { return createdAt; }
+		public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }
 	}
 
 	public static class UpdateMemberRequest {

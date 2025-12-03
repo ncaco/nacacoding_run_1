@@ -10,6 +10,7 @@ import com.backend.core.dto.ApiResponse;
 import com.backend.common.user.model.Role;
 import com.backend.common.user.model.User;
 import com.backend.common.user.service.UserService;
+import com.backend.common.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -37,14 +38,18 @@ public class AuthController {
 	private final TokenBlacklistService tokenBlacklistService;
 	private final RefreshTokenService refreshTokenService;
 	private final PasswordEncoder passwordEncoder;
+	private final MemberService memberService;
 	private static final long REFRESH_TOKEN_VALIDITY_SECONDS = 86400 * 7; // 7일
 
-	public AuthController(UserService userService, JwtUtil jwtUtil, TokenBlacklistService tokenBlacklistService, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder) {
+	public AuthController(UserService userService, JwtUtil jwtUtil, TokenBlacklistService tokenBlacklistService,
+	                      RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder,
+	                      MemberService memberService) {
 		this.userService = userService;
 		this.jwtUtil = jwtUtil;
 		this.tokenBlacklistService = tokenBlacklistService;
 		this.refreshTokenService = refreshTokenService;
 		this.passwordEncoder = passwordEncoder;
+		this.memberService = memberService;
 	}
 
 	@Operation(summary = "사용자 로그인", description = "사용자(MEMBER) 계정으로 로그인하여 JWT 토큰을 발급받습니다.")
@@ -58,7 +63,10 @@ public class AuthController {
 				.filter(u -> passwordEncoder.matches(req.getPassword(), u.getPassword()))
 				.filter(u -> u.getRole() == Role.MEMBER)
 				.orElseThrow(() -> new IllegalArgumentException("invalid credentials or insufficient privileges"));
-		
+
+		// MEMBERS 테이블 기준 마지막 로그인 일시 업데이트
+		memberService.updateLastLogin(user.getUsername());
+
 		// Access Token 생성
 		String accessToken = jwtUtil.generateToken(user.getUsername(), Map.of("role", user.getRole().name()));
 		

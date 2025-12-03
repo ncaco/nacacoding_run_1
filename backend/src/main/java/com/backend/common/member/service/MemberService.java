@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,6 +37,14 @@ public class MemberService {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * MEMBERS 테이블에서 username 기준 단일 사용자 조회
+	 */
+	public Optional<Member> findByUsername(String username) {
+		return memberRepository.findByUsername(username)
+				.map(this::toMember);
+	}
+
 	public Optional<Member> findById(String id) {
 		return memberRepository.findById(id)
 				.map(this::toMember);
@@ -45,19 +54,21 @@ public class MemberService {
 	 * MEMBERS + USERS 동시 생성
 	 * - MEMBERS: 사용자 관리(목록/수정/삭제)용
 	 * - USERS  : 인증/권한(Role.MEMBER)용
+	 * @param createdAt 가입 일시 (null 인 경우 현재 시간으로 설정)
 	 */
-	public Member createMember(String username, String password, String name, String email) {
+	public Member createMember(String username, String password, String name, String email, LocalDateTime createdAt) {
 		if (memberRepository.existsByUsername(username) || userRepository.existsByUsername(username)) {
 			throw new IllegalArgumentException("Username already exists: " + username);
 		}
 		String encoded = passwordEncoder.encode(password);
+		LocalDateTime joinDateTime = createdAt != null ? createdAt : LocalDateTime.now();
 
 		// USERS 테이블에 MEMBER 계정 생성 (로그인용)
 		UserEntity userEntity = new UserEntity(username, encoded, Role.MEMBER, name, email);
 		userRepository.save(userEntity);
 
 		// MEMBERS 테이블에 사용자 정보 생성 (관리용)
-		MemberEntity memberEntity = new MemberEntity(username, encoded, name, email, null);
+		MemberEntity memberEntity = new MemberEntity(username, encoded, name, email, null, joinDateTime);
 		MemberEntity saved = memberRepository.save(memberEntity);
 
 		return toMember(saved);
@@ -102,6 +113,17 @@ public class MemberService {
 		memberRepository.delete(memberEntity);
 	}
 
+	/**
+	 * 마지막 로그인 일시 업데이트
+	 */
+	public void updateLastLogin(String username) {
+		memberRepository.findByUsername(username)
+				.ifPresent(entity -> {
+					entity.setLastLoginAt(LocalDateTime.now());
+					memberRepository.save(entity);
+				});
+	}
+
 	private Member toMember(MemberEntity entity) {
 		return new Member(
 			entity.getId(),
@@ -109,7 +131,9 @@ public class MemberService {
 			entity.getPassword(),
 			entity.getName(),
 			entity.getEmail(),
-			entity.getAvatarUrl()
+			entity.getAvatarUrl(),
+			entity.getCreatedAt(),
+			entity.getLastLoginAt()
 		);
 	}
 }

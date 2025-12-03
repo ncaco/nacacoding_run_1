@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { getApiUrl } from '../utils/api';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -13,12 +14,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
 
     try {
       const response = await fetch(getApiUrl('/auth/login/user'), {
@@ -32,7 +31,23 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || '로그인에 실패했습니다.');
+        // 서버에서 내려오는 인증/권한 오류 메시지를 한글로 매핑
+        const rawMessage: string | undefined = data.message;
+
+        let message: string;
+        if (
+          rawMessage === 'invalid credentials or insufficient privileges' ||
+          rawMessage === 'Invalid credentials or insufficient privileges'
+        ) {
+          message = '아이디 또는 비밀번호가 올바르지 않거나 권한이 없습니다.';
+        } else if (response.status === 400 || response.status === 401 || response.status === 403) {
+          message = '아이디 또는 비밀번호가 올바르지 않거나 권한이 없습니다.';
+        } else {
+          message = rawMessage || '로그인에 실패했습니다. 다시 시도해주세요.';
+        }
+
+        toast.error(message);
+        throw new Error(message);
       }
 
       // JWT 토큰 및 Refresh Token 저장
@@ -50,10 +65,9 @@ export default function LoginPage() {
       // 홈으로 리다이렉트
       router.push('/');
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      if (!(err instanceof Error)) {
+        const fallbackMessage = '로그인 중 오류가 발생했습니다. 다시 시도해주세요.';
+        toast.error(fallbackMessage);
       }
     } finally {
       setIsLoading(false);
@@ -82,27 +96,6 @@ export default function LoginPage() {
             </div>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-              {error && (
-                <div className="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
-                  <div className="flex">
-                    <svg
-                      className="h-5 w-5 text-red-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <p className="ml-3 text-sm text-red-800 dark:text-red-300">{error}</p>
-                  </div>
-                </div>
-              )}
-
               <div className="space-y-4">
                 <div>
                   <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -2,6 +2,8 @@ package com.backend.common.member.model;
 
 import jakarta.validation.constraints.NotBlank;
 
+import java.time.LocalDateTime;
+
 public class Member {
 	private String id;
 	@NotBlank
@@ -11,6 +13,8 @@ public class Member {
 	private String name;
 	private String email;
 	private String avatarUrl;
+	private LocalDateTime createdAt;
+	private LocalDateTime lastLoginAt;
 
 	public Member() {}
 	
@@ -37,6 +41,18 @@ public class Member {
 		this.avatarUrl = avatarUrl;
 	}
 
+	public Member(String id, String username, String password, String name, String email, String avatarUrl,
+	              LocalDateTime createdAt, LocalDateTime lastLoginAt) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.name = name;
+		this.email = email;
+		this.avatarUrl = avatarUrl;
+		this.createdAt = createdAt;
+		this.lastLoginAt = lastLoginAt;
+	}
+
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
 	public String getUsername() { return username; }
@@ -49,5 +65,9 @@ public class Member {
 	public void setEmail(String email) { this.email = email; }
 	public String getAvatarUrl() { return avatarUrl; }
 	public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+	public LocalDateTime getCreatedAt() { return createdAt; }
+	public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+	public LocalDateTime getLastLoginAt() { return lastLoginAt; }
+	public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
 }
 
