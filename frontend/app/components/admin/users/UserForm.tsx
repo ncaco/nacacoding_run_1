@@ -14,6 +14,7 @@ interface UserFormProps {
     role?: 'MEMBER' | 'USER';
     name?: string;
     email?: string;
+    phoneNumber?: string;
     userRoleId?: string;
   };
   isLoading?: boolean;
@@ -30,6 +31,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
     role: initialData?.role || 'MEMBER',
     name: initialData?.name || '',
     email: initialData?.email || '',
+    phoneNumber: initialData?.phoneNumber || '',
     userRoleId: initialData?.userRoleId || '',
   });
 
@@ -42,6 +44,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
         role: initialData.role || 'MEMBER',
         name: initialData.name || '',
         email: initialData.email || '',
+        phoneNumber: initialData.phoneNumber || '',
         userRoleId: initialData.userRoleId || '',
       });
     } else {
@@ -52,6 +55,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
         role: 'MEMBER',
         name: '',
         email: '',
+        phoneNumber: '',
         userRoleId: '',
       });
     }
@@ -158,6 +162,15 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
             value={formData.email}
             onChange={(value) => setFormData({ ...formData, email: value })}
             helperText="이메일 형식으로 입력하세요."
+          />
+
+          <FormField
+            label="연락처(전화번호)"
+            name="phoneNumber"
+            type="text"
+            placeholder="연락처(전화번호)를 입력하세요 (선택사항)"
+            value={formData.phoneNumber}
+            onChange={(value) => setFormData({ ...formData, phoneNumber: value })}
           />
 
           <div className="border-t border-slate-200 pt-3 dark:border-slate-800">

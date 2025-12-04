@@ -32,6 +32,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
   const [menuItems, setMenuItems] = useState<Menu[]>([]);
   const [isLoadingMenus, setIsLoadingMenus] = useState(true);
   const [loggedInUsername, setLoggedInUsername] = useState<string | null>(null);
+  const [memberName, setMemberName] = useState<string | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
 
@@ -41,18 +42,46 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
 
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
+    const userRole = localStorage.getItem('userRole');
 
-    if (!token || isTokenExpired(token)) {
+    if (!token || isTokenExpired(token) || userRole !== 'MEMBER') {
       // 만료되었거나 없는 토큰은 정리
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('username');
       localStorage.removeItem('userRole');
       setLoggedInUsername(null);
+      setMemberName(null);
       return;
     }
 
     setLoggedInUsername(username || null);
+
+    // 회원 이름 조회 (동그라미 이니셜용)
+    const fetchMemberProfile = async () => {
+      try {
+        const response = await fetch(getApiUrl('/members/me'), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        if (data?.success && data?.data) {
+          setMemberName(data.data.name || null);
+        }
+      } catch {
+        // 헤더 표시용이므로 에러는 무시
+      }
+    };
+
+    fetchMemberProfile();
   }, []);
 
   const handleLogout = async () => {
@@ -80,6 +109,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
         localStorage.removeItem('userRole');
       }
       setLoggedInUsername(null);
+      setMemberName(null);
       router.push('/');
     }
   };
@@ -203,6 +233,8 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
     fetchMenus();
   }, [onMenuLoadComplete]);
 
+  const profileInitial = (memberName || loggedInUsername || 'U').charAt(0).toUpperCase();
+
   return (
     <>
       {/* Mobile Menu Overlay - 헤더 밖으로 이동하여 레이아웃 문제 해결 */}
@@ -277,13 +309,12 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                   <div className="flex items-center justify-between rounded-lg bg-white px-4 py-3 shadow-sm dark:bg-gray-800">
                     <div className="flex items-center gap-3">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-sm font-semibold text-white">
-                        {loggedInUsername.charAt(0).toUpperCase()}
+                        {profileInitial}
                       </div>
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {loggedInUsername}
+                          @{loggedInUsername}
                         </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">포털 회원</span>
                       </div>
                     </div>
                     <button
@@ -366,7 +397,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                   aria-label="Profile menu"
                   aria-expanded={isProfileOpen}
                 >
-                  {loggedInUsername.charAt(0).toUpperCase()}
+                  {profileInitial}
                 </button>
 
                 {isProfileOpen && (
@@ -374,14 +405,11 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                     <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                       <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-sm font-semibold text-white">
-                          {loggedInUsername.charAt(0).toUpperCase()}
+                          {profileInitial}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                            {loggedInUsername}
-                          </p>
-                          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                            포털 회원
+                            @{loggedInUsername}
                           </p>
                         </div>
                       </div>

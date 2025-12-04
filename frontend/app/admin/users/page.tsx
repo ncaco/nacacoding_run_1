@@ -16,6 +16,7 @@ interface User {
   role: 'MEMBER';
   name?: string;
   email?: string;
+  phoneNumber?: string;
   avatarUrl?: string;
 }
 
@@ -65,6 +66,7 @@ function UsersPageContent() {
         role: 'MEMBER' as const,
         name: member.name,
         email: member.email,
+        phoneNumber: member.phoneNumber,
         avatarUrl: member.avatarUrl,
       }));
 
@@ -172,6 +174,7 @@ function UsersPageContent() {
           body: JSON.stringify({
             name: formData.name || '',
             email: formData.email || '',
+            phoneNumber: formData.phoneNumber || '',
           }),
         });
 
@@ -199,6 +202,7 @@ function UsersPageContent() {
             password: formData.password,
             name: formData.name || '',
             email: formData.email || '',
+            phoneNumber: formData.phoneNumber || '',
           }),
         });
 
@@ -247,6 +251,7 @@ function UsersPageContent() {
               role: 'MEMBER',
               name: editingUser.name,
               email: editingUser.email,
+              phoneNumber: editingUser.phoneNumber,
             } : undefined}
             isLoading={isSubmitting}
           />

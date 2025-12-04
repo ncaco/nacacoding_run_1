@@ -42,6 +42,28 @@ public class MemberController {
 		return ResponseEntity.ok(ApiResponse.ok(member));
 	}
 
+	@Operation(summary = "현재 사용자 프로필 수정", description = "로그인한 사용자(MEMBER)의 프로필 정보를 수정합니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "수정 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+	})
+	@SecurityRequirement(name = "bearerAuth")
+	@PutMapping("/me")
+	public ResponseEntity<ApiResponse<Member>> updateMe(Authentication auth,
+	                                                   @RequestBody UpdateMyProfileRequest request) {
+		String username = auth.getName();
+
+		Member updated = memberService.updateMyProfile(
+			username,
+			request.getName(),
+			request.getEmail(),
+			request.getPhoneNumber()
+		);
+
+		return ResponseEntity.ok(ApiResponse.ok(updated));
+	}
+
 	@Operation(summary = "사용자 목록 조회", description = "전체 사용자(MEMBER) 목록을 조회합니다.")
 	@ApiResponses(value = {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -71,6 +93,7 @@ public class MemberController {
 				request.getPassword(),
 				request.getName(),
 				request.getEmail(),
+				request.getPhoneNumber(),
 				request.getCreatedAt()
 			)
 		));
@@ -89,7 +112,38 @@ public class MemberController {
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse<Member>> update(@PathVariable String id,
 	                                                   @RequestBody UpdateMemberRequest request) {
-		return ResponseEntity.ok(ApiResponse.ok(memberService.updateMember(id, request.getName(), request.getEmail())));
+		return ResponseEntity.ok(ApiResponse.ok(
+			memberService.updateMember(
+				id,
+				request.getName(),
+				request.getEmail(),
+				request.getPhoneNumber()
+			)
+		));
+	}
+
+	@Operation(summary = "현재 사용자 비밀번호 변경", description = "로그인한 사용자(MEMBER)의 비밀번호를 변경합니다.")
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "변경 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청 또는 현재 비밀번호 불일치"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+	})
+	@SecurityRequirement(name = "bearerAuth")
+	@PostMapping("/me/password")
+	public ResponseEntity<ApiResponse<Void>> changePassword(Authentication auth,
+	                                                       @RequestBody ChangePasswordRequest request) {
+		String username = auth.getName();
+
+		if (request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
+			throw new IllegalArgumentException("신규 비밀번호를 입력해주세요.");
+		}
+		if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+			throw new IllegalArgumentException("신규 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+		}
+
+		memberService.changePassword(username, request.getCurrentPassword(), request.getNewPassword());
+
+		return ResponseEntity.ok(ApiResponse.ok(null));
 	}
 
 	@Operation(summary = "사용자 삭제", description = "사용자(MEMBER)를 삭제합니다. USER 권한이 필요합니다.")
@@ -115,6 +169,7 @@ public class MemberController {
 		private String password;
 		private String name;
 		private String email;
+		private String phoneNumber;
 		// 가입 일시 (관리자에서 직접 지정 가능, 미지정 시 서버에서 현재 시간으로 처리)
 		private java.time.LocalDateTime createdAt;
 
@@ -126,6 +181,8 @@ public class MemberController {
 		public void setName(String name) { this.name = name; }
 		public String getEmail() { return email; }
 		public void setEmail(String email) { this.email = email; }
+		public String getPhoneNumber() { return phoneNumber; }
+		public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 		public java.time.LocalDateTime getCreatedAt() { return createdAt; }
 		public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }
 	}
@@ -133,11 +190,43 @@ public class MemberController {
 	public static class UpdateMemberRequest {
 		private String name;
 		private String email;
+		private String phoneNumber;
 
 		public String getName() { return name; }
 		public void setName(String name) { this.name = name; }
 		public String getEmail() { return email; }
 		public void setEmail(String email) { this.email = email; }
+		public String getPhoneNumber() { return phoneNumber; }
+		public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+	}
+
+	public static class UpdateMyProfileRequest {
+		private String name;
+		private String email;
+		private String phoneNumber;
+
+		public String getName() { return name; }
+		public void setName(String name) { this.name = name; }
+		public String getEmail() { return email; }
+		public void setEmail(String email) { this.email = email; }
+		public String getPhoneNumber() { return phoneNumber; }
+		public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+	}
+
+	public static class ChangePasswordRequest {
+		@NotBlank
+		private String currentPassword;
+		@NotBlank
+		private String newPassword;
+		@NotBlank
+		private String confirmPassword;
+
+		public String getCurrentPassword() { return currentPassword; }
+		public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
+		public String getNewPassword() { return newPassword; }
+		public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
+		public String getConfirmPassword() { return confirmPassword; }
+		public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
 	}
 }
 

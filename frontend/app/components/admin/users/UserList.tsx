@@ -11,6 +11,7 @@ interface User {
   role: 'USER' | 'MEMBER';
   name?: string;
   email?: string;
+  phoneNumber?: string;
   avatarUrl?: string;
 }
 
@@ -115,7 +116,8 @@ export default function UserList({ users, isLoading, onAdd, onEdit, onDelete, is
       const matchesSearch = 
         user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()));
+        (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (user.phoneNumber && user.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesRole = !roleFilter || user.role === roleFilter;
       return matchesSearch && matchesRole;
     });

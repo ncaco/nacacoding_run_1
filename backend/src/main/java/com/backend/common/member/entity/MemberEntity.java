@@ -34,6 +34,10 @@ public class MemberEntity {
 	@Comment("이메일 주소")
 	private String email;
 
+	@Column(name = "PHONE_NO")
+	@Comment("연락처(전화번호)")
+	private String phoneNumber;
+
 	@Column(name = "AVATAR_URL")
 	@Comment("아바타 이미지 URL")
 	private String avatarUrl;
@@ -48,11 +52,12 @@ public class MemberEntity {
 
 	public MemberEntity() {}
 
-	public MemberEntity(String username, String password, String name, String email, String avatarUrl, LocalDateTime createdAt) {
+	public MemberEntity(String username, String password, String name, String email, String phoneNumber, String avatarUrl, LocalDateTime createdAt) {
 		this.username = username;
 		this.password = password;
 		this.name = name;
 		this.email = email;
+		this.phoneNumber = phoneNumber;
 		this.avatarUrl = avatarUrl;
 		this.createdAt = createdAt;
 	}
@@ -67,6 +72,8 @@ public class MemberEntity {
 	public void setName(String name) { this.name = name; }
 	public String getEmail() { return email; }
 	public void setEmail(String email) { this.email = email; }
+	public String getPhoneNumber() { return phoneNumber; }
+	public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 	public String getAvatarUrl() { return avatarUrl; }
 	public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 	public LocalDateTime getCreatedAt() { return createdAt; }

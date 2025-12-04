@@ -59,7 +59,7 @@ export default function LoginPage() {
         localStorage.setItem('username', username);
         localStorage.setItem('userRole', 'MEMBER');
       } else {
-        throw new Error('토큰을 받지 못했습니다.');
+        throw new Error('토큰을 받지 못했습니다.');~
       }
       
       // 홈으로 리다이렉트

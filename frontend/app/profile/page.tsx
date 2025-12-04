@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getApiUrl } from '../utils/api';
@@ -22,6 +23,20 @@ export default function PortalProfilePage() {
   const [profile, setProfile] = useState<MemberProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState<{ name: string; email: string; phoneNumber: string }>({
+    name: '',
+    email: '',
+    phoneNumber: '',
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState<{ currentPassword: string; newPassword: string; confirmPassword: string }>({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     const initProfile = async () => {
@@ -74,6 +89,11 @@ export default function PortalProfilePage() {
 
         const member: MemberProfile = data.data || {};
         setProfile(member);
+        setProfileForm({
+          name: member.name || '',
+          email: member.email || '',
+          phoneNumber: member.phoneNumber || '',
+        });
       } catch (err) {
         console.error('포털 프로필 조회 실패:', err);
         setError('프로필 정보를 불러오는 중 오류가 발생했습니다.');
@@ -106,6 +126,167 @@ export default function PortalProfilePage() {
     // ISO 문자열 "YYYY-MM-DDTHH:mm:ss" 형태 기준으로 공백으로 치환 후 앞 19자리까지 사용
     const normalized = value.replace('T', ' ');
     return normalized.substring(0, 19);
+  };
+
+  const handleStartEditProfile = () => {
+    if (!profile) return;
+    setProfileForm({
+      name: profile.name || '',
+      email: profile.email || '',
+      phoneNumber: profile.phoneNumber || '',
+    });
+    setIsEditingProfile(true);
+  };
+
+  const handleCancelEditProfile = () => {
+    if (profile) {
+      setProfileForm({
+        name: profile.name || '',
+        email: profile.email || '',
+        phoneNumber: profile.phoneNumber || '',
+      });
+    }
+    setIsEditingProfile(false);
+  };
+
+  const handleSaveProfile = async () => {
+    if (typeof window === 'undefined') return;
+    const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!token || isTokenExpired(token) || userRole !== 'MEMBER') {
+      toast.error('로그인이 필요합니다. 다시 로그인해주세요.');
+      router.push('/login');
+      return;
+    }
+
+    try {
+      setIsSavingProfile(true);
+      const response = await fetch(getApiUrl('/members/me'), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: profileForm.name,
+          email: profileForm.email,
+          phoneNumber: profileForm.phoneNumber,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 401) {
+        toast.error('세션이 만료되었습니다. 다시 로그인해주세요.');
+        router.push('/login');
+        return;
+      }
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '프로필 수정에 실패했습니다.');
+      }
+
+      const updated: MemberProfile = data.data || {};
+      setProfile(updated);
+      setProfileForm({
+        name: updated.name || '',
+        email: updated.email || '',
+        phoneNumber: updated.phoneNumber || '',
+      });
+      setIsEditingProfile(false);
+      toast.success('프로필이 성공적으로 수정되었습니다.');
+    } catch (err) {
+      console.error('프로필 수정 실패:', err);
+      if (err instanceof Error) {
+        toast.error(err.message || '프로필 수정에 실패했습니다.');
+      } else {
+        toast.error('프로필 수정에 실패했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleOpenPasswordModal = () => {
+    setPasswordForm({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
+    setIsPasswordModalOpen(true);
+  };
+
+  const handleClosePasswordModal = () => {
+    setIsPasswordModalOpen(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      toast.error('모든 비밀번호 입력란을 채워주세요.');
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('신규 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+      return;
+    }
+
+    if (typeof window === 'undefined') return;
+    const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!token || isTokenExpired(token) || userRole !== 'MEMBER') {
+      toast.error('로그인이 필요합니다. 다시 로그인해주세요.');
+      router.push('/login');
+      return;
+    }
+
+    try {
+      setIsChangingPassword(true);
+      const response = await fetch(getApiUrl('/members/me/password'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+          confirmPassword: passwordForm.confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 401) {
+        toast.error('세션이 만료되었습니다. 다시 로그인해주세요.');
+        router.push('/login');
+        return;
+      }
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || '비밀번호 변경에 실패했습니다.');
+      }
+
+      toast.success('비밀번호가 성공적으로 변경되었습니다. 다시 로그인해주세요.');
+      setIsPasswordModalOpen(false);
+
+      // 비밀번호 변경 후 보안을 위해 로그아웃 처리
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userRole');
+      router.push('/login');
+    } catch (err) {
+      console.error('비밀번호 변경 실패:', err);
+      if (err instanceof Error) {
+        toast.error(err.message || '비밀번호 변경에 실패했습니다.');
+      } else {
+        toast.error('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   return (
@@ -141,9 +322,6 @@ export default function PortalProfilePage() {
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {profile?.name || profile?.username || '회원'}
                     </h2>
-                    <p className="mt-1 text-xs font-medium uppercase tracking-[0.16em] text-green-600 dark:text-green-400">
-                      Portal Member
-                    </p>
                     <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                       나의 활동과 계정 정보를 관리하는 공간입니다.
                     </p>
@@ -174,10 +352,17 @@ export default function PortalProfilePage() {
                     </button>
                     <button
                       type="button"
-                      disabled
-                      className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-green-400 to-green-600 px-4 py-2 text-sm font-semibold text-white opacity-60 shadow-md shadow-green-500/30"
+                  onClick={handleStartEditProfile}
+                  className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-green-400 to-green-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-green-500/30 hover:shadow-lg hover:-translate-y-0.5 transition-all"
                     >
-                      프로필 수정 (준비 중)
+                  프로필 수정
+                </button>
+                <button
+                  type="button"
+                  onClick={handleOpenPasswordModal}
+                  className="inline-flex items-center justify-center rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 shadow-sm transition-all hover:-translate-y-0.5 hover:border-red-400 hover:bg-red-50 hover:text-red-700 dark:border-red-500/40 dark:bg-gray-900 dark:text-red-300 dark:hover:border-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-200"
+                >
+                  비밀번호 변경
                     </button>
                   </div>
                 </>
@@ -195,49 +380,121 @@ export default function PortalProfilePage() {
               )}
 
               <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                계정 정보
+                {isEditingProfile ? '계정 정보 수정' : '계정 정보'}
               </h2>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 로그인 및 서비스 이용에 사용되는 기본 정보입니다.
               </p>
 
-              <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                    아이디
-                  </p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {profile?.username || '-'}
-                  </p>
-                </div>
+              {isEditingProfile ? (
+                <div className="mt-6 space-y-4">
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        아이디
+                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {profile?.username ? `@${profile.username}` : '-'}
+                      </p>
+                    </div>
 
-                <div className="space-y-1.5">
-                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                    이름
-                  </p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {profile?.name || profile?.username || '-'}
-                  </p>
-                </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        이름
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.name}
+                        onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-green-500 dark:focus:ring-green-600/40"
+                        placeholder="이름을 입력하세요"
+                      />
+                    </div>
 
-                <div className="space-y-1.5">
-                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                    이메일
-                  </p>
-                  <p className="break-all text-sm text-gray-900 dark:text-gray-100">
-                    {profile?.email || '-'}
-                  </p>
-                </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        이메일
+                      </label>
+                      <input
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-green-500 dark:focus:ring-green-600/40"
+                        placeholder="이메일을 입력하세요"
+                      />
+                    </div>
 
-                <div className="space-y-1.5">
-                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                    연락처
-                  </p>
-                  <p className="text-sm text-gray-900 dark:text-gray-100">
-                    {profile?.phoneNumber || '-'}
-                  </p>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        연락처
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.phoneNumber}
+                        onChange={(e) => setProfileForm({ ...profileForm, phoneNumber: e.target.value })}
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-green-500 dark:focus:ring-green-600/40"
+                        placeholder="연락처(전화번호)를 입력하세요"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCancelEditProfile}
+                      className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-800"
+                    >
+                      취소
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveProfile}
+                      disabled={isSavingProfile}
+                      className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-green-500/30 transition-all hover:from-green-500 hover:to-green-700 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isSavingProfile ? '저장 중...' : '저장'}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                      아이디
+                    </p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {profile?.username ? `@${profile.username}` : '-'}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                      이름
+                    </p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {profile?.name || profile?.username || '-'}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                      이메일
+                    </p>
+                    <p className="break-all text-sm text-gray-900 dark:text-gray-100">
+                      {profile?.email || '-'}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                      연락처
+                    </p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {profile?.phoneNumber || '-'}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-8 rounded-xl border border-dashed border-gray-200 bg-gray-50/80 px-4 py-4 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400">
                 향후 알림 설정, 보안 설정 등 더 많은 마이페이지 기능이 이 영역에 확장될 예정입니다.
@@ -248,6 +505,92 @@ export default function PortalProfilePage() {
       </main>
 
       <Footer />
+
+      {/* 비밀번호 변경 모달 */}
+      {isPasswordModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-700">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                  비밀번호 변경
+                </h2>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  현재 비밀번호를 확인하고 새 비밀번호로 변경합니다.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleClosePasswordModal}
+                className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  현재 비밀번호
+                </label>
+                <input
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                  className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-green-500 dark:focus:ring-green-600/40"
+                  placeholder="현재 비밀번호를 입력하세요"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  신규 비밀번호
+                </label>
+                <input
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                  className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-green-500 dark:focus:ring-green-600/40"
+                  placeholder="새 비밀번호를 입력하세요"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  신규 비밀번호 확인
+                </label>
+                <input
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                  className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-green-500 dark:focus:ring-green-600/40"
+                  placeholder="새 비밀번호를 다시 입력하세요"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={handleClosePasswordModal}
+                className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-800"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleChangePassword}
+                disabled={isChangingPassword}
+                className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-red-500/30 transition-all hover:from-red-600 hover:to-red-700 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isChangingPassword ? '변경 중...' : '비밀번호 변경'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

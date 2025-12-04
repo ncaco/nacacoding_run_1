@@ -45,6 +45,32 @@ public class MemberService {
 				.map(this::toMember);
 	}
 
+	/**
+	 * 로그인한 사용자(MEMBER)의 프로필 수정 (이름, 이메일, 전화번호)
+	 * - MEMBERS: name, email, phoneNumber 수정
+	 * - USERS  : name, email 동기화
+	 */
+	public Member updateMyProfile(String username, String name, String email, String phoneNumber) {
+		MemberEntity memberEntity = memberRepository.findByUsername(username)
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다: " + username));
+
+		memberEntity.setName(name);
+		memberEntity.setEmail(email);
+		memberEntity.setPhoneNumber(phoneNumber);
+		MemberEntity savedMember = memberRepository.save(memberEntity);
+
+		// USERS 테이블에도 동일 username 사용 시 동기화
+		userRepository.findByUsername(memberEntity.getUsername())
+			.filter(u -> u.getRole() == Role.MEMBER)
+			.ifPresent(u -> {
+				u.setName(name);
+				u.setEmail(email);
+				userRepository.save(u);
+			});
+
+		return toMember(savedMember);
+	}
+
 	public Optional<Member> findById(String id) {
 		return memberRepository.findById(id)
 				.map(this::toMember);
@@ -56,7 +82,7 @@ public class MemberService {
 	 * - USERS  : 인증/권한(Role.MEMBER)용
 	 * @param createdAt 가입 일시 (null 인 경우 현재 시간으로 설정)
 	 */
-	public Member createMember(String username, String password, String name, String email, LocalDateTime createdAt) {
+	public Member createMember(String username, String password, String name, String email, String phoneNumber, LocalDateTime createdAt) {
 		if (memberRepository.existsByUsername(username) || userRepository.existsByUsername(username)) {
 			throw new IllegalArgumentException("Username already exists: " + username);
 		}
@@ -68,7 +94,7 @@ public class MemberService {
 		userRepository.save(userEntity);
 
 		// MEMBERS 테이블에 사용자 정보 생성 (관리용)
-		MemberEntity memberEntity = new MemberEntity(username, encoded, name, email, null, joinDateTime);
+		MemberEntity memberEntity = new MemberEntity(username, encoded, name, email, phoneNumber, null, joinDateTime);
 		MemberEntity saved = memberRepository.save(memberEntity);
 
 		return toMember(saved);
@@ -77,12 +103,13 @@ public class MemberService {
 	/**
 	 * MEMBERS + USERS 동시 수정 (이름/이메일 동기화)
 	 */
-	public Member updateMember(String id, String name, String email) {
+	public Member updateMember(String id, String name, String email, String phoneNumber) {
 		MemberEntity memberEntity = memberRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + id));
 
 		memberEntity.setName(name);
 		memberEntity.setEmail(email);
+		memberEntity.setPhoneNumber(phoneNumber);
 		MemberEntity savedMember = memberRepository.save(memberEntity);
 
 		// USERS 테이블에도 동일 username 사용 시 동기화
@@ -124,6 +151,36 @@ public class MemberService {
 				});
 	}
 
+	/**
+	 * 사용자(MEMBER) 비밀번호 변경
+	 * - 현재 비밀번호 검증 후 USERS + MEMBERS 동시 변경
+	 */
+	public void changePassword(String username, String currentPassword, String newPassword) {
+		// USERS 테이블에서 사용자 조회
+		UserEntity userEntity = userRepository.findByUsername(username)
+			.filter(u -> u.getRole() == Role.MEMBER)
+			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + username));
+
+		// 현재 비밀번호 확인
+		if (!passwordEncoder.matches(currentPassword, userEntity.getPassword())) {
+			throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+		}
+
+		// 새 비밀번호 암호화
+		String encoded = passwordEncoder.encode(newPassword);
+
+		// USERS 테이블 비밀번호 변경
+		userEntity.setPassword(encoded);
+		userRepository.save(userEntity);
+
+		// MEMBERS 테이블도 존재하면 비밀번호 동기화
+		memberRepository.findByUsername(username)
+			.ifPresent(memberEntity -> {
+				memberEntity.setPassword(encoded);
+				memberRepository.save(memberEntity);
+			});
+	}
+
 	private Member toMember(MemberEntity entity) {
 		return new Member(
 			entity.getId(),
@@ -131,6 +188,7 @@ public class MemberService {
 			entity.getPassword(),
 			entity.getName(),
 			entity.getEmail(),
+			entity.getPhoneNumber(),
 			entity.getAvatarUrl(),
 			entity.getCreatedAt(),
 			entity.getLastLoginAt()
