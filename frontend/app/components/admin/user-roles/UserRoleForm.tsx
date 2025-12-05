@@ -93,7 +93,7 @@ export default function UserRoleForm({ onSubmit, onCancel, initialData, isLoadin
                 type="select"
                 required
                 value={formData.roleCd}
-                onChange={(value) => setFormData({ ...formData, roleCd: value })}
+                onChange={(value) => setFormData({ ...formData, roleCd: String(value) })}
                 options={[
                   { value: '', label: '선택하세요' },
                   ...roleCdOptions,
@@ -126,7 +126,7 @@ export default function UserRoleForm({ onSubmit, onCancel, initialData, isLoadin
             required
             placeholder="역할명을 입력하세요"
             value={formData.roleNm}
-            onChange={(value) => setFormData({ ...formData, roleNm: value })}
+            onChange={(value) => setFormData({ ...formData, roleNm: String(value) })}
           />
 
           <FormField
@@ -136,7 +136,7 @@ export default function UserRoleForm({ onSubmit, onCancel, initialData, isLoadin
             rows={3}
             placeholder="역할 설명을 입력하세요 (선택사항)"
             value={formData.roleDesc}
-            onChange={(value) => setFormData({ ...formData, roleDesc: value })}
+            onChange={(value) => setFormData({ ...formData, roleDesc: String(value) })}
           />
 
           <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
@@ -145,7 +145,7 @@ export default function UserRoleForm({ onSubmit, onCancel, initialData, isLoadin
               name="enabled"
               type="checkbox"
               value={formData.enabled}
-              onChange={(value) => setFormData({ ...formData, enabled: value })}
+              onChange={(value) => setFormData({ ...formData, enabled: Boolean(value) })}
             />
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
               비활성화된 역할은 사용할 수 없습니다.
@@ -155,7 +155,6 @@ export default function UserRoleForm({ onSubmit, onCancel, initialData, isLoadin
           <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
             <FormActions
               onCancel={onCancel}
-              onSubmit={handleSubmit}
               submitLabel={isEditMode ? '수정' : '생성'}
               isLoading={isLoading}
             />

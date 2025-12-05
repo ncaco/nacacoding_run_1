@@ -6,7 +6,7 @@ import TabContainer from '../../components/admin/TabContainer';
 import LogList from '../../components/admin/logs/LogList';
 import LogForm from '../../components/admin/logs/LogForm';
 
-interface Log {
+interface Log extends Record<string, unknown> {
   id: string;
   level: 'INFO' | 'WARN' | 'ERROR';
   message: string;

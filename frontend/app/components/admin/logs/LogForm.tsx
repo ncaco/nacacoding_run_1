@@ -40,7 +40,7 @@ export default function LogForm({ onSubmit, onCancel, initialData }: LogFormProp
           name="level"
           type="select"
           value={formData.level}
-          onChange={(value) => setFormData({ ...formData, level: value })}
+          onChange={(value) => setFormData({ ...formData, level: String(value) as 'INFO' | 'WARN' | 'ERROR' })}
           options={[
             { value: 'INFO', label: 'INFO' },
             { value: 'WARN', label: 'WARN' },
@@ -54,7 +54,7 @@ export default function LogForm({ onSubmit, onCancel, initialData }: LogFormProp
           rows={4}
           placeholder="로그 메시지를 입력하세요"
           value={formData.message}
-          onChange={(value) => setFormData({ ...formData, message: value })}
+          onChange={(value) => setFormData({ ...formData, message: String(value) })}
         />
         <FormActions onCancel={onCancel} submitLabel="추가" />
       </form>

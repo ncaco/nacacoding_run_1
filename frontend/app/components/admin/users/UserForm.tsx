@@ -108,7 +108,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
             required
             placeholder="사용자명을 입력하세요"
             value={formData.username}
-            onChange={(value) => setFormData({ ...formData, username: value })}
+            onChange={(value) => setFormData({ ...formData, username: String(value) })}
             disabled={isEditMode}
             helperText={isEditMode ? '사용자명은 변경할 수 없습니다.' : '로그인에 사용할 사용자명을 입력하세요.'}
           />
@@ -121,7 +121,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
               required
               placeholder="비밀번호를 입력하세요"
               value={formData.password}
-              onChange={(value) => setFormData({ ...formData, password: value })}
+              onChange={(value) => setFormData({ ...formData, password: String(value) })}
               helperText="비밀번호는 암호화되어 저장됩니다."
             />
           )}
@@ -133,7 +133,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
               type="select"
               required={!isEditMode}
               value={formData.userRoleId}
-              onChange={(value) => setFormData({ ...formData, userRoleId: value })}
+              onChange={(value) => setFormData({ ...formData, userRoleId: String(value) })}
               options={[
                 { value: '', label: '선택하세요' },
                 ...userRoleOptions,
@@ -147,7 +147,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
               type="select"
               required
               value={formData.role}
-              onChange={(value) => setFormData({ ...formData, role: value as 'MEMBER' | 'USER' })}
+              onChange={(value) => setFormData({ ...formData, role: String(value) as 'MEMBER' | 'USER' })}
               options={[
                 { value: 'MEMBER', label: '사용자 (MEMBER)' },
                 { value: 'USER', label: '관리자 (USER)' },
@@ -162,7 +162,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
             type="text"
             placeholder="이름을 입력하세요 (선택사항)"
             value={formData.name}
-            onChange={(value) => setFormData({ ...formData, name: value })}
+            onChange={(value) => setFormData({ ...formData, name: String(value) })}
           />
 
           <FormField
@@ -171,7 +171,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
             type="email"
             placeholder="이메일 주소를 입력하세요 (선택사항)"
             value={formData.email}
-            onChange={(value) => setFormData({ ...formData, email: value })}
+            onChange={(value) => setFormData({ ...formData, email: String(value) })}
             helperText="이메일 형식으로 입력하세요."
           />
 
@@ -181,13 +181,12 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
             type="text"
             placeholder="연락처(전화번호)를 입력하세요 (선택사항)"
             value={formData.phoneNumber}
-            onChange={(value) => setFormData({ ...formData, phoneNumber: value })}
+            onChange={(value) => setFormData({ ...formData, phoneNumber: String(value) })}
           />
 
           <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
             <FormActions
               onCancel={onCancel}
-              onSubmit={handleSubmit}
               submitLabel={isEditMode ? '수정' : '생성'}
               isLoading={isLoading}
             />

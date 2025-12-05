@@ -49,12 +49,12 @@ interface MenuFormProps {
 export default function MenuForm({ onSubmit, onCancel, initialData, isLoading = false, sites = [], menus = [] }: MenuFormProps) {
   const isEditMode = !!initialData?.name;
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<MenuFormData>({
     siteId: initialData?.siteId || '',
     name: initialData?.name || '',
     url: initialData?.url || '',
     displayOrder: initialData?.displayOrder || 0,
-    parentId: initialData?.parentId || '',
+    parentId: initialData?.parentId || null,
     enabled: initialData?.enabled ?? true,
   });
 
@@ -106,7 +106,7 @@ export default function MenuForm({ onSubmit, onCancel, initialData, isLoading = 
               type="select"
               required
               value={formData.siteId}
-              onChange={(value) => setFormData({ ...formData, siteId: value, parentId: '' })}
+              onChange={(value) => setFormData({ ...formData, siteId: String(value), parentId: '' })}
               options={siteOptions}
             />
           )}
@@ -130,7 +130,7 @@ export default function MenuForm({ onSubmit, onCancel, initialData, isLoading = 
             required
             placeholder="메뉴명을 입력하세요"
             value={formData.name}
-            onChange={(value) => setFormData({ ...formData, name: value })}
+            onChange={(value) => setFormData({ ...formData, name: String(value) })}
           />
 
           <FormField
@@ -139,7 +139,7 @@ export default function MenuForm({ onSubmit, onCancel, initialData, isLoading = 
             type="text"
             placeholder="/example (선택사항)"
             value={formData.url}
-            onChange={(value) => setFormData({ ...formData, url: value })}
+            onChange={(value) => setFormData({ ...formData, url: String(value) })}
           />
 
           <FormField
@@ -156,8 +156,8 @@ export default function MenuForm({ onSubmit, onCancel, initialData, isLoading = 
             label="부모 메뉴"
             name="parentId"
             type="select"
-            value={formData.parentId}
-            onChange={(value) => setFormData({ ...formData, parentId: value })}
+            value={formData.parentId || ''}
+            onChange={(value) => setFormData({ ...formData, parentId: String(value) || null })}
             options={parentMenuOptions}
           />
 
@@ -168,7 +168,7 @@ export default function MenuForm({ onSubmit, onCancel, initialData, isLoading = 
                 name="enabled"
                 type="checkbox"
                 value={formData.enabled}
-                onChange={(value) => setFormData({ ...formData, enabled: value })}
+                onChange={(value) => setFormData({ ...formData, enabled: Boolean(value) })}
               />
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 비활성화된 메뉴는 사용할 수 없습니다.

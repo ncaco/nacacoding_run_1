@@ -112,7 +112,7 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
                 type="select"
                 required
                 value={formData.siteType}
-                onChange={(value) => setFormData({ ...formData, siteType: value })}
+                onChange={(value) => setFormData({ ...formData, siteType: String(value) })}
                 options={[
                   { value: '', label: '선택하세요' },
                   ...siteTypeOptions,
@@ -150,7 +150,7 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
             required
             placeholder="사이트명을 입력하세요"
             value={formData.siteName}
-            onChange={(value) => setFormData({ ...formData, siteName: value })}
+            onChange={(value) => setFormData({ ...formData, siteName: String(value) })}
           />
 
           <FormField
@@ -160,7 +160,7 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
             rows={3}
             placeholder="사이트 설명을 입력하세요 (선택사항)"
             value={formData.description}
-            onChange={(value) => setFormData({ ...formData, description: value })}
+            onChange={(value) => setFormData({ ...formData, description: String(value) })}
           />
 
           <FormField
@@ -169,7 +169,7 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
             type="text"
             placeholder="예: '' (빈 값 = root), 'admin' = /admin, 공백(' ')도 가능"
             value={formData.contextPath}
-            onChange={(value) => setFormData({ ...formData, contextPath: value })}
+            onChange={(value) => setFormData({ ...formData, contextPath: String(value) })}
             helperText="빈 값('')은 root 경로(포털사이트), 'admin'은 /admin 경로(관리자 사이트)를 의미합니다. 공백 문자열(' ')도 저장 가능합니다."
           />
 
@@ -181,7 +181,7 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
               required
               placeholder="예: 1.0.0"
               value={formData.version}
-              onChange={(value) => setFormData({ ...formData, version: value })}
+              onChange={(value) => setFormData({ ...formData, version: String(value) })}
             />
             {formData.version && (
               <p className={`mt-1 text-xs ${getVersionHelperText().includes('올바른') ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
@@ -202,7 +202,7 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
                 name="enabled"
                 type="checkbox"
                 value={formData.enabled}
-                onChange={(value) => setFormData({ ...formData, enabled: value })}
+                onChange={(value) => setFormData({ ...formData, enabled: Boolean(value) })}
               />
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
                 비활성화된 사이트는 사용할 수 없습니다.

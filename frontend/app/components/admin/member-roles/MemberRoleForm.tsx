@@ -93,7 +93,7 @@ export default function MemberRoleForm({ onSubmit, onCancel, initialData, isLoad
                 required
                 placeholder="역할 코드를 입력하세요 (예: VIP, PREMIUM, BASIC)"
                 value={formData.roleCd}
-                onChange={(value) => setFormData({ ...formData, roleCd: value })}
+                onChange={(value) => setFormData({ ...formData, roleCd: String(value) })}
               />
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
                 역할 코드를 입력합니다. 생성 후 변경할 수 없습니다.
@@ -122,7 +122,7 @@ export default function MemberRoleForm({ onSubmit, onCancel, initialData, isLoad
             required
             placeholder="역할명을 입력하세요"
             value={formData.roleNm}
-            onChange={(value) => setFormData({ ...formData, roleNm: value })}
+            onChange={(value) => setFormData({ ...formData, roleNm: String(value) })}
           />
 
           <FormField
@@ -132,7 +132,7 @@ export default function MemberRoleForm({ onSubmit, onCancel, initialData, isLoad
             rows={3}
             placeholder="역할 설명을 입력하세요 (선택사항)"
             value={formData.roleDesc}
-            onChange={(value) => setFormData({ ...formData, roleDesc: value })}
+            onChange={(value) => setFormData({ ...formData, roleDesc: String(value) })}
           />
 
           <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
@@ -141,7 +141,7 @@ export default function MemberRoleForm({ onSubmit, onCancel, initialData, isLoad
               name="enabled"
               type="checkbox"
               value={formData.enabled}
-              onChange={(value) => setFormData({ ...formData, enabled: value })}
+              onChange={(value) => setFormData({ ...formData, enabled: Boolean(value) })}
             />
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
               비활성화된 역할은 사용할 수 없습니다.

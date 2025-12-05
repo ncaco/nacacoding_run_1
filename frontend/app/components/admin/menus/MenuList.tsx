@@ -634,7 +634,7 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onSubmit
                       name="parentId"
                       type="select"
                       value={formData.parentId || ''}
-                      onChange={(value) => setFormData({ ...formData, parentId: value || null })}
+                      onChange={(value) => setFormData({ ...formData, parentId: String(value) || null })}
                       options={getParentMenuOptions()}
                       helperText="(선택사항) 상위 메뉴를 선택하여 계층 구조를 만듭니다."
                     />
@@ -649,7 +649,7 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onSubmit
                   required
                   placeholder="메뉴명을 입력하세요"
                   value={formData.name}
-                  onChange={(value) => setFormData({ ...formData, name: value })}
+                  onChange={(value) => setFormData({ ...formData, name: String(value) })}
                 />
 
                 {/* 경로 (URL) */}
@@ -659,7 +659,7 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onSubmit
                   type="text"
                   placeholder="메뉴 URL을 입력하세요 (선택사항)"
                   value={formData.url}
-                  onChange={(value) => setFormData({ ...formData, url: value })}
+                  onChange={(value) => setFormData({ ...formData, url: String(value) })}
                   helperText="메뉴 클릭 시 이동할 경로를 입력하세요."
                 />
 
@@ -670,7 +670,7 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onSubmit
                   </label>
                   <CustomSelect
                     value={formData.icon}
-                    onChange={(value) => setFormData({ ...formData, icon: value })}
+                    onChange={(value) => setFormData({ ...formData, icon: String(value) })}
                     options={[
                       { value: '', label: '아이콘 없음' },
                       ...icons

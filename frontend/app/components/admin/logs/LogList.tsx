@@ -3,7 +3,7 @@
 import DataTable from '../DataTable';
 import ListHeader from '../ListHeader';
 
-interface Log {
+interface Log extends Record<string, unknown> {
   id: string;
   timestamp: string;
   level: 'INFO' | 'WARN' | 'ERROR';
