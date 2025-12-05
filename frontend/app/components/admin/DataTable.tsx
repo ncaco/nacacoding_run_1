@@ -1,11 +1,10 @@
 'use client';
 
-import { DataTableProps, TableColumn } from './types';
+import { DataTableProps } from './types';
 import LoadingState from './LoadingState';
 import EmptyState from './EmptyState';
-import StatusBadge from './StatusBadge';
 
-export default function DataTable<T extends Record<string, any>>({
+export default function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   isLoading = false,
@@ -52,7 +51,7 @@ export default function DataTable<T extends Record<string, any>>({
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
             {data.map((item, index) => (
-              <tr key={item.id || index}>
+              <tr key={(item.id as string | number | undefined) || index}>
                 {columns.map((column) => (
                   <td
                     key={column.key}
@@ -60,7 +59,7 @@ export default function DataTable<T extends Record<string, any>>({
                       column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left'
                     }`}
                   >
-                    {column.render ? column.render(item) : item[column.key]}
+                    {column.render ? column.render(item) : String(item[column.key] ?? '')}
                   </td>
                 ))}
                 {(onEdit || onDelete) && (
@@ -95,14 +94,14 @@ export default function DataTable<T extends Record<string, any>>({
             mobileCardRender(item)
           ) : (
             <div
-              key={item.id || index}
+              key={(item.id as string | number | undefined) || index}
               className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
             >
               {columns.map((column) => (
                 <div key={column.key} className="mb-2">
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{column.label}: </span>
                   <span className="text-sm text-gray-900 dark:text-white">
-                    {column.render ? column.render(item) : item[column.key]}
+                    {column.render ? column.render(item) : String(item[column.key] ?? '')}
                   </span>
                 </div>
               ))}

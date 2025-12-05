@@ -14,8 +14,16 @@ interface CmnCd {
   children?: CmnCd[];
 }
 
+interface CmnCdFormData {
+  cd?: string;
+  name: string;
+  description?: string;
+  enabled?: boolean;
+  parentCd?: string;
+}
+
 interface CmnCdFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: CmnCdFormData) => void;
   onCancel?: () => void;
   initialData?: {
     cd?: string;
@@ -58,8 +66,9 @@ export default function CmnCdForm({ onSubmit, onCancel, initialData, isLoading =
   };
 
   // 코드 입력 시 자동 포맷팅
-  const handleCdChange = (value: string) => {
-    const upperValue = value.toUpperCase().replace(/[^PC0-9]/g, '');
+  const handleCdChange = (value: string | number | boolean) => {
+    const stringValue = String(value);
+    const upperValue = stringValue.toUpperCase().replace(/[^PC0-9]/g, '');
     if (upperValue.length <= 4) {
       setFormData({ ...formData, cd: upperValue });
     }
@@ -103,7 +112,7 @@ export default function CmnCdForm({ onSubmit, onCancel, initialData, isLoading =
               name="parentCd"
               type="select"
               value={formData.parentCd}
-              onChange={(value) => setFormData({ ...formData, parentCd: value })}
+              onChange={(value) => setFormData({ ...formData, parentCd: String(value) })}
               options={parentCodeOptions}
             />
             {formData.cd.startsWith('C') && !formData.parentCd && (
@@ -137,7 +146,7 @@ export default function CmnCdForm({ onSubmit, onCancel, initialData, isLoading =
           required
           placeholder="공통코드 명칭을 입력하세요"
           value={formData.name}
-          onChange={(value) => setFormData({ ...formData, name: value })}
+          onChange={(value) => setFormData({ ...formData, name: String(value) })}
         />
 
         <FormField
@@ -147,7 +156,7 @@ export default function CmnCdForm({ onSubmit, onCancel, initialData, isLoading =
           rows={3}
           placeholder="공통코드 설명을 입력하세요"
           value={formData.description}
-          onChange={(value) => setFormData({ ...formData, description: value })}
+          onChange={(value) => setFormData({ ...formData, description: String(value) })}
         />
 
         <FormField
@@ -155,12 +164,11 @@ export default function CmnCdForm({ onSubmit, onCancel, initialData, isLoading =
           name="enabled"
           type="checkbox"
           value={formData.enabled}
-          onChange={(value) => setFormData({ ...formData, enabled: value })}
+          onChange={(value) => setFormData({ ...formData, enabled: Boolean(value) })}
         />
 
         <FormActions
           onCancel={onCancel}
-          onSubmit={handleSubmit}
           submitLabel={isEditMode ? '수정' : '생성'}
           isLoading={isLoading}
         />

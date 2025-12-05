@@ -6,26 +6,33 @@ import TabContainer from '../../components/admin/TabContainer';
 import FileList from '../../components/admin/files/FileList';
 import FileUpload from '../../components/admin/files/FileUpload';
 
+interface File {
+  id: string;
+  name: string;
+  size: string;
+  uploadDate: string;
+}
+
 export default function FilesPage() {
-  const [files, setFiles] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [files] = useState<File[]>([]);
+  const [isLoading] = useState(false);
 
   const handleUpload = () => {
     // TODO: 업로드 로직 구현
     console.log('파일 업로드');
   };
 
-  const handleDownload = (file: any) => {
+  const handleDownload = (file: File) => {
     // TODO: 다운로드 로직 구현
     console.log('파일 다운로드', file);
   };
 
-  const handleDelete = (file: any) => {
+  const handleDelete = (file: File) => {
     // TODO: 삭제 로직 구현
     console.log('파일 삭제', file);
   };
 
-  const handleSubmit = (file: File) => {
+  const handleSubmit = (file: globalThis.File) => {
     // TODO: 제출 로직 구현
     console.log('파일 업로드', file);
   };

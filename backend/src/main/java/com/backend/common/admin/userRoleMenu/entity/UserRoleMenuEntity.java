@@ -1,7 +1,6 @@
 package com.backend.common.admin.userRoleMenu.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "USER_ROLE_MENU")
@@ -10,43 +9,43 @@ public class UserRoleMenuEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "USER_ROLE_MENU_ID")
-	@Comment("관리자 역할 메뉴 고유 식별자 (UUID 형식)")
+	@org.hibernate.annotations.Comment("관리자 역할 메뉴 고유 식별자 (UUID 형식)")
 	private String id;
 
 	@Column(name = "USER_ROLE_ID", nullable = false)
-	@Comment("관리자 역할 ID (USER_ROLE 테이블 참조)")
+	@org.hibernate.annotations.Comment("관리자 역할 ID (USER_ROLE 테이블 참조)")
 	private String userRoleId;
 
 	@Column(name = "MENU_ID", nullable = false)
-	@Comment("메뉴 ID (MENUS 테이블 참조)")
+	@org.hibernate.annotations.Comment("메뉴 ID (MENUS 테이블 참조)")
 	private String menuId;
 
 	@Column(name = "PERM_READ", nullable = false, length = 1)
-	@Comment("읽기 권한 (Y/N, 기본값: N)")
+	@org.hibernate.annotations.Comment("읽기 권한 (Y/N, 기본값: N)")
 	private String permRead = "N";
 
 	@Column(name = "PERM_CREATE", nullable = false, length = 1)
-	@Comment("등록 권한 (Y/N, 기본값: N)")
+	@org.hibernate.annotations.Comment("등록 권한 (Y/N, 기본값: N)")
 	private String permCreate = "N";
 
 	@Column(name = "PERM_UPDATE", nullable = false, length = 1)
-	@Comment("수정 권한 (Y/N, 기본값: N)")
+	@org.hibernate.annotations.Comment("수정 권한 (Y/N, 기본값: N)")
 	private String permUpdate = "N";
 
 	@Column(name = "PERM_DELETE", nullable = false, length = 1)
-	@Comment("삭제 권한 (Y/N, 기본값: N)")
+	@org.hibernate.annotations.Comment("삭제 권한 (Y/N, 기본값: N)")
 	private String permDelete = "N";
 
 	@Column(name = "PERM_DOWNLOAD", nullable = false, length = 1)
-	@Comment("다운로드 권한 (Y/N, 기본값: N)")
+	@org.hibernate.annotations.Comment("다운로드 권한 (Y/N, 기본값: N)")
 	private String permDownload = "N";
 
 	@Column(name = "PERM_ALL", nullable = false, length = 1)
-	@Comment("전체 권한 (Y/N, 기본값: N)")
+	@org.hibernate.annotations.Comment("전체 권한 (Y/N, 기본값: N)")
 	private String permAll = "N";
 
 	@Column(name = "USE_YN", nullable = false, length = 1)
-	@Comment("활성화 여부 (Y/N, 기본값: Y)")
+	@org.hibernate.annotations.Comment("활성화 여부 (Y/N, 기본값: Y)")
 	private String enabled = "Y";
 
 	public UserRoleMenuEntity() {}

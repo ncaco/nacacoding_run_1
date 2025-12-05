@@ -4,8 +4,17 @@ import { useState, useEffect } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
 
+interface SiteFormData {
+  siteType?: string;
+  siteName: string;
+  description?: string;
+  contextPath?: string;
+  version: string;
+  enabled?: boolean;
+}
+
 interface SiteFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: SiteFormData) => void;
   onCancel?: () => void;
   initialData?: {
     siteType?: string;
@@ -34,6 +43,7 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
   // initialData가 변경되면 formData 업데이트
   useEffect(() => {
     if (initialData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         siteType: initialData.siteType || '',
         siteName: initialData.siteName || '',
@@ -203,7 +213,6 @@ export default function SiteForm({ onSubmit, onCancel, initialData, isLoading = 
           <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
             <FormActions
               onCancel={onCancel}
-              onSubmit={handleSubmit}
               submitLabel={isEditMode ? '수정' : '생성'}
               isLoading={isLoading}
             />

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -28,6 +29,7 @@ export default function CustomSelect({
   const selectedOption = options.find((opt) => opt.value === value);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -62,7 +64,7 @@ export default function CustomSelect({
       ...provided,
       height: '32px',
     }),
-    indicatorSeparator: (provided: any) => ({
+    indicatorSeparator: () => ({
       display: 'none',
     }),
     dropdownIndicator: (provided: any) => ({
@@ -144,7 +146,7 @@ export default function CustomSelect({
       ...provided,
       height: '32px',
     }),
-    indicatorSeparator: (provided: any) => ({
+    indicatorSeparator: () => ({
       display: 'none',
     }),
     dropdownIndicator: (provided: any) => ({

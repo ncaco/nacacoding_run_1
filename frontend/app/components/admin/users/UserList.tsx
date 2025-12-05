@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import ToggleSwitch from '../ToggleSwitch';
+import Image from 'next/image';
 import LoadingState from '../LoadingState';
 import CustomSelect from '../CustomSelect';
 
@@ -37,7 +37,7 @@ function UserItem({ user, onEdit, onDelete }: { user: User; onEdit?: (user: User
         {/* 사용자 아이콘 */}
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
           {user.avatarUrl ? (
-            <img src={user.avatarUrl} alt={user.username} className="h-full w-full rounded-lg object-cover" />
+            <Image src={user.avatarUrl} alt={user.username} width={40} height={40} className="h-full w-full rounded-lg object-cover" unoptimized />
           ) : (
             <svg className="h-5 w-5 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

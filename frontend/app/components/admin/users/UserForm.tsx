@@ -4,8 +4,18 @@ import { useState, useEffect } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
 
+interface UserFormData {
+  username: string;
+  password?: string;
+  role: 'MEMBER' | 'USER';
+  name?: string;
+  email?: string;
+  phoneNumber?: string;
+  userRoleId?: string;
+}
+
 interface UserFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: UserFormData) => void;
   onCancel?: () => void;
   initialData?: {
     id?: string;
@@ -38,6 +48,7 @@ export default function UserForm({ onSubmit, onCancel, initialData, isLoading = 
   // initialData가 변경되면 formData 업데이트
   useEffect(() => {
     if (initialData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         username: initialData.username || '',
         password: initialData.password || '',

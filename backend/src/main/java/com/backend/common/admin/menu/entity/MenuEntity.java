@@ -2,7 +2,6 @@ package com.backend.common.admin.menu.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "MENUS")
@@ -11,36 +10,36 @@ public class MenuEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "MENU_ID")
-	@Comment("메뉴 고유 식별자 (UUID 형식)")
+	@org.hibernate.annotations.Comment("메뉴 고유 식별자 (UUID 형식)")
 	private String id;
 	
 	@Column(name = "SITE_ID", nullable = false)
-	@Comment("사이트 ID (SITES 테이블 참조)")
+	@org.hibernate.annotations.Comment("사이트 ID (SITES 테이블 참조)")
 	private String siteId;
 	
 	@NotBlank
 	@Column(name = "MENU_NM", nullable = false)
-	@Comment("메뉴명")
+	@org.hibernate.annotations.Comment("메뉴명")
 	private String name;
 	
 	@Column(name = "MENU_URL", length = 500)
-	@Comment("메뉴 URL")
+	@org.hibernate.annotations.Comment("메뉴 URL")
 	private String url;
 	
 	@Column(name = "ICON_ID", length = 100)
-	@Comment("메뉴 아이콘 ID (ICONS 테이블의 ICON_CD 참조)")
+	@org.hibernate.annotations.Comment("메뉴 아이콘 ID (ICONS 테이블의 ICON_CD 참조)")
 	private String icon;
 	
 	@Column(name = "DISP_ORD", nullable = false)
-	@Comment("표시 순서")
+	@org.hibernate.annotations.Comment("표시 순서")
 	private Integer displayOrder = 0;
 	
 	@Column(name = "PARENT_ID")
-	@Comment("부모 메뉴 ID (계층 구조용, 최상위 메뉴는 NULL)")
+	@org.hibernate.annotations.Comment("부모 메뉴 ID (계층 구조용, 최상위 메뉴는 NULL)")
 	private String parentId;
 	
 	@Column(name = "USE_YN", nullable = false)
-	@Comment("활성화 여부 (기본값: true)")
+	@org.hibernate.annotations.Comment("활성화 여부 (기본값: true)")
 	private Boolean enabled = true;
 	
 	public MenuEntity() {}

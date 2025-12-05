@@ -457,43 +457,43 @@ export default function PortalProfilePage() {
                   </div>
                 </div>
               ) : (
-                <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      아이디
-                    </p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    아이디
+                  </p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {profile?.username ? `@${profile.username}` : '-'}
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      이름
-                    </p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {profile?.name || profile?.username || '-'}
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      이메일
-                    </p>
-                    <p className="break-all text-sm text-gray-900 dark:text-gray-100">
-                      {profile?.email || '-'}
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      연락처
-                    </p>
-                    <p className="text-sm text-gray-900 dark:text-gray-100">
-                      {profile?.phoneNumber || '-'}
-                    </p>
-                  </div>
+                  </p>
                 </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    이름
+                  </p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {profile?.name || profile?.username || '-'}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    이메일
+                  </p>
+                  <p className="break-all text-sm text-gray-900 dark:text-gray-100">
+                    {profile?.email || '-'}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    연락처
+                  </p>
+                  <p className="text-sm text-gray-900 dark:text-gray-100">
+                    {profile?.phoneNumber || '-'}
+                  </p>
+                </div>
+              </div>
               )}
 
               <div className="mt-8 rounded-xl border border-dashed border-gray-200 bg-gray-50/80 px-4 py-4 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400">

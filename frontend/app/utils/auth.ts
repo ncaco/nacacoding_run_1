@@ -1,7 +1,14 @@
 import { getApiUrl } from './api';
 
+interface JWTPayload {
+  sub?: string;
+  iat?: number;
+  exp?: number;
+  [key: string]: unknown;
+}
+
 // JWT 토큰 디코딩 유틸리티
-export function decodeJWT(token: string): any {
+export function decodeJWT(token: string): JWTPayload | null {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -12,7 +19,7 @@ export function decodeJWT(token: string): any {
         .join('')
     );
     return JSON.parse(jsonPayload);
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -137,7 +144,7 @@ export async function fetchWithTokenRefresh(
 }
 
 // 로그아웃 처리
-export function logout(router: any) {
+export function logout(router: { push: (path: string) => void }) {
   // 로컬 스토리지에서 토큰 및 사용자 정보 제거
   localStorage.removeItem('adminToken');
   localStorage.removeItem('adminRefreshToken');

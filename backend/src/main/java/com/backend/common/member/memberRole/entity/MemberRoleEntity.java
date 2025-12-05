@@ -2,7 +2,6 @@ package com.backend.common.member.memberRole.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "MEMBER_ROLE")
@@ -11,25 +10,25 @@ public class MemberRoleEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "MEMBER_ROLE_ID")
-	@Comment("사용자 역할 고유 식별자 (UUID 형식)")
+	@org.hibernate.annotations.Comment("사용자 역할 고유 식별자 (UUID 형식)")
 	private String id;
 
 	@NotBlank
 	@Column(name = "ROLE_CD", nullable = false, unique = true, length = 50)
-	@Comment("역할 코드 (예: VIP, PREMIUM, BASIC, GUEST)")
+	@org.hibernate.annotations.Comment("역할 코드 (예: VIP, PREMIUM, BASIC, GUEST)")
 	private String roleCd;
 
 	@NotBlank
 	@Column(name = "ROLE_NM", nullable = false)
-	@Comment("역할명")
+	@org.hibernate.annotations.Comment("역할명")
 	private String roleNm;
 
 	@Column(name = "ROLE_DESC", length = 1000)
-	@Comment("역할 설명")
+	@org.hibernate.annotations.Comment("역할 설명")
 	private String roleDesc;
 
 	@Column(name = "USE_YN", nullable = false)
-	@Comment("활성화 여부 (기본값: true)")
+	@org.hibernate.annotations.Comment("활성화 여부 (기본값: true)")
 	private Boolean enabled = true;
 
 	public MemberRoleEntity() {}

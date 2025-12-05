@@ -4,12 +4,12 @@ import { useState } from 'react';
 import FormActions from '../FormActions';
 
 interface FileUploadProps {
-  onSubmit?: (file: File) => void;
+  onSubmit?: (file: globalThis.File) => void;
   onCancel?: () => void;
 }
 
 export default function FileUpload({ onSubmit, onCancel }: FileUploadProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<globalThis.File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -59,7 +59,7 @@ export default function FileUpload({ onSubmit, onCancel }: FileUploadProps) {
             </div>
           </div>
         </div>
-        <FormActions onCancel={onCancel} onSubmit={handleSubmit} submitLabel="업로드" />
+        <FormActions onCancel={onCancel} submitLabel="업로드" />
       </form>
     </div>
   );

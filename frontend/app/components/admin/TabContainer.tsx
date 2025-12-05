@@ -32,6 +32,7 @@ export default function TabContainer({ tabs, defaultTab, queryParam = 'tab' }: T
   useEffect(() => {
     const tabFromUrl = searchParams.get(queryParam);
     if (tabFromUrl && tabs.find(tab => tab.id === tabFromUrl)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tabFromUrl);
     }
   }, [searchParams, queryParam, tabs]);

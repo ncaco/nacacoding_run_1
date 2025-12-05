@@ -3,7 +3,6 @@ package com.backend.common.admin.site.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "SITES")
@@ -12,34 +11,34 @@ public class SiteEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "SITE_ID")
-	@Comment("사이트 고유 식별자 (UUID 형식)")
+	@org.hibernate.annotations.Comment("사이트 고유 식별자 (UUID 형식)")
 	private String id;
 	
 	@NotBlank
 	@Column(name = "SITE_TYPE_CD", nullable = false)
-	@Comment("사이트 타입 (공통코드 P001의 하위코드 사용)")
+	@org.hibernate.annotations.Comment("사이트 타입 (공통코드 P001의 하위코드 사용)")
 	private String siteType;
 	
 	@NotBlank
 	@Column(name = "SITE_NM", nullable = false)
-	@Comment("사이트명")
+	@org.hibernate.annotations.Comment("사이트명")
 	private String siteName;
 	
 	@Column(name = "SITE_DESC", length = 1000)
-	@Comment("사이트 설명")
+	@org.hibernate.annotations.Comment("사이트 설명")
 	private String description;
 	
 	@NotNull
 	@Column(name = "CONTEXT_PATH", nullable = false, unique = true)
-	@Comment("Context Path (빈 값 = root, 예: admin = /admin, 공백 문자열도 허용)")
+	@org.hibernate.annotations.Comment("Context Path (빈 값 = root, 예: admin = /admin, 공백 문자열도 허용)")
 	private String contextPath;
 	
 	@Column(name = "VERSION", nullable = false)
-	@Comment("사이트 버전")
+	@org.hibernate.annotations.Comment("사이트 버전")
 	private String version;
 	
 	@Column(name = "USE_YN", nullable = false)
-	@Comment("활성화 여부 (기본값: true)")
+	@org.hibernate.annotations.Comment("활성화 여부 (기본값: true)")
 	private Boolean enabled = true;
 	
 	public SiteEntity() {}

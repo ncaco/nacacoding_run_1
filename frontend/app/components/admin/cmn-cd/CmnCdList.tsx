@@ -36,6 +36,7 @@ function CmnCdItem({ cmnCd, isSelected, onSelect, onEdit, onInlineEdit, onDelete
 
   // cmnCd가 변경되면 편집 상태 초기화
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEditedName(cmnCd.name);
     setIsEditingName(false);
   }, [cmnCd.id, cmnCd.name]);
@@ -173,7 +174,7 @@ function CmnCdItem({ cmnCd, isSelected, onSelect, onEdit, onInlineEdit, onDelete
   );
 }
 
-export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAddChild, onEdit, onInlineEdit, onDelete, onToggleEnabled, selectedParentCdCode }: CmnCdListProps) {
+export default function CmnCdList({ cmnCds, isLoading, onAddParent, onAddChild, onEdit, onInlineEdit, onDelete, onToggleEnabled, selectedParentCdCode }: CmnCdListProps) {
   const [selectedParentCd, setSelectedParentCd] = useState<CmnCd | null>(null);
 
   // 상위코드만 필터링
@@ -194,6 +195,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
     if (selectedParentCdCode && parentCmnCds.length > 0) {
       const targetParent = parentCmnCds.find((cd) => cd.cd === selectedParentCdCode);
       if (targetParent) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedParentCd(targetParent);
       }
     }
@@ -202,6 +204,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
   // 상위코드가 모두 삭제되었을 때 선택 초기화
   useEffect(() => {
     if (parentCmnCds.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedParentCd(null);
     }
   }, [parentCmnCds]);
@@ -209,6 +212,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
   // 첫 번째 상위코드를 자동 선택
   useEffect(() => {
     if (parentCmnCds.length > 0 && !selectedParentCd && !selectedParentCdCode) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedParentCd(parentCmnCds[0]);
     }
   }, [parentCmnCds, selectedParentCd, selectedParentCdCode]);
@@ -218,6 +222,7 @@ export default function CmnCdList({ cmnCds, isLoading, onAdd, onAddParent, onAdd
     if (selectedParentCd && !selectedParentCdCode) {
       const updatedParent = parentCmnCds.find((cd) => cd.id === selectedParentCd.id);
       if (updatedParent) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedParentCd(updatedParent);
       } else {
         setSelectedParentCd(null);

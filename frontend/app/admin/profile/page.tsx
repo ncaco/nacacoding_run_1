@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import AdminLayout from '../../components/admin/AdminLayout';
 import TabContainer from '../../components/admin/TabContainer';
 import FormField from '../../components/admin/FormField';
@@ -45,8 +46,6 @@ function getTimeRemaining(expirationDate: Date | null): string {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [username, setUsername] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
   const [role, setRole] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -59,9 +58,6 @@ export default function ProfilePage() {
     tokenExpiresAt: null as Date | null,
     sessionStatus: 'unknown' as 'active' | 'expired' | 'unknown',
   });
-  
-  // 남은 시간 실시간 업데이트를 위한 상태
-  const [currentTime, setCurrentTime] = useState(new Date());
 
   // 프로필 정보 폼
   const [profileData, setProfileData] = useState({
@@ -147,7 +143,6 @@ export default function ProfilePage() {
 
         if (response.ok && data.success && data.data) {
           const user = data.data;
-          setUsername(user.username || '');
           setRole(user.role === 'USER' ? '관리자' : user.role);
           
           // avatarUrl이 상대 경로인 경우 백엔드 서버 URL 추가
@@ -174,7 +169,6 @@ export default function ProfilePage() {
           const userRole = localStorage.getItem('userRole');
           
           if (adminUsername) {
-            setUsername(adminUsername);
             setProfileData({
               username: adminUsername,
               email: `${adminUsername}@admin.com`,
@@ -198,11 +192,11 @@ export default function ProfilePage() {
         const userRole = localStorage.getItem('userRole');
         
         if (adminUsername) {
-          setUsername(adminUsername);
           setProfileData({
             username: adminUsername,
             email: `${adminUsername}@admin.com`,
             name: adminUsername,
+            avatarUrl: '',
           });
         }
         
@@ -213,6 +207,7 @@ export default function ProfilePage() {
     };
 
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 남은 시간 실시간 업데이트 및 토큰 만료 시 자동 로그아웃
@@ -220,7 +215,6 @@ export default function ProfilePage() {
     if (loginStatus.sessionStatus === 'active' && loginStatus.tokenExpiresAt) {
       const interval = setInterval(() => {
         const now = new Date();
-        setCurrentTime(now);
         
         const token = localStorage.getItem('adminToken');
         if (!token || isTokenExpired(token)) {
@@ -517,10 +511,13 @@ export default function ProfilePage() {
               <div className="relative">
                 {profileData.avatarUrl ? (
                   <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-gray-200 dark:border-gray-700">
-                    <img
+                    <Image
                       src={profileData.avatarUrl}
                       alt="프로필 이미지"
+                      width={64}
+                      height={64}
                       className="h-full w-full object-cover"
+                      unoptimized
                       onError={(e) => {
                         // 이미지 로드 실패 시 기본 아바타 표시
                         const target = e.target as HTMLImageElement;
@@ -534,7 +531,7 @@ export default function ProfilePage() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-green-400 to-green-600">
                     <span className="text-2xl font-bold text-white">
                       {profileData.name ? profileData.name.charAt(0).toUpperCase() : (profileData.username ? profileData.username.charAt(0).toUpperCase() : 'A')}
                     </span>
@@ -618,7 +615,6 @@ export default function ProfilePage() {
               onChange={(value) => setProfileData({ ...profileData, email: value as string })}
             />
             <FormActions
-              onSubmit={handleProfileSubmit}
               submitLabel="저장"
               isLoading={isLoading}
             />
@@ -724,11 +720,11 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">이메일 인증</span>
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    email 
+                    profileData.email 
                       ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                       : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
                   }`}>
-                    {email ? '인증됨' : '미인증'}
+                    {profileData.email ? '인증됨' : '미인증'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -854,7 +850,6 @@ export default function ProfilePage() {
               </div>
             </div>
             <FormActions
-              onSubmit={handlePasswordSubmit}
               submitLabel="비밀번호 변경"
               isLoading={isLoading}
             />

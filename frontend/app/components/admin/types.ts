@@ -47,7 +47,7 @@ export interface FormFieldProps {
   options?: { value: string; label: string }[];
   rows?: number;
   value?: string | number | boolean;
-  onChange?: (value: any) => void;
+  onChange?: (value: string | number | boolean) => void;
   helperText?: string;
 }
 
@@ -59,14 +59,14 @@ export interface FormActionsProps {
   isLoading?: boolean;
 }
 
-export interface TableColumn<T = any> {
+export interface TableColumn<T = Record<string, unknown>> {
   key: string;
   label: string;
   render?: (item: T) => React.ReactNode;
   align?: 'left' | 'right' | 'center';
 }
 
-export interface DataTableProps<T = any> {
+export interface DataTableProps<T = Record<string, unknown>> {
   data: T[];
   columns: TableColumn<T>[];
   isLoading?: boolean;

@@ -2,7 +2,6 @@ package com.backend.common.member.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 
@@ -13,41 +12,41 @@ public class MemberEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "MEMBER_ID")
-	@Comment("사용자(MEMBER) 고유 식별자 (UUID 형식)")
+	@org.hibernate.annotations.Comment("사용자(MEMBER) 고유 식별자 (UUID 형식)")
 	private String id;
 
 	@NotBlank
 	@Column(name = "USER_NM", unique = true, nullable = false)
-	@Comment("사용자명 (로그인 ID)")
+	@org.hibernate.annotations.Comment("사용자명 (로그인 ID)")
 	private String username;
 
 	@NotBlank
 	@Column(name = "PASSWORD", nullable = false)
-	@Comment("암호화된 비밀번호 (BCrypt 해시)")
+	@org.hibernate.annotations.Comment("암호화된 비밀번호 (BCrypt 해시)")
 	private String password;
 
 	@Column(name = "NAME")
-	@Comment("사용자 이름")
+	@org.hibernate.annotations.Comment("사용자 이름")
 	private String name;
 
 	@Column(name = "EMAIL")
-	@Comment("이메일 주소")
+	@org.hibernate.annotations.Comment("이메일 주소")
 	private String email;
 
 	@Column(name = "PHONE_NO")
-	@Comment("연락처(전화번호)")
+	@org.hibernate.annotations.Comment("연락처(전화번호)")
 	private String phoneNumber;
 
 	@Column(name = "AVATAR_URL")
-	@Comment("아바타 이미지 URL")
+	@org.hibernate.annotations.Comment("아바타 이미지 URL")
 	private String avatarUrl;
 
 	@Column(name = "CREATED_AT")
-	@Comment("가입 일시")
+	@org.hibernate.annotations.Comment("가입 일시")
 	private LocalDateTime createdAt;
 
 	@Column(name = "LAST_LOGIN_AT")
-	@Comment("마지막 로그인 일시")
+	@org.hibernate.annotations.Comment("마지막 로그인 일시")
 	private LocalDateTime lastLoginAt;
 
 	public MemberEntity() {}

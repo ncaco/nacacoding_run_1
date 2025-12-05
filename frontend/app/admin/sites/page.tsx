@@ -15,7 +15,7 @@ interface Site {
   siteType: string;
   siteName: string;
   description?: string;
-  contextPath: string;
+  contextPath?: string;
   version: string;
   enabled?: boolean;
 }
@@ -137,6 +137,7 @@ function SitesPageContent() {
   useEffect(() => {
     fetchSiteTypeOptions();
     fetchSites();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
@@ -247,7 +248,16 @@ function SitesPageContent() {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
+  interface SiteFormData {
+    siteType?: string;
+    siteName: string;
+    description?: string;
+    contextPath?: string;
+    version: string;
+    enabled?: boolean;
+  }
+
+  const handleSubmit = async (formData: SiteFormData) => {
     setIsSubmitting(true);
 
     try {

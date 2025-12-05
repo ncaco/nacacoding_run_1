@@ -70,6 +70,7 @@ function IconsPageContent() {
 
   useEffect(() => {
     fetchIcons();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
@@ -170,7 +171,14 @@ function IconsPageContent() {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
+  interface IconFormData {
+    iconId?: string;
+    name: string;
+    svgCode: string;
+    enabled?: boolean;
+  }
+
+  const handleSubmit = async (formData: IconFormData) => {
     setIsSubmitting(true);
 
     try {

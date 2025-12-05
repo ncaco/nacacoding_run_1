@@ -1,11 +1,9 @@
 'use client';
 
 import { FormActionsProps } from './types';
-import ActionButton from './ActionButton';
 
 export default function FormActions({
   onCancel,
-  onSubmit,
   cancelLabel = '취소',
   submitLabel = '제출',
   isLoading = false,
@@ -29,15 +27,13 @@ export default function FormActions({
           {cancelLabel}
         </button>
       )}
-      {onSubmit && (
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-600 dark:hover:bg-slate-500 sm:w-auto"
-        >
-          {isLoading ? '처리 중...' : submitLabel}
-        </button>
-      )}
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-600 dark:hover:bg-slate-500 sm:w-auto"
+      >
+        {isLoading ? '처리 중...' : submitLabel}
+      </button>
     </div>
   );
 }

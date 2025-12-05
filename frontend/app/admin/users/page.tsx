@@ -13,7 +13,7 @@ import { getApiUrl } from '../../utils/api';
 interface User {
   id: string;
   username: string;
-  role: 'MEMBER';
+  role: 'USER' | 'MEMBER';
   name?: string;
   email?: string;
   phoneNumber?: string;
@@ -59,8 +59,17 @@ function UsersPageContent() {
         throw new Error(data.message || '사용자 목록 조회에 실패했습니다.');
       }
 
+      interface MemberResponse {
+        id: string;
+        username: string;
+        name?: string;
+        email?: string;
+        phoneNumber?: string;
+        avatarUrl?: string;
+      }
+
       // 사용자(MEMBER)만 매핑
-      const members: User[] = (data.data || []).map((member: any) => ({
+      const members: User[] = (data.data || []).map((member: MemberResponse) => ({
         id: member.id,
         username: member.username,
         role: 'MEMBER' as const,
@@ -84,6 +93,7 @@ function UsersPageContent() {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
@@ -147,7 +157,16 @@ function UsersPageContent() {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
+  interface UserFormData {
+    username: string;
+    password?: string;
+    role: 'USER' | 'MEMBER';
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+  }
+
+  const handleSubmit = async (formData: UserFormData) => {
     setIsSubmitting(true);
 
     try {

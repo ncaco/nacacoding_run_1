@@ -135,6 +135,7 @@ function UserRolePageContent() {
   useEffect(() => {
     fetchRoleCdOptions();
     fetchUserRoles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
@@ -197,7 +198,14 @@ function UserRolePageContent() {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
+  interface UserRoleFormData {
+    roleCd: string;
+    roleNm: string;
+    roleDesc?: string;
+    enabled?: boolean;
+  }
+
+  const handleSubmit = async (formData: UserRoleFormData) => {
     setIsSubmitting(true);
 
     try {

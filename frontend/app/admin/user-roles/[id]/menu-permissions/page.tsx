@@ -40,17 +40,16 @@ interface Site {
 
 interface MenuTreeNode extends MenuPermissionItem {
   children: MenuTreeNode[];
+  level?: number;
 }
 
 // 헤더 체크박스 컴포넌트
 function HeaderCheckbox({
-  permissionType,
   checked,
   indeterminate,
   onChange,
   label,
 }: {
-  permissionType: string;
   checked: boolean;
   indeterminate: boolean;
   onChange: (checked: boolean) => void;
@@ -100,6 +99,7 @@ function MenuPermissionPageContent() {
       }
     };
     initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRoleId]);
 
   const fetchSites = async () => {
@@ -426,12 +426,14 @@ function MenuPermissionPageContent() {
     return result;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const flattenedMenus = useMemo(() => {
     return flattenMenuTree(menuTree);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuTree]);
 
   // 메뉴 행 렌더링
-  const renderMenuRow = (menu: MenuTreeNode & { level?: number }) => {
+  const renderMenuRow = (menu: MenuTreeNode) => {
     const level = menu.level || 0;
     const isExpanded = expandedMenus.has(menu.menuId);
     const hasChildren = menu.children && menu.children.length > 0;
@@ -594,11 +596,25 @@ function MenuPermissionPageContent() {
               </div>
             ) : !selectedSiteId ? (
               <div className="p-8">
-                <EmptyState message="사이트를 선택해주세요." />
+                <EmptyState
+                  icon={
+                    <svg className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  }
+                  message="사이트를 선택해주세요."
+                />
               </div>
             ) : filteredMenus.length === 0 ? (
               <div className="p-8">
-                <EmptyState message={`선택된 사이트에 메뉴가 없습니다. (전체 메뉴 수: ${menus.length})`} />
+                <EmptyState
+                  icon={
+                    <svg className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  }
+                  message={`선택된 사이트에 메뉴가 없습니다. (전체 메뉴 수: ${menus.length})`}
+                />
               </div>
             ) : (
               <table className="w-full text-xs">
@@ -609,7 +625,6 @@ function MenuPermissionPageContent() {
                     </th>
                     <th className="px-4 py-3 text-center w-16">
                       <HeaderCheckbox
-                        permissionType="permRead"
                         checked={getHeaderCheckboxState('permRead').checked}
                         indeterminate={getHeaderCheckboxState('permRead').indeterminate}
                         onChange={(checked) => updateAllPermissions('permRead', checked)}
@@ -618,7 +633,6 @@ function MenuPermissionPageContent() {
                     </th>
                     <th className="px-4 py-3 text-center w-16">
                       <HeaderCheckbox
-                        permissionType="permCreate"
                         checked={getHeaderCheckboxState('permCreate').checked}
                         indeterminate={getHeaderCheckboxState('permCreate').indeterminate}
                         onChange={(checked) => updateAllPermissions('permCreate', checked)}
@@ -627,7 +641,6 @@ function MenuPermissionPageContent() {
                     </th>
                     <th className="px-4 py-3 text-center w-16">
                       <HeaderCheckbox
-                        permissionType="permUpdate"
                         checked={getHeaderCheckboxState('permUpdate').checked}
                         indeterminate={getHeaderCheckboxState('permUpdate').indeterminate}
                         onChange={(checked) => updateAllPermissions('permUpdate', checked)}
@@ -636,7 +649,6 @@ function MenuPermissionPageContent() {
                     </th>
                     <th className="px-4 py-3 text-center w-16">
                       <HeaderCheckbox
-                        permissionType="permDelete"
                         checked={getHeaderCheckboxState('permDelete').checked}
                         indeterminate={getHeaderCheckboxState('permDelete').indeterminate}
                         onChange={(checked) => updateAllPermissions('permDelete', checked)}
@@ -645,7 +657,6 @@ function MenuPermissionPageContent() {
                     </th>
                     <th className="px-4 py-3 text-center w-20">
                       <HeaderCheckbox
-                        permissionType="permDownload"
                         checked={getHeaderCheckboxState('permDownload').checked}
                         indeterminate={getHeaderCheckboxState('permDownload').indeterminate}
                         onChange={(checked) => updateAllPermissions('permDownload', checked)}
@@ -654,7 +665,6 @@ function MenuPermissionPageContent() {
                     </th>
                     <th className="px-4 py-3 text-center w-16">
                       <HeaderCheckbox
-                        permissionType="permAll"
                         checked={getHeaderCheckboxState('permAll').checked}
                         indeterminate={getHeaderCheckboxState('permAll').indeterminate}
                         onChange={(checked) => updateAllPermissions('permAll', checked)}

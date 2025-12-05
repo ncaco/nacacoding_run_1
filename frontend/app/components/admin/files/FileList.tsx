@@ -1,6 +1,5 @@
 'use client';
 
-import DataTable from '../DataTable';
 import ListHeader from '../ListHeader';
 
 interface File {
@@ -19,7 +18,11 @@ interface FileListProps {
 }
 
 export default function FileList({ files, isLoading, onUpload, onDownload, onDelete }: FileListProps) {
-  const columns = [
+  const columns: Array<{
+    key: keyof File;
+    label: string;
+    render?: (file: File) => React.ReactNode;
+  }> = [
     {
       key: 'name',
       label: '파일명',

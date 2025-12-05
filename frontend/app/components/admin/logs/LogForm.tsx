@@ -4,8 +4,13 @@ import { useState } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
 
+interface LogFormData {
+  level: 'INFO' | 'WARN' | 'ERROR';
+  message: string;
+}
+
 interface LogFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: LogFormData) => void;
   onCancel?: () => void;
   initialData?: {
     level?: 'INFO' | 'WARN' | 'ERROR';
@@ -51,7 +56,7 @@ export default function LogForm({ onSubmit, onCancel, initialData }: LogFormProp
           value={formData.message}
           onChange={(value) => setFormData({ ...formData, message: value })}
         />
-        <FormActions onCancel={onCancel} onSubmit={handleSubmit} submitLabel="추가" />
+        <FormActions onCancel={onCancel} submitLabel="추가" />
       </form>
     </div>
   );

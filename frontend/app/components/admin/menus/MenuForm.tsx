@@ -20,8 +20,18 @@ interface Site {
   siteName: string;
 }
 
+interface MenuFormData {
+  siteId: string;
+  name: string;
+  url?: string;
+  icon?: string;
+  displayOrder: number;
+  parentId?: string | null;
+  enabled?: boolean;
+}
+
 interface MenuFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: MenuFormData) => void;
   onCancel?: () => void;
   initialData?: {
     siteId?: string;
@@ -169,7 +179,6 @@ export default function MenuForm({ onSubmit, onCancel, initialData, isLoading = 
           <div className="border-t border-gray-200 pt-3 dark:border-[#1f2435]">
             <FormActions
               onCancel={onCancel}
-              onSubmit={handleSubmit}
               submitLabel={isEditMode ? '수정' : '생성'}
               isLoading={isLoading}
             />

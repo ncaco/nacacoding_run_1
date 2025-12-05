@@ -221,7 +221,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
           .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
         
         setMenuItems(parentMenus);
-      } catch (error) {
+      } catch {
         // 에러 발생 시 빈 배열로 설정
         setMenuItems([]);
       } finally {

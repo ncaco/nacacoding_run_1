@@ -73,6 +73,7 @@ function CmnCdPageContent() {
 
   useEffect(() => {
     fetchCmnCds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
@@ -422,7 +423,15 @@ function CmnCdPageContent() {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
+  interface CmnCdFormData {
+    cd?: string;
+    name: string;
+    description?: string;
+    enabled?: boolean;
+    parentCd?: string;
+  }
+
+  const handleSubmit = async (formData: CmnCdFormData) => {
     setIsSubmitting(true);
 
     try {

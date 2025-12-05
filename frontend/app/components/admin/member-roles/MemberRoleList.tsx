@@ -113,7 +113,6 @@ function MemberRoleItem({ memberRole, onEdit, onDelete, onToggleEnabled }: { mem
 }
 
 export default function MemberRoleList({ memberRoles, isLoading, onAdd, onEdit, onDelete, onToggleEnabled }: MemberRoleListProps) {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
   // 필터링된 역할 목록

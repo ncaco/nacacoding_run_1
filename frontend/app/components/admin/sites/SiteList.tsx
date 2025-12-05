@@ -10,8 +10,9 @@ interface Site {
   siteType: string;
   siteName: string;
   description?: string;
+  contextPath?: string;
   version: string;
-  enabled: boolean;
+  enabled?: boolean;
 }
 
 interface SiteListProps {

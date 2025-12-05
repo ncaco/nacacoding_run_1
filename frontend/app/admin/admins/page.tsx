@@ -13,7 +13,7 @@ import { getApiUrl } from '../../utils/api';
 interface Admin {
   id: string;
   username: string;
-  role: 'USER';
+  role: 'USER' | 'MEMBER';
   name?: string;
   email?: string;
   avatarUrl?: string;
@@ -67,7 +67,16 @@ function AdminsPageContent() {
         throw new Error(data.message || '관리자 목록 조회에 실패했습니다.');
       }
 
-      const adminsList: Admin[] = (data.data || []).map((admin: any) => ({
+      interface AdminResponse {
+        id: string;
+        username: string;
+        name?: string;
+        email?: string;
+        avatarUrl?: string;
+        userRoleId?: string;
+      }
+
+      const adminsList: Admin[] = (data.data || []).map((admin: AdminResponse) => ({
         id: admin.id,
         username: admin.username,
         role: 'USER' as const,
@@ -137,22 +146,23 @@ function AdminsPageContent() {
   useEffect(() => {
     fetchUserRoleOptions();
     fetchAdmins();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
     setEditingAdmin({} as Admin);
   };
 
-  const handleEdit = (admin: Admin) => {
-    if (!admin.id) {
+  const handleEdit = (user: Admin) => {
+    if (!user.id) {
       toast.error('관리자 ID가 없습니다.');
       return;
     }
-    setEditingAdmin(admin);
+    setEditingAdmin(user);
   };
 
-  const handleDelete = (admin: Admin) => {
-    setDeleteDialog({ isOpen: true, admin });
+  const handleDelete = (user: Admin) => {
+    setDeleteDialog({ isOpen: true, admin: user });
   };
 
   const handleConfirmDelete = async () => {
@@ -199,7 +209,15 @@ function AdminsPageContent() {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
+  interface AdminFormData {
+    username: string;
+    password?: string;
+    name?: string;
+    email?: string;
+    userRoleId?: string;
+  }
+
+  const handleSubmit = async (formData: AdminFormData) => {
     setIsSubmitting(true);
 
     try {

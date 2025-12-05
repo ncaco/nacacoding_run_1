@@ -6,21 +6,33 @@ import TabContainer from '../../components/admin/TabContainer';
 import LogList from '../../components/admin/logs/LogList';
 import LogForm from '../../components/admin/logs/LogForm';
 
+interface Log {
+  id: string;
+  level: 'INFO' | 'WARN' | 'ERROR';
+  message: string;
+  timestamp: string;
+}
+
+interface LogFormData {
+  level: 'INFO' | 'WARN' | 'ERROR';
+  message: string;
+}
+
 export default function LogsPage() {
-  const [logs, setLogs] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [logs] = useState<Log[]>([]);
+  const [isLoading] = useState(false);
 
   const handleAdd = () => {
     // TODO: 추가 로직 구현
     console.log('로그 추가');
   };
 
-  const handleDelete = (log: any) => {
+  const handleDelete = (log: Log) => {
     // TODO: 삭제 로직 구현
     console.log('로그 삭제', log);
   };
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: LogFormData) => {
     // TODO: 제출 로직 구현
     console.log('로그 추가', data);
   };

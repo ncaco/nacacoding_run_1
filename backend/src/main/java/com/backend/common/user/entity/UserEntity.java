@@ -3,7 +3,6 @@ package com.backend.common.user.entity;
 import com.backend.common.user.model.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "USERS")
@@ -12,38 +11,38 @@ public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "USER_ID")
-	@Comment("사용자 고유 식별자 (UUID 형식)")
+	@org.hibernate.annotations.Comment("사용자 고유 식별자 (UUID 형식)")
 	private String id;
 	
 	@NotBlank
 	@Column(name = "USER_NM", unique = true, nullable = false)
-	@Comment("사용자명 (로그인 ID)")
+	@org.hibernate.annotations.Comment("사용자명 (로그인 ID)")
 	private String username;
 	
 	@NotBlank
 	@Column(name = "PASSWORD", nullable = false)
-	@Comment("암호화된 비밀번호 (BCrypt 해시)")
+	@org.hibernate.annotations.Comment("암호화된 비밀번호 (BCrypt 해시)")
 	private String password;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "ROLE", nullable = false)
-	@Comment("사용자 역할 (USER: 관리자, MEMBER: 사용자)")
+	@org.hibernate.annotations.Comment("사용자 역할 (USER: 관리자, MEMBER: 사용자)")
 	private Role role;
 	
 	@Column(name = "NAME")
-	@Comment("사용자 이름")
+	@org.hibernate.annotations.Comment("사용자 이름")
 	private String name;
 	
 	@Column(name = "EMAIL")
-	@Comment("이메일 주소")
+	@org.hibernate.annotations.Comment("이메일 주소")
 	private String email;
 	
 	@Column(name = "AVATAR_URL")
-	@Comment("아바타 이미지 URL")
+	@org.hibernate.annotations.Comment("아바타 이미지 URL")
 	private String avatarUrl;
 	
 	@Column(name = "USER_ROLE_ID")
-	@Comment("사용자 역할 ID (USER_ROLE 테이블 참조)")
+	@org.hibernate.annotations.Comment("사용자 역할 ID (USER_ROLE 테이블 참조)")
 	private String userRoleId;
 	
 	public UserEntity() {}

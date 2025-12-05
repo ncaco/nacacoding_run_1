@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
-import { isTokenExpired, logout, fetchWithTokenRefresh } from '../../utils/auth';
+import { logout, fetchWithTokenRefresh } from '../../utils/auth';
 import { getApiUrl } from '../../utils/api';
 
 interface MenuItem {
@@ -355,10 +356,13 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
             aria-expanded={isProfileOpen}
           >
             {avatarUrl ? (
-              <img
+              <Image
                 src={avatarUrl}
                 alt="프로필"
+                width={40}
+                height={40}
                 className="h-full w-full object-cover"
+                unoptimized
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
@@ -383,10 +387,13 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-green-400 to-green-600">
                     {avatarUrl ? (
-                      <img
+                      <Image
                         src={avatarUrl}
                         alt="프로필"
+                        width={40}
+                        height={40}
                         className="h-full w-full object-cover"
+                        unoptimized
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';

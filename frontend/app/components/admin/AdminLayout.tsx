@@ -120,6 +120,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
     // 초기 설정
     if (window.innerWidth < 1024) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsSidebarOpen(false);
       localStorage.setItem('adminSidebarOpen', 'false');
     } else {
@@ -198,7 +199,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       />
       <div className="flex flex-1 flex-col min-w-0">
         <AdminHeader onMenuClick={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden border-t border-x border-gray-200 dark:border-gray-800 scrollbar-hide">{children}</main>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden border-t border-x border-gray-200 dark:border-gray-800 scrollbar-hide p-4 bg-white dark:bg-black">{children}</main>
       </div>
     </div>
   );

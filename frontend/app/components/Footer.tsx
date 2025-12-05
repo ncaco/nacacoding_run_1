@@ -29,7 +29,7 @@ export default function Footer() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-400 to-green-600">
                 <span className="text-xl font-bold text-white">P</span>
               </div>
-              <span className="text-xl font-semibold text-gray-900">Portal</span>
+              <span className="text-xl font-semibold text-gray-900 dark:text-white">Portal</span>
             </Link>
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
               주말에 구축하고, 수백만으로 확장하세요.
@@ -88,7 +88,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-gray-200 pt-8">
+        <div className="mt-12 border-t border-gray-200 pt-8 dark:border-gray-800">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               © {new Date().getFullYear()} 포털. 모든 권리 보유.

@@ -6,8 +6,15 @@ import FormField from '../FormField';
 import FormActions from '../FormActions';
 import IconSelector from './IconSelector';
 
+interface IconFormData {
+  iconId?: string;
+  name: string;
+  svgCode: string;
+  enabled?: boolean;
+}
+
 interface IconFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: IconFormData) => void;
   onCancel?: () => void;
   initialData?: {
     iconId?: string;
@@ -37,6 +44,7 @@ export default function IconForm({ onSubmit, onCancel, initialData, isLoading = 
     if (formData.svgCode) {
       // 일반적인 SVG path 패턴이 아니면 사용자 정의로 간주
       const isCommonPattern = formData.svgCode.match(/^[MLHVCSQTAZmlhvcsqtaz0-9\s,.-]+$/);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUseCustomSvg(!isCommonPattern);
     }
   }, [formData.svgCode]);
@@ -68,7 +76,7 @@ export default function IconForm({ onSubmit, onCancel, initialData, isLoading = 
             required
             placeholder="예: menu-icon, home-icon"
             value={formData.iconId}
-            onChange={(value) => setFormData({ ...formData, iconId: value })}
+            onChange={(value) => setFormData({ ...formData, iconId: String(value) })}
             helperText="아이콘을 식별하는 고유 ID를 입력하세요."
           />
         )}
@@ -93,7 +101,7 @@ export default function IconForm({ onSubmit, onCancel, initialData, isLoading = 
           required
           placeholder="아이콘명을 입력하세요"
           value={formData.name}
-          onChange={(value) => setFormData({ ...formData, name: value })}
+          onChange={(value) => setFormData({ ...formData, name: String(value) })}
         />
 
         {/* 아이콘 선택 탭 */}
@@ -142,13 +150,14 @@ export default function IconForm({ onSubmit, onCancel, initialData, isLoading = 
               </Tab.Panel>
               <Tab.Panel>
                 <FormField
+                  label="SVG 코드"
                   name="svgCode"
                   type="textarea"
                   rows={5}
                   required
                   placeholder="예: M4 6h16M4 12h16M4 18h16 또는 전체 SVG 코드"
                   value={formData.svgCode}
-                  onChange={(value) => setFormData({ ...formData, svgCode: value })}
+                  onChange={(value) => setFormData({ ...formData, svgCode: String(value) })}
                   helperText="SVG path 데이터 또는 전체 SVG 코드를 입력하세요."
                 />
               </Tab.Panel>
@@ -177,7 +186,7 @@ export default function IconForm({ onSubmit, onCancel, initialData, isLoading = 
               name="enabled"
               type="checkbox"
               value={formData.enabled}
-              onChange={(value) => setFormData({ ...formData, enabled: value })}
+              onChange={(value) => setFormData({ ...formData, enabled: Boolean(value) })}
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               비활성화된 아이콘은 사용할 수 없습니다.
@@ -188,7 +197,6 @@ export default function IconForm({ onSubmit, onCancel, initialData, isLoading = 
         <div className="border-t border-gray-200 pt-3 dark:border-[#1f2435]">
           <FormActions
             onCancel={onCancel}
-            onSubmit={handleSubmit}
             submitLabel={isEditMode ? '수정' : '생성'}
             isLoading={isLoading}
           />

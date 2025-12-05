@@ -113,7 +113,6 @@ function UserRoleItem({ userRole, onEdit, onDelete, onToggleEnabled }: { userRol
 }
 
 export default function UserRoleList({ userRoles, isLoading, onAdd, onEdit, onDelete, onToggleEnabled }: UserRoleListProps) {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
   // 필터링된 역할 목록

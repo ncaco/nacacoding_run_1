@@ -130,7 +130,7 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [, setIsLoggingOut] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [hoveredMenuItem, setHoveredMenuItem] = useState<string | null>(null);
@@ -216,7 +216,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
         // 4. 메뉴를 계층 구조로 변환 (아이콘 맵 전달)
         const menuItemsData = buildMenuHierarchy(menus, iconsMap);
         setMenuItems(menuItemsData);
-      } catch (error) {
+      } catch {
         // 에러 발생 시 빈 메뉴 목록 설정
         setMenuItems([]);
       } finally {
@@ -285,6 +285,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
     }, 100);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {

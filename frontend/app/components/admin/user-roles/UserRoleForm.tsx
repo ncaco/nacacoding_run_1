@@ -4,8 +4,15 @@ import { useState, useEffect } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
 
+interface UserRoleFormData {
+  roleCd: string;
+  roleNm: string;
+  roleDesc?: string;
+  enabled?: boolean;
+}
+
 interface UserRoleFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: UserRoleFormData) => void;
   onCancel?: () => void;
   initialData?: {
     id?: string;
@@ -31,6 +38,7 @@ export default function UserRoleForm({ onSubmit, onCancel, initialData, isLoadin
   // initialData가 변경되면 formData 업데이트
   useEffect(() => {
     if (initialData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         roleCd: initialData.roleCd || '',
         roleNm: initialData.roleNm || '',

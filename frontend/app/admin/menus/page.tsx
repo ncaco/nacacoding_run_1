@@ -17,7 +17,7 @@ interface Menu {
   url?: string;
   icon?: string;
   displayOrder: number;
-  parentId?: string;
+  parentId?: string | null;
   enabled?: boolean;
 }
 
@@ -159,6 +159,7 @@ function MenusPageContent() {
     fetchSites();
     fetchMenus();
     fetchIcons();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 다음 표시 순서 계산 (같은 레벨의 메뉴 중 최대값 + 1)
@@ -322,7 +323,7 @@ function MenusPageContent() {
     }
   };
 
-  const handleEdit = (menu: Menu) => {
+  const handleEdit = () => {
     // 편집 모드는 MenuList 내부에서 처리
   };
 
@@ -511,7 +512,18 @@ function MenusPageContent() {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
+  interface MenuFormData {
+    id?: string;
+    siteId: string;
+    name: string;
+    url?: string;
+    icon?: string;
+    displayOrder: number;
+    parentId?: string | null;
+    enabled?: boolean;
+  }
+
+  const handleSubmit = async (formData: MenuFormData) => {
     setIsSubmitting(true);
 
     try {

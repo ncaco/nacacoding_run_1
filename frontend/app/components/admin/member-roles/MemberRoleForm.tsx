@@ -4,8 +4,15 @@ import { useState, useEffect } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
 
+interface MemberRoleFormData {
+  roleCd: string;
+  roleNm: string;
+  roleDesc?: string;
+  enabled?: boolean;
+}
+
 interface MemberRoleFormProps {
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: MemberRoleFormData) => void;
   onCancel?: () => void;
   initialData?: {
     id?: string;
@@ -30,6 +37,7 @@ export default function MemberRoleForm({ onSubmit, onCancel, initialData, isLoad
   // initialData가 변경되면 formData 업데이트
   useEffect(() => {
     if (initialData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         roleCd: initialData.roleCd || '',
         roleNm: initialData.roleNm || '',
@@ -143,7 +151,6 @@ export default function MemberRoleForm({ onSubmit, onCancel, initialData, isLoad
           <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
             <FormActions
               onCancel={onCancel}
-              onSubmit={handleSubmit}
               submitLabel={isEditMode ? '수정' : '생성'}
               isLoading={isLoading}
             />

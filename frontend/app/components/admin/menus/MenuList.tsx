@@ -15,7 +15,7 @@ interface Menu {
   url?: string;
   icon?: string;
   displayOrder: number;
-  parentId?: string;
+  parentId?: string | null;
   enabled?: boolean;
   children?: Menu[];
 }
@@ -33,13 +33,24 @@ interface Icon {
   enabled?: boolean;
 }
 
+interface MenuFormData {
+  id?: string;
+  siteId: string;
+  name: string;
+  url?: string;
+  icon?: string;
+  displayOrder: number;
+  parentId?: string | null;
+  enabled?: boolean;
+}
+
 interface MenuListProps {
   menus: Menu[];
   isLoading: boolean;
   onAdd?: () => void;
   onAddChild?: (parentMenu: Menu) => void;
   onEdit?: (menu: Menu) => void;
-  onSubmit?: (formData: any) => void;
+  onSubmit?: (formData: MenuFormData) => void;
   onDelete?: (menu: Menu) => void;
   onToggleEnabled?: (menu: Menu, enabled: boolean) => void;
   onReorder?: (reorderedMenus: Array<{ id: string; parentId: string | null; displayOrder: number }>) => void;
@@ -153,7 +164,7 @@ function MenuTreeNode({ menu, level = 0, index, isSelected, onSelect, onAddChild
   );
 }
 
-export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, onSubmit, onDelete, onToggleEnabled, onReorder, sites = [], icons = [], selectedSiteId, isSubmitting = false, selectedMenuId, onSelectMenu }: MenuListProps) {
+export default function MenuList({ menus, isLoading, onAdd, onAddChild, onSubmit, onDelete, onToggleEnabled, onReorder, sites = [], icons = [], selectedSiteId, isSubmitting = false, selectedMenuId, onSelectMenu }: MenuListProps) {
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
   const [formData, setFormData] = useState<{
     name: string;
@@ -290,8 +301,7 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, 
     const isMovingToRoot = destination.droppableId === 'root';
     const isMovingToChild = destination.droppableId.startsWith('child-');
     
-    let newParentId: string | null = null;
-    let targetIndex = destination.index;
+    const targetIndex = destination.index;
 
     if (isMovingToChild) {
       // 자식 레벨로 이동
@@ -301,8 +311,6 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, 
       if (isDescendant(parentId, draggedMenu.id)) {
         return;
       }
-      
-      newParentId = parentId;
       
       // 부모 메뉴의 자식 목록 가져오기
       const parentChildren = menus.filter((m) => m.parentId === parentId && m.id !== draggedMenu.id);
@@ -334,7 +342,6 @@ export default function MenuList({ menus, isLoading, onAdd, onAddChild, onEdit, 
       onReorder([...reorderedOriginalLevel, ...reorderedChildren]);
     } else if (isMovingToRoot) {
       // 루트 레벨로 이동
-      newParentId = null;
       
       // 루트 메뉴 목록 가져오기
       const rootMenus = menus.filter((m) => !m.parentId && m.id !== draggedMenu.id);
