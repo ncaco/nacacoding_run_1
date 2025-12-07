@@ -7,8 +7,8 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import UserList from '../../components/admin/users/UserList';
 import UserForm from '../../components/admin/users/UserForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '../../utils/auth';
-import { getApiUrl } from '../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../_lib/utils/auth';
+import { getApiUrl } from '../../_lib/api/client';
 
 interface Admin {
   id: string;

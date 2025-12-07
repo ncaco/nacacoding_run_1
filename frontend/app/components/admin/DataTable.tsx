@@ -1,6 +1,6 @@
 'use client';
 
-import { DataTableProps } from './types';
+import type { DataTableProps } from '../../_types/admin';
 import LoadingState from './LoadingState';
 import EmptyState from './EmptyState';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { FormFieldProps } from './types';
+import type { FormFieldProps } from '../../_types/admin';
 import CustomSelect from './CustomSelect';
 
 export default function FormField({

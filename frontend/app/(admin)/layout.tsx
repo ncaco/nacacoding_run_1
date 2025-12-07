@@ -1,10 +1,15 @@
 'use client';
 
 import { useState, ReactNode, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import AdminHeader from './AdminHeader';
-import AdminSidebar from './AdminSidebar';
-import { isTokenExpired, logout, decodeJWT, refreshAccessToken } from '../../_lib/utils/auth';
+import { useRouter, usePathname } from 'next/navigation';
+import AdminHeader from '../components/admin/AdminHeader';
+import AdminSidebar from '../components/admin/AdminSidebar';
+import { isTokenExpired, logout, decodeJWT, refreshAccessToken } from '../_lib/utils/auth';
+import { STORAGE_KEYS, BREAKPOINTS, TOKEN_REFRESH_BEFORE_EXPIRATION } from '../_lib/constants';
+
+// 참고: Route Groups를 제대로 활용하려면 admin/ 폴더를 (admin)/admin/으로 이동해야 합니다.
+// 현재는 admin/ 폴더가 루트에 있으므로 이 layout.tsx는 적용되지 않습니다.
+// 임시로 각 페이지에서 AdminLayout을 사용하고 있습니다.
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -12,13 +17,19 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  
+  // 로그인 페이지는 레이아웃 적용 제외
+  if (pathname?.includes('/admin/login')) {
+    return <>{children}</>;
+  }
   
   // localStorage에서 사이드바 상태 복원 (기본값: true)
   const getInitialSidebarState = (): boolean => {
     if (typeof window === 'undefined') return true;
     // 모바일에서는 항상 닫힌 상태
-    if (window.innerWidth < 1024) return false;
-    const saved = localStorage.getItem('adminSidebarOpen');
+    if (window.innerWidth < BREAKPOINTS.MOBILE) return false;
+    const saved = localStorage.getItem(STORAGE_KEYS.ADMIN_SIDEBAR_OPEN);
     if (saved === null) return true; // 기본값
     return saved === 'true';
   };
@@ -26,7 +37,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => getInitialSidebarState());
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false;
-    const saved = localStorage.getItem('adminSidebarCollapsed');
+    const saved = localStorage.getItem(STORAGE_KEYS.ADMIN_SIDEBAR_COLLAPSED);
     return saved === 'true';
   });
   const [isChecking, setIsChecking] = useState(true);
@@ -34,7 +45,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // 로그인 상태 확인 및 토큰 만료 체크
   useEffect(() => {
     const checkAuth = async () => {
-      const adminToken = localStorage.getItem('adminToken');
+      const adminToken = localStorage.getItem(STORAGE_KEYS.ADMIN_TOKEN);
       if (!adminToken) {
         // 로그인 안되어 있으면 로그인 페이지로 리다이렉트
         router.push('/admin/login');
@@ -60,7 +71,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // 토큰 만료 전 자동 갱신 (만료 5분 전)
   useEffect(() => {
-    const adminToken = localStorage.getItem('adminToken');
+    const adminToken = localStorage.getItem(STORAGE_KEYS.ADMIN_TOKEN);
     if (!adminToken) return;
 
     // 토큰 만료 시간 확인
@@ -70,7 +81,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const expirationTime = decoded.exp * 1000;
     const now = Date.now();
     const timeUntilExpiration = expirationTime - now;
-    const refreshBeforeExpiration = 5 * 60 * 1000; // 5분 전
 
     if (timeUntilExpiration <= 0) {
       // 이미 만료된 경우 Refresh Token으로 갱신 시도
@@ -83,7 +93,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
 
     // 만료 5분 전에 자동 갱신
-    const refreshTime = Math.max(0, timeUntilExpiration - refreshBeforeExpiration);
+    const refreshTime = Math.max(0, timeUntilExpiration - TOKEN_REFRESH_BEFORE_EXPIRATION);
     const refreshTimeoutId = setTimeout(async () => {
       const newToken = await refreshAccessToken();
       if (!newToken) {
@@ -106,12 +116,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     // 모바일에서는 기본적으로 사이드바를 닫음
     const handleResize = () => {
-      if (window.innerWidth < 1024) {
+      if (window.innerWidth < BREAKPOINTS.MOBILE) {
         setIsSidebarOpen(false);
-        localStorage.setItem('adminSidebarOpen', 'false');
+        localStorage.setItem(STORAGE_KEYS.ADMIN_SIDEBAR_OPEN, 'false');
       } else {
         // 데스크톱에서는 저장된 상태 복원
-        const saved = localStorage.getItem('adminSidebarOpen');
+        const saved = localStorage.getItem(STORAGE_KEYS.ADMIN_SIDEBAR_OPEN);
         if (saved !== null) {
           setIsSidebarOpen(saved === 'true');
         }
@@ -119,13 +129,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     };
 
     // 초기 설정
-    if (window.innerWidth < 1024) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (window.innerWidth < BREAKPOINTS.MOBILE) {
       setIsSidebarOpen(false);
-      localStorage.setItem('adminSidebarOpen', 'false');
+      localStorage.setItem(STORAGE_KEYS.ADMIN_SIDEBAR_OPEN, 'false');
     } else {
       // 데스크톱에서는 저장된 상태 사용
-      const saved = localStorage.getItem('adminSidebarOpen');
+      const saved = localStorage.getItem(STORAGE_KEYS.ADMIN_SIDEBAR_OPEN);
       if (saved !== null) {
         setIsSidebarOpen(saved === 'true');
       }
@@ -139,8 +148,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // 사이드바 상태 변경 시 localStorage에 저장
   useEffect(() => {
     // 모바일이 아닐 때만 저장 (모바일에서는 항상 닫힘)
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
-      localStorage.setItem('adminSidebarOpen', isSidebarOpen.toString());
+    if (typeof window !== 'undefined' && window.innerWidth >= BREAKPOINTS.MOBILE) {
+      localStorage.setItem(STORAGE_KEYS.ADMIN_SIDEBAR_OPEN, isSidebarOpen.toString());
     }
   }, [isSidebarOpen]);
 
@@ -148,15 +157,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const newState = !isSidebarOpen;
     setIsSidebarOpen(newState);
     // 즉시 localStorage에 저장
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
-      localStorage.setItem('adminSidebarOpen', newState.toString());
+    if (typeof window !== 'undefined' && window.innerWidth >= BREAKPOINTS.MOBILE) {
+      localStorage.setItem(STORAGE_KEYS.ADMIN_SIDEBAR_OPEN, newState.toString());
     }
   };
 
   const toggleSidebarCollapse = () => {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
-    localStorage.setItem('adminSidebarCollapsed', newState.toString());
+    localStorage.setItem(STORAGE_KEYS.ADMIN_SIDEBAR_COLLAPSED, newState.toString());
   };
 
   // 로그인 상태 확인 중일 때는 로딩 표시
@@ -204,4 +213,3 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     </div>
   );
 }
-

@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
-import { fetchWithTokenRefresh, logout } from '../../../utils/auth';
-import { getApiUrl } from '../../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../../_lib/utils/auth';
+import { getApiUrl } from '../../../_lib/api/client';
 import { useRouter } from 'next/navigation';
 
 interface MenuPermissionItem {

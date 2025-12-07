@@ -7,8 +7,8 @@ import { Tab } from '@headlessui/react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import MenuList from '../../components/admin/menus/MenuList';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '../../utils/auth';
-import { getApiUrl } from '../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../_lib/utils/auth';
+import { getApiUrl } from '../../_lib/api/client';
 
 interface Menu {
   id: string;

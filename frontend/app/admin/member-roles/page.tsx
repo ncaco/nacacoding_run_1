@@ -7,8 +7,8 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import MemberRoleList from '../../components/admin/member-roles/MemberRoleList';
 import MemberRoleForm from '../../components/admin/member-roles/MemberRoleForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '../../utils/auth';
-import { getApiUrl } from '../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../_lib/utils/auth';
+import { getApiUrl } from '../../_lib/api/client';
 
 interface MemberRole {
   id: string;

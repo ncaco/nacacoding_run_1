@@ -7,8 +7,8 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import SiteList from '../../components/admin/sites/SiteList';
 import SiteForm from '../../components/admin/sites/SiteForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '../../utils/auth';
-import { getApiUrl } from '../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../_lib/utils/auth';
+import { getApiUrl } from '../../_lib/api/client';
 
 interface Site {
   id: string;

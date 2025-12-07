@@ -1,6 +1,6 @@
 'use client';
 
-import { StatCardProps } from './types';
+import type { StatCardProps } from '../../_types/admin';
 
 export default function StatCard({
   title,

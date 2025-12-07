@@ -7,8 +7,8 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import CmnCdList from '../../components/admin/cmn-cd/CmnCdList';
 import CmnCdForm from '../../components/admin/cmn-cd/CmnCdForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '../../utils/auth';
-import { getApiUrl } from '../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../_lib/utils/auth';
+import { getApiUrl } from '../../_lib/api/client';
 
 interface CmnCd {
   id: string;

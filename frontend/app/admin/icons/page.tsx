@@ -7,8 +7,8 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import IconList from '../../components/admin/icons/IconList';
 import IconForm from '../../components/admin/icons/IconForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '../../utils/auth';
-import { getApiUrl } from '../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../_lib/utils/auth';
+import { getApiUrl } from '../../_lib/api/client';
 
 interface Icon {
   id: string;

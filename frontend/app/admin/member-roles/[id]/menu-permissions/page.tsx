@@ -7,8 +7,8 @@ import { Tab } from '@headlessui/react';
 import AdminLayout from '../../../../components/admin/AdminLayout';
 import LoadingState from '../../../../components/admin/LoadingState';
 import EmptyState from '../../../../components/admin/EmptyState';
-import { fetchWithTokenRefresh, logout } from '../../../../utils/auth';
-import { getApiUrl } from '../../../../utils/api';
+import { fetchWithTokenRefresh, logout } from '../../../../_lib/utils/auth';
+import { getApiUrl } from '../../../../_lib/api/client';
 
 interface MenuPermissionItem {
   menuId: string;
