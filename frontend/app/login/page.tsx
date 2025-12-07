@@ -4,9 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { getApiUrl } from '../utils/api';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import { getApiUrl } from '../_lib/api/client';
+import Header from '../_components/layout/Header';
+import Footer from '../_components/layout/Footer';
 
 export default function LoginPage() {
   const router = useRouter();

@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../_components/layout/Header';
+import Footer from '../_components/layout/Footer';
 
 const plans = [
   {

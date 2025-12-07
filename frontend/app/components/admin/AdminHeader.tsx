@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import ThemeToggle from '../ThemeToggle';
+import ThemeToggle from '../../_components/ui/ThemeToggle';
 import { logout, fetchWithTokenRefresh } from '../../utils/auth';
 import { getApiUrl } from '../../utils/api';
 

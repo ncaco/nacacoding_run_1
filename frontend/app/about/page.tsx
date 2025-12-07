@@ -1,8 +1,8 @@
 'use client';
 
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import PortalLoading from '../components/PortalLoading';
+import Header from '../_components/layout/Header';
+import Footer from '../_components/layout/Footer';
+import PortalLoading from '../_components/ui/PortalLoading';
 import { useState } from 'react';
 
 export default function AboutPage() {

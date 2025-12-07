@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { getApiUrl } from '../utils/api';
-import { isTokenExpired, decodeJWT } from '../utils/auth';
+import Header from '../_components/layout/Header';
+import Footer from '../_components/layout/Footer';
+import { getApiUrl } from '../_lib/api/client';
+import { isTokenExpired, decodeJWT } from '../_lib/utils/auth';
 
 interface MemberProfile {
   id?: string;

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { getApiUrl } from '../utils/api';
+import { getApiUrl } from '../_lib/api/client';
 import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../_components/layout/Header';
+import Footer from '../_components/layout/Footer';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');

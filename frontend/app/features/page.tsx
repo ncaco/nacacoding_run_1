@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import Features from '../components/Features';
-import PortalLoading from '../components/PortalLoading';
+import Header from '../_components/layout/Header';
+import Footer from '../_components/layout/Footer';
+import Features from '../_components/layout/Features';
+import PortalLoading from '../_components/ui/PortalLoading';
 
 export default function FeaturesPage() {
   const [isMenuLoading, setIsMenuLoading] = useState(true);

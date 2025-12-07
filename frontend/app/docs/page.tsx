@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import PortalLoading from '../components/PortalLoading';
+import Header from '../_components/layout/Header';
+import Footer from '../_components/layout/Footer';
+import PortalLoading from '../_components/ui/PortalLoading';
 
 const docsCategories = [
   {
