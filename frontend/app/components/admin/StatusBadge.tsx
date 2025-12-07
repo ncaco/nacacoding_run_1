@@ -1,6 +1,6 @@
 'use client';
 
-import type { StatusBadgeProps } from '../../_types/admin';
+import type { StatusBadgeProps } from '@/_types/admin';
 
 export default function StatusBadge({
   enabled,

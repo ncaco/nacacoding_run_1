@@ -2,9 +2,9 @@
  * 사용자(Member) 관리 API 서비스
  */
 
-import { getApiUrl } from '../../../_lib/api/client';
-import { fetchWithTokenRefresh } from '../../../_lib/utils/auth';
-import type { ApiResponse, User, UserFormData } from '../../../_types';
+import { getApiUrl } from '@/_lib/api/client';
+import { fetchWithTokenRefresh } from '@/_lib/utils/auth';
+import type { ApiResponse, User, UserFormData } from '@/_types';
 
 export interface MemberResponse {
   id: string;

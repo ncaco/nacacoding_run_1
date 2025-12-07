@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getApiUrl } from '@/app/_lib/api/client';
+import { getApiUrl } from '@/_lib/api/client';
 
 export default function AdminLoginPage() {
   const router = useRouter();

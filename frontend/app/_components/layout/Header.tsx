@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import ThemeToggle from '../ui/ThemeToggle';
-import { getApiUrl } from '../../_lib/api/client';
-import { isTokenExpired } from '../../_lib/utils/auth';
+import ThemeToggle from '@/_components/ui/ThemeToggle';
+import { getApiUrl } from '@/_lib/api/client';
+import { isTokenExpired } from '@/_lib/utils/auth';
 
 interface Site {
   id: string;

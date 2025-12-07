@@ -6,8 +6,8 @@ import { toast } from 'sonner';
 import CmnCdList from '@/components/admin/cmn-cd/CmnCdList';
 import CmnCdForm from '@/components/admin/cmn-cd/CmnCdForm';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '@/app/_lib/utils/auth';
-import { getApiUrl } from '@/app/_lib/api/client';
+import { fetchWithTokenRefresh, logout } from '@/_lib/utils/auth';
+import { getApiUrl } from '@/_lib/api/client';
 
 interface CmnCd {
   id: string;

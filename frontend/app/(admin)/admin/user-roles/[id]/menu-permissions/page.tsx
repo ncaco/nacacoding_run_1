@@ -6,8 +6,8 @@ import { toast } from 'sonner';
 import { Tab } from '@headlessui/react';
 import LoadingState from '@/components/admin/LoadingState';
 import EmptyState from '@/components/admin/EmptyState';
-import { fetchWithTokenRefresh, logout } from '@/app/_lib/utils/auth';
-import { getApiUrl } from '@/app/_lib/api/client';
+import { fetchWithTokenRefresh, logout } from '@/_lib/utils/auth';
+import { getApiUrl } from '@/_lib/api/client';
 
 interface MenuPermissionItem {
   menuId: string;

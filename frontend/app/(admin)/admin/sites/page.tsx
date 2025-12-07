@@ -6,8 +6,8 @@ import { toast } from 'sonner';
 import SiteList from '@/components/admin/sites/SiteList';
 import SiteForm from '@/components/admin/sites/SiteForm';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '@/app/_lib/utils/auth';
-import { getApiUrl } from '@/app/_lib/api/client';
+import { fetchWithTokenRefresh, logout } from '@/_lib/utils/auth';
+import { getApiUrl } from '@/_lib/api/client';
 
 interface Site {
   id: string;

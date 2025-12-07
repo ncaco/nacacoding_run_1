@@ -1,6 +1,6 @@
 'use client';
 
-import type { EmptyStateProps } from '../../_types/admin';
+import type { EmptyStateProps } from '@/_types/admin';
 
 export default function EmptyState({ icon, message }: EmptyStateProps) {
   return (

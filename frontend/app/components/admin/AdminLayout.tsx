@@ -4,7 +4,7 @@ import { useState, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
-import { isTokenExpired, logout, decodeJWT, refreshAccessToken } from '../../_lib/utils/auth';
+import { isTokenExpired, logout, decodeJWT, refreshAccessToken } from '@/_lib/utils/auth';
 
 interface AdminLayoutProps {
   children: ReactNode;

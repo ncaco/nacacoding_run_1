@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
-import type { UserFormData } from '../../../_types';
+import type { UserFormData } from '@/_types';
 
 interface UserFormProps {
   onSubmit?: (data: UserFormData) => void;

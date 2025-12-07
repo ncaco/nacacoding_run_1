@@ -2,9 +2,9 @@
  * 인증 관련 유틸리티 함수
  */
 
-import { getApiUrl } from '../api/client';
-import type { JWTPayload } from '../../_types';
-import { STORAGE_KEYS, TOKEN_REFRESH_BEFORE_EXPIRATION } from '../constants';
+import { getApiUrl } from '@/_lib/api/client';
+import type { JWTPayload } from '@/_types';
+import { STORAGE_KEYS, TOKEN_REFRESH_BEFORE_EXPIRATION } from '@/_lib/constants';
 
 // JWT 토큰 디코딩 유틸리티
 export function decodeJWT(token: string): JWTPayload | null {

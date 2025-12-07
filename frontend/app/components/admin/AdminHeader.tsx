@@ -4,9 +4,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import ThemeToggle from '../../_components/ui/ThemeToggle';
-import { logout, fetchWithTokenRefresh } from '../../_lib/utils/auth';
-import { getApiUrl } from '../../_lib/api/client';
+import ThemeToggle from '@/_components/ui/ThemeToggle';
+import { logout, fetchWithTokenRefresh } from '@/_lib/utils/auth';
+import { getApiUrl } from '@/_lib/api/client';
 
 interface MenuItem {
   name: string;

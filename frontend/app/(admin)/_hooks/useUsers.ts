@@ -5,9 +5,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import * as usersService from '../_services/users.service';
-import { logout } from '../../../_lib/utils/auth';
-import type { User, UserFormData } from '../../../_types';
+import * as usersService from '@/(admin)/_services/users.service';
+import { logout } from '@/_lib/utils/auth';
+import type { User, UserFormData } from '@/_types';
 
 export function useUsers() {
   const router = useRouter();

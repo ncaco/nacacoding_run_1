@@ -4,8 +4,8 @@ import { useState, Suspense } from 'react';
 import UserList from '@/components/admin/users/UserList';
 import UserForm from '@/components/admin/users/UserForm';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
-import { useUsers } from '@/app/(admin)/_hooks/useUsers';
-import type { User, UserFormData } from '@/app/_types';
+import { useUsers } from '@/(admin)/_hooks/useUsers';
+import type { User, UserFormData } from '@/_types';
 
 function UsersPageContent() {
   const { users, isLoading, isSubmitting, createUser, updateUser, deleteUser } = useUsers();

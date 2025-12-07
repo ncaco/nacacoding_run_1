@@ -6,8 +6,8 @@ import { toast } from 'sonner';
 import UserRoleList from '@/components/admin/user-roles/UserRoleList';
 import UserRoleForm from '@/components/admin/user-roles/UserRoleForm';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '@/app/_lib/utils/auth';
-import { getApiUrl } from '@/app/_lib/api/client';
+import { fetchWithTokenRefresh, logout } from '@/_lib/utils/auth';
+import { getApiUrl } from '@/_lib/api/client';
 
 interface UserRole {
   id: string;

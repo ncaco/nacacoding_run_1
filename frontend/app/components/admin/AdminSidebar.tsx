@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { getApiUrl } from '../../_lib/api/client';
-import { fetchWithTokenRefresh, logout } from '../../_lib/utils/auth';
+import { getApiUrl } from '@/_lib/api/client';
+import { fetchWithTokenRefresh, logout } from '@/_lib/utils/auth';
 
 interface SubMenuItem {
   id?: string;

@@ -2,10 +2,10 @@
 
 import { useState, ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import AdminHeader from '../components/admin/AdminHeader';
-import AdminSidebar from '../components/admin/AdminSidebar';
-import { isTokenExpired, logout, decodeJWT, refreshAccessToken } from '../_lib/utils/auth';
-import { STORAGE_KEYS, BREAKPOINTS, TOKEN_REFRESH_BEFORE_EXPIRATION } from '../_lib/constants';
+import AdminHeader from '@/components/admin/AdminHeader';
+import AdminSidebar from '@/components/admin/AdminSidebar';
+import { isTokenExpired, logout, decodeJWT, refreshAccessToken } from '@/_lib/utils/auth';
+import { STORAGE_KEYS, BREAKPOINTS, TOKEN_REFRESH_BEFORE_EXPIRATION } from '@/_lib/constants';
 
 // 참고: Route Groups를 제대로 활용하려면 admin/ 폴더를 (admin)/admin/으로 이동해야 합니다.
 // 현재는 admin/ 폴더가 루트에 있으므로 이 layout.tsx는 적용되지 않습니다.

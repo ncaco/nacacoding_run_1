@@ -6,8 +6,8 @@ import Image from 'next/image';
 import TabContainer from '@/components/admin/TabContainer';
 import FormField from '@/components/admin/FormField';
 import FormActions from '@/components/admin/FormActions';
-import { decodeJWT, isTokenExpired, logout, fetchWithTokenRefresh } from '@/app/_lib/utils/auth';
-import { getApiUrl } from '@/app/_lib/api/client';
+import { decodeJWT, isTokenExpired, logout, fetchWithTokenRefresh } from '@/_lib/utils/auth';
+import { getApiUrl } from '@/_lib/api/client';
 
 // 날짜 포맷팅 함수
 function formatDate(date: Date | null): string {

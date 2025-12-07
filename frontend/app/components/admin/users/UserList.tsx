@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import LoadingState from '../LoadingState';
 import CustomSelect from '../CustomSelect';
-import type { User } from '../../../_types';
+import type { User } from '@/_types';
 
 interface UserListProps {
   users: User[];

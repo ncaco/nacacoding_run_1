@@ -1,6 +1,6 @@
 'use client';
 
-import type { ActionButtonProps } from '../../_types/admin';
+import type { ActionButtonProps } from '@/_types/admin';
 
 export default function ActionButton({
   label,

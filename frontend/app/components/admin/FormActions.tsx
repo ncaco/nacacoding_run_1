@@ -1,6 +1,6 @@
 'use client';
 
-import type { FormActionsProps } from '../../_types/admin';
+import type { FormActionsProps } from '@/_types/admin';
 
 export default function FormActions({
   onCancel,

@@ -1,6 +1,6 @@
 'use client';
 
-import type { PageHeaderProps } from '../../_types/admin';
+import type { PageHeaderProps } from '@/_types/admin';
 
 export default function PageHeader({ title, description }: PageHeaderProps) {
   return (
