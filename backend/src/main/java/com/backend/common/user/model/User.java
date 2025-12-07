@@ -1,17 +1,34 @@
 package com.backend.common.user.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
+@Schema(description = "사용자 정보")
 public class User {
+	@Schema(description = "사용자 ID", example = "user-id-123")
 	private String id;
+	
+	@Schema(description = "사용자명", example = "admin")
 	@NotBlank
 	private String username;
+	
+	@Schema(description = "비밀번호 (응답 시 제외됨)", example = "****", accessMode = Schema.AccessMode.WRITE_ONLY)
 	@NotBlank
 	private String password;
+	
+	@Schema(description = "역할", example = "USER", allowableValues = {"USER", "MEMBER"})
 	private Role role;
+	
+	@Schema(description = "이름", example = "홍길동")
 	private String name;
+	
+	@Schema(description = "이메일", example = "admin@example.com")
 	private String email;
+	
+	@Schema(description = "프로필 이미지 URL", example = "/api/v1/admin/profile/avatar/user-id-123/image.jpg")
 	private String avatarUrl;
+	
+	@Schema(description = "사용자 역할 ID", example = "role-id-123")
 	private String userRoleId;
 
 	public User() {}

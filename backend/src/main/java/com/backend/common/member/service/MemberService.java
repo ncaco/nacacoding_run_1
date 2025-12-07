@@ -6,6 +6,10 @@ import com.backend.common.member.repository.MemberRepository;
 import com.backend.common.user.entity.UserEntity;
 import com.backend.common.user.model.Role;
 import com.backend.common.user.repository.UserRepository;
+import com.backend.core.exception.DuplicateResourceException;
+import com.backend.core.exception.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +20,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class MemberService {
+	private static final Logger logger = LoggerFactory.getLogger(MemberService.class);
 	private final MemberRepository memberRepository;
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -31,7 +35,9 @@ public class MemberService {
 	/**
 	 * MEMBERS 테이블 기준 사용자(MEMBER) 목록 조회
 	 */
+	@Transactional(readOnly = true)
 	public List<Member> listMembers() {
+		logger.debug("사용자 목록 조회");
 		return memberRepository.findAll().stream()
 				.map(this::toMember)
 				.collect(Collectors.toList());
@@ -40,6 +46,7 @@ public class MemberService {
 	/**
 	 * MEMBERS 테이블에서 username 기준 단일 사용자 조회
 	 */
+	@Transactional(readOnly = true)
 	public Optional<Member> findByUsername(String username) {
 		return memberRepository.findByUsername(username)
 				.map(this::toMember);
@@ -50,9 +57,11 @@ public class MemberService {
 	 * - MEMBERS: name, email, phoneNumber 수정
 	 * - USERS  : name, email 동기화
 	 */
+	@Transactional
 	public Member updateMyProfile(String username, String name, String email, String phoneNumber) {
+		logger.info("프로필 수정: username={}", username);
 		MemberEntity memberEntity = memberRepository.findByUsername(username)
-			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다: " + username));
+			.orElseThrow(() -> new ResourceNotFoundException("사용자", username));
 
 		memberEntity.setName(name);
 		memberEntity.setEmail(email);
@@ -68,9 +77,11 @@ public class MemberService {
 				userRepository.save(u);
 			});
 
+		logger.info("프로필 수정 완료: username={}", username);
 		return toMember(savedMember);
 	}
 
+	@Transactional(readOnly = true)
 	public Optional<Member> findById(String id) {
 		return memberRepository.findById(id)
 				.map(this::toMember);
@@ -82,10 +93,13 @@ public class MemberService {
 	 * - USERS  : 인증/권한(Role.MEMBER)용
 	 * @param createdAt 가입 일시 (null 인 경우 현재 시간으로 설정)
 	 */
+	@Transactional
 	public Member createMember(String username, String password, String name, String email, String phoneNumber, LocalDateTime createdAt) {
 		if (memberRepository.existsByUsername(username) || userRepository.existsByUsername(username)) {
-			throw new IllegalArgumentException("Username already exists: " + username);
+			logger.warn("사용자명 중복 시도: {}", username);
+			throw new DuplicateResourceException("사용자명", username);
 		}
+		logger.info("새 사용자 생성: username={}", username);
 		String encoded = passwordEncoder.encode(password);
 		LocalDateTime joinDateTime = createdAt != null ? createdAt : LocalDateTime.now();
 
@@ -97,15 +111,18 @@ public class MemberService {
 		MemberEntity memberEntity = new MemberEntity(username, encoded, name, email, phoneNumber, null, joinDateTime);
 		MemberEntity saved = memberRepository.save(memberEntity);
 
+		logger.info("사용자 생성 완료: id={}, username={}", saved.getId(), username);
 		return toMember(saved);
 	}
 
 	/**
 	 * MEMBERS + USERS 동시 수정 (이름/이메일 동기화)
 	 */
+	@Transactional
 	public Member updateMember(String id, String name, String email, String phoneNumber) {
+		logger.info("사용자 정보 수정: id={}", id);
 		MemberEntity memberEntity = memberRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("사용자", id));
 
 		memberEntity.setName(name);
 		memberEntity.setEmail(email);
@@ -121,15 +138,18 @@ public class MemberService {
 					userRepository.save(u);
 				});
 
+		logger.info("사용자 정보 수정 완료: id={}", id);
 		return toMember(savedMember);
 	}
 
 	/**
 	 * MEMBERS + USERS 동시 삭제
 	 */
+	@Transactional
 	public void deleteMember(String id) {
+		logger.info("사용자 삭제: id={}", id);
 		MemberEntity memberEntity = memberRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("사용자", id));
 
 		// USERS 테이블의 MEMBER 계정 삭제
 		userRepository.findByUsername(memberEntity.getUsername())
@@ -138,16 +158,19 @@ public class MemberService {
 
 		// MEMBERS 테이블 삭제
 		memberRepository.delete(memberEntity);
+		logger.info("사용자 삭제 완료: id={}", id);
 	}
 
 	/**
 	 * 마지막 로그인 일시 업데이트
 	 */
+	@Transactional
 	public void updateLastLogin(String username) {
 		memberRepository.findByUsername(username)
 				.ifPresent(entity -> {
 					entity.setLastLoginAt(LocalDateTime.now());
 					memberRepository.save(entity);
+					logger.debug("마지막 로그인 일시 업데이트: username={}", username);
 				});
 	}
 
@@ -155,14 +178,17 @@ public class MemberService {
 	 * 사용자(MEMBER) 비밀번호 변경
 	 * - 현재 비밀번호 검증 후 USERS + MEMBERS 동시 변경
 	 */
+	@Transactional
 	public void changePassword(String username, String currentPassword, String newPassword) {
+		logger.info("비밀번호 변경 시도: username={}", username);
 		// USERS 테이블에서 사용자 조회
 		UserEntity userEntity = userRepository.findByUsername(username)
 			.filter(u -> u.getRole() == Role.MEMBER)
-			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + username));
+			.orElseThrow(() -> new ResourceNotFoundException("사용자", username));
 
 		// 현재 비밀번호 확인
 		if (!passwordEncoder.matches(currentPassword, userEntity.getPassword())) {
+			logger.warn("비밀번호 불일치: username={}", username);
 			throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
 		}
 
@@ -179,6 +205,7 @@ public class MemberService {
 				memberEntity.setPassword(encoded);
 				memberRepository.save(memberEntity);
 			});
+		logger.info("비밀번호 변경 완료: username={}", username);
 	}
 
 	private Member toMember(MemberEntity entity) {

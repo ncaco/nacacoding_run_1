@@ -1,8 +1,16 @@
 package com.backend.core.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "API 공통 응답")
 public class ApiResponse<T> {
+	@Schema(description = "성공 여부", example = "true")
 	private boolean success;
+	
+	@Schema(description = "응답 메시지", example = "OK")
 	private String message;
+	
+	@Schema(description = "응답 데이터")
 	private T data;
 
 	public ApiResponse() {}

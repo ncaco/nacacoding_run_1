@@ -3,13 +3,13 @@ package com.backend.common.admin.icon.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class IconCreateRequest {
-	@NotBlank
+	@NotBlank(message = "아이콘 ID는 필수입니다")
 	private String iconId;
 	
-	@NotBlank
+	@NotBlank(message = "아이콘명은 필수입니다")
 	private String name;
 	
-	@NotBlank
+	@NotBlank(message = "SVG 코드는 필수입니다")
 	private String svgCode;
 	
 	public String getIconId() { return iconId; }

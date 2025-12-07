@@ -23,11 +23,12 @@ spring:
     time-zone: Asia/Seoul
   
   # Database 설정 (PostgreSQL)
+  # 환경변수로 설정 가능: DB_URL, DB_USERNAME, DB_PASSWORD
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: qwe123!@#
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:qwe123!@#}
   
   # H2 콘솔 (PostgreSQL 사용 시 비활성화)
   # h2:
@@ -52,9 +53,10 @@ server:
   port: 8080
 
 # JWT 설정 (256비트 이상 필요)
+# 환경변수로 설정 가능: JWT_SECRET
 app:
   jwt:
-    secret: t/mTafIRctWrDSsBH8VTT64hMgxYgTT/5g4eQkk1Svo=
+    secret: ${JWT_SECRET:t/mTafIRctWrDSsBH8VTT64hMgxYgTT/5g4eQkk1Svo=}
 
 # 로깅 설정
 logging:

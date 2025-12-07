@@ -1,18 +1,33 @@
 package com.backend.common.admin.site.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
+@Schema(description = "사이트 정보")
 public class Site {
+	@Schema(description = "사이트 ID", example = "site-id-123")
 	private String id;
+	
+	@Schema(description = "사이트 타입 코드", example = "C001")
 	@NotBlank
 	private String siteType;
+	
+	@Schema(description = "사이트명", example = "통합관리시스템")
 	@NotBlank
 	private String siteName;
+	
+	@Schema(description = "사이트 설명", example = "통합 관리 시스템")
 	private String description;
+	
+	@Schema(description = "Context Path", example = "admin")
 	@NotBlank
 	private String contextPath;
+	
+	@Schema(description = "버전", example = "1.0.0")
 	@NotBlank
 	private String version;
+	
+	@Schema(description = "활성화 여부", example = "true")
 	private Boolean enabled;
 	
 	public Site() {}

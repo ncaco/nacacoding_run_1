@@ -4,17 +4,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class MenuCreateRequest {
-	@NotBlank
+	@NotBlank(message = "사이트 ID는 필수입니다")
 	private String siteId;
 	
-	@NotBlank
+	@NotBlank(message = "메뉴명은 필수입니다")
 	private String name;
 	
 	private String url;
 	
 	private String icon;
 	
-	@NotNull
+	@NotNull(message = "표시 순서는 필수입니다")
 	private Integer displayOrder = 0;
 	
 	private String parentId;

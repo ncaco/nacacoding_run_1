@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/member-role-menu")
-@Tag(name = "13_사용자역할메뉴", description = "사용자 역할별 메뉴 권한 관리 API")
+@Tag(name = "14_사용자역할메뉴", description = "사용자 역할별 메뉴 권한 관리 API")
 public class MemberRoleMenuController {
 	private final MemberRoleMenuService memberRoleMenuService;
 

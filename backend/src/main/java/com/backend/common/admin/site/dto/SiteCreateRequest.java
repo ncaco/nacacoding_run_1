@@ -1,21 +1,27 @@
 package com.backend.common.admin.site.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
+@Schema(description = "사이트 생성 요청")
 public class SiteCreateRequest {
-	@NotBlank
+	@Schema(description = "사이트 타입 코드 (공통코드 P001의 하위코드)", example = "C001", required = true)
+	@NotBlank(message = "사이트 타입은 필수입니다")
 	private String siteType;
 	
-	@NotBlank
+	@Schema(description = "사이트명", example = "통합관리시스템", required = true)
+	@NotBlank(message = "사이트명은 필수입니다")
 	private String siteName;
 	
+	@Schema(description = "사이트 설명", example = "통합 관리 시스템")
 	private String description;
 	
-	@NotNull
+	@Schema(description = "Context Path (URL 경로)", example = "admin", required = true)
+	@NotBlank(message = "Context Path는 필수입니다")
 	private String contextPath;
 	
-	@NotBlank
+	@Schema(description = "버전", example = "1.0.0", required = true)
+	@NotBlank(message = "버전은 필수입니다")
 	private String version;
 	
 	public String getSiteType() { return siteType; }

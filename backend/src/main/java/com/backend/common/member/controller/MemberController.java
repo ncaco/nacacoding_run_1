@@ -1,13 +1,17 @@
 package com.backend.common.member.controller;
 
 import com.backend.core.dto.ApiResponse;
+import com.backend.common.member.dto.MemberCreateRequest;
+import com.backend.common.member.dto.MemberUpdateRequest;
+import com.backend.common.member.dto.MemberProfileUpdateRequest;
+import com.backend.common.member.dto.MemberPasswordChangeRequest;
 import com.backend.common.member.model.Member;
 import com.backend.common.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -51,7 +55,7 @@ public class MemberController {
 	@SecurityRequirement(name = "bearerAuth")
 	@PutMapping("/me")
 	public ResponseEntity<ApiResponse<Member>> updateMe(Authentication auth,
-	                                                   @RequestBody UpdateMyProfileRequest request) {
+	                                                   @Valid @RequestBody MemberProfileUpdateRequest request) {
 		String username = auth.getName();
 
 		Member updated = memberService.updateMyProfile(
@@ -86,7 +90,7 @@ public class MemberController {
 	@SecurityRequirement(name = "bearerAuth")
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping
-	public ResponseEntity<ApiResponse<Member>> create(@RequestBody CreateMemberRequest request) {
+	public ResponseEntity<ApiResponse<Member>> create(@Valid @RequestBody MemberCreateRequest request) {
 		return ResponseEntity.ok(ApiResponse.ok(
 			memberService.createMember(
 				request.getUsername(),
@@ -111,7 +115,7 @@ public class MemberController {
 	@PreAuthorize("hasRole('USER')")
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse<Member>> update(@PathVariable String id,
-	                                                   @RequestBody UpdateMemberRequest request) {
+	                                                   @Valid @RequestBody MemberUpdateRequest request) {
 		return ResponseEntity.ok(ApiResponse.ok(
 			memberService.updateMember(
 				id,
@@ -131,12 +135,9 @@ public class MemberController {
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping("/me/password")
 	public ResponseEntity<ApiResponse<Void>> changePassword(Authentication auth,
-	                                                       @RequestBody ChangePasswordRequest request) {
+	                                                       @Valid @RequestBody MemberPasswordChangeRequest request) {
 		String username = auth.getName();
 
-		if (request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
-			throw new IllegalArgumentException("신규 비밀번호를 입력해주세요.");
-		}
 		if (!request.getNewPassword().equals(request.getConfirmPassword())) {
 			throw new IllegalArgumentException("신규 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
 		}
@@ -159,74 +160,6 @@ public class MemberController {
 	public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String id) {
 		memberService.deleteMember(id);
 		return ResponseEntity.ok(ApiResponse.ok(null));
-	}
-
-	// DTO 클래스
-	public static class CreateMemberRequest {
-		@NotBlank
-		private String username;
-		@NotBlank
-		private String password;
-		private String name;
-		private String email;
-		private String phoneNumber;
-		// 가입 일시 (관리자에서 직접 지정 가능, 미지정 시 서버에서 현재 시간으로 처리)
-		private java.time.LocalDateTime createdAt;
-
-		public String getUsername() { return username; }
-		public void setUsername(String username) { this.username = username; }
-		public String getPassword() { return password; }
-		public void setPassword(String password) { this.password = password; }
-		public String getName() { return name; }
-		public void setName(String name) { this.name = name; }
-		public String getEmail() { return email; }
-		public void setEmail(String email) { this.email = email; }
-		public String getPhoneNumber() { return phoneNumber; }
-		public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-		public java.time.LocalDateTime getCreatedAt() { return createdAt; }
-		public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }
-	}
-
-	public static class UpdateMemberRequest {
-		private String name;
-		private String email;
-		private String phoneNumber;
-
-		public String getName() { return name; }
-		public void setName(String name) { this.name = name; }
-		public String getEmail() { return email; }
-		public void setEmail(String email) { this.email = email; }
-		public String getPhoneNumber() { return phoneNumber; }
-		public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-	}
-
-	public static class UpdateMyProfileRequest {
-		private String name;
-		private String email;
-		private String phoneNumber;
-
-		public String getName() { return name; }
-		public void setName(String name) { this.name = name; }
-		public String getEmail() { return email; }
-		public void setEmail(String email) { this.email = email; }
-		public String getPhoneNumber() { return phoneNumber; }
-		public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-	}
-
-	public static class ChangePasswordRequest {
-		@NotBlank
-		private String currentPassword;
-		@NotBlank
-		private String newPassword;
-		@NotBlank
-		private String confirmPassword;
-
-		public String getCurrentPassword() { return currentPassword; }
-		public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
-		public String getNewPassword() { return newPassword; }
-		public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
-		public String getConfirmPassword() { return confirmPassword; }
-		public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
 	}
 }
 

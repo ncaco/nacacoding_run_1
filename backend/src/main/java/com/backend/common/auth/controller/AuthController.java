@@ -12,6 +12,8 @@ import com.backend.common.user.model.User;
 import com.backend.common.user.service.UserService;
 import com.backend.common.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,10 +54,57 @@ public class AuthController {
 		this.memberService = memberService;
 	}
 
-	@Operation(summary = "사용자 로그인", description = "사용자(MEMBER) 계정으로 로그인하여 JWT 토큰을 발급받습니다.")
+	@Operation(
+		summary = "사용자 로그인", 
+		description = """
+			사용자(MEMBER) 계정으로 로그인하여 JWT 토큰을 발급받습니다.
+			
+			**응답 데이터:**
+			- `token`: Access Token (1시간 유효)
+			- `refreshToken`: Refresh Token (7일 유효)
+			
+			**사용 방법:**
+			1. 발급받은 Access Token을 Authorization 헤더에 포함하여 API 호출
+			2. 예시: `Authorization: Bearer {token}`
+			""",
+		tags = {"01_인증"}
+	)
 	@ApiResponses(value = {
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그인 성공"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 인증 정보 또는 권한 부족")
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "200", 
+			description = "로그인 성공",
+			content = @io.swagger.v3.oas.annotations.media.Content(
+				mediaType = "application/json",
+				examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+					value = """
+						{
+						  "success": true,
+						  "message": "OK",
+						  "data": {
+						    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+						    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+						  }
+						}
+						"""
+				)
+			)
+		),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "400", 
+			description = "잘못된 인증 정보 또는 권한 부족",
+			content = @io.swagger.v3.oas.annotations.media.Content(
+				mediaType = "application/json",
+				examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+					value = """
+						{
+						  "success": false,
+						  "message": "invalid credentials or insufficient privileges",
+						  "data": null
+						}
+						"""
+				)
+			)
+		)
 	})
 	@PostMapping("/login/user")
 	public ResponseEntity<ApiResponse<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest req) {
@@ -79,10 +128,45 @@ public class AuthController {
 		return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken, refreshToken)));
 	}
 
-	@Operation(summary = "관리자 로그인", description = "관리자(USER) 계정으로 로그인하여 JWT 토큰을 발급받습니다.")
+	@Operation(
+		summary = "관리자 로그인", 
+		description = """
+			관리자(USER) 계정으로 로그인하여 JWT 토큰을 발급받습니다.
+			
+			**응답 데이터:**
+			- `token`: Access Token (1시간 유효)
+			- `refreshToken`: Refresh Token (7일 유효)
+			
+			**기본 계정:**
+			- 사용자명: `admin`
+			- 비밀번호: `admin123`
+			""",
+		tags = {"01_인증"}
+	)
 	@ApiResponses(value = {
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그인 성공"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 인증 정보 또는 권한 부족")
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "200", 
+			description = "로그인 성공",
+			content = @Content(
+				mediaType = "application/json",
+				examples = @ExampleObject(
+					value = """
+						{
+						  "success": true,
+						  "message": "OK",
+						  "data": {
+						    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+						    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+						  }
+						}
+						"""
+				)
+			)
+		),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "400", 
+			description = "잘못된 인증 정보 또는 권한 부족"
+		)
 	})
 	@PostMapping("/login/admin")
 	public ResponseEntity<ApiResponse<LoginResponse>> loginAdmin(@Valid @RequestBody LoginRequest req) {
@@ -161,11 +245,58 @@ public class AuthController {
 		return ResponseEntity.ok(ApiResponse.ok());
 	}
 
-	@Operation(summary = "토큰 갱신", description = "Refresh Token을 사용하여 새로운 Access Token을 발급받습니다.")
+	@Operation(
+		summary = "토큰 갱신", 
+		description = """
+			Refresh Token을 사용하여 새로운 Access Token과 Refresh Token을 발급받습니다.
+			
+			**토큰 갱신 정책:**
+			- Refresh Token Rotation 방식 사용
+			- 기존 Refresh Token은 무효화되고 새로운 Refresh Token이 발급됨
+			- Access Token 만료 시에만 사용 권장
+			""",
+		tags = {"01_인증"}
+	)
 	@ApiResponses(value = {
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "갱신 성공"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 Refresh Token"),
-		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "200", 
+			description = "갱신 성공",
+			content = @Content(
+				mediaType = "application/json",
+				examples = @ExampleObject(
+					value = """
+						{
+						  "success": true,
+						  "message": "OK",
+						  "data": {
+						    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+						    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+						  }
+						}
+						"""
+				)
+			)
+		),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "400", 
+			description = "잘못된 Refresh Token",
+			content = @Content(
+				mediaType = "application/json",
+				examples = @ExampleObject(
+					value = """
+						{
+						  "success": false,
+						  "message": "유효하지 않은 Refresh Token입니다.",
+						  "data": null
+						}
+						"""
+				)
+			)
+		),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "401", 
+			description = "인증 필요"
+		)
 	})
 	@PostMapping("/refresh")
 	public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {

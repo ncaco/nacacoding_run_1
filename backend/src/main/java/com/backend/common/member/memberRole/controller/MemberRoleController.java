@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/member-roles")
-@Tag(name = "12_사용자역할", description = "사용자 역할(MEMBER_ROLE) 관리 API")
+@Tag(name = "13_사용자역할", description = "사용자 역할(MEMBER_ROLE) 관리 API")
 public class MemberRoleController {
 	private final MemberRoleService memberRoleService;
 
