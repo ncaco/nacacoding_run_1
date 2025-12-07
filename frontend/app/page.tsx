@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import Footer from './components/Footer';
-import PortalLoading from './components/PortalLoading';
+import Header from './_components/layout/Header';
+import Hero from './_components/layout/Hero';
+import Features from './_components/layout/Features';
+import Footer from './_components/layout/Footer';
+import PortalLoading from './_components/ui/PortalLoading';
 
 export default function Home() {
   const [isMenuLoading, setIsMenuLoading] = useState(true);

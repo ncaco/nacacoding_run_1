@@ -3,16 +3,7 @@
 import { useState, useEffect } from 'react';
 import FormField from '../FormField';
 import FormActions from '../FormActions';
-
-interface UserFormData {
-  username: string;
-  password?: string;
-  role: 'MEMBER' | 'USER';
-  name?: string;
-  email?: string;
-  phoneNumber?: string;
-  userRoleId?: string;
-}
+import type { UserFormData } from '../../../_types';
 
 interface UserFormProps {
   onSubmit?: (data: UserFormData) => void;

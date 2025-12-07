@@ -1,100 +1,20 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { useState, Suspense } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import UserList from '../../components/admin/users/UserList';
 import UserForm from '../../components/admin/users/UserForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
-import { fetchWithTokenRefresh, logout } from '../../utils/auth';
-import { getApiUrl } from '../../utils/api';
-
-interface User {
-  id: string;
-  username: string;
-  role: 'USER' | 'MEMBER';
-  name?: string;
-  email?: string;
-  phoneNumber?: string;
-  avatarUrl?: string;
-}
+import { useUsers } from '../../(admin)/_hooks/useUsers';
+import type { User, UserFormData } from '../../_types';
 
 function UsersPageContent() {
-  const router = useRouter();
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { users, isLoading, isSubmitting, createUser, updateUser, deleteUser } = useUsers();
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; user: User | null }>({
     isOpen: false,
     user: null,
   });
-
-  // 사용자 목록 조회 (사용자만)
-  const fetchUsers = async () => {
-    setIsLoading(true);
-    try {
-      const token = localStorage.getItem('adminToken');
-      if (!token) {
-        throw new Error('인증 토큰이 없습니다.');
-      }
-
-      // 사용자(MEMBER) 목록만 조회
-      const response = await fetchWithTokenRefresh(getApiUrl('/members'), {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.status === 401) {
-        logout(router);
-        return;
-      }
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || '사용자 목록 조회에 실패했습니다.');
-      }
-
-      interface MemberResponse {
-        id: string;
-        username: string;
-        name?: string;
-        email?: string;
-        phoneNumber?: string;
-        avatarUrl?: string;
-      }
-
-      // 사용자(MEMBER)만 매핑
-      const members: User[] = (data.data || []).map((member: MemberResponse) => ({
-        id: member.id,
-        username: member.username,
-        role: 'MEMBER' as const,
-        name: member.name,
-        email: member.email,
-        phoneNumber: member.phoneNumber,
-        avatarUrl: member.avatarUrl,
-      }));
-
-      setUsers(members);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message || '사용자 목록 조회에 실패했습니다.');
-      } else {
-        toast.error('사용자 목록 조회에 실패했습니다. 다시 시도해주세요.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleAdd = () => {
     setEditingUser({} as User);
@@ -102,7 +22,6 @@ function UsersPageContent() {
 
   const handleEdit = (user: User) => {
     if (!user.id) {
-      toast.error('사용자 ID가 없습니다.');
       return;
     }
     setEditingUser(user);
@@ -113,145 +32,35 @@ function UsersPageContent() {
   };
 
   const handleConfirmDelete = async () => {
-    if (!deleteDialog.user) return;
+    if (!deleteDialog.user?.id) return;
 
     const user = deleteDialog.user;
     setDeleteDialog({ isOpen: false, user: null });
-    setIsLoading(true);
-
-    try {
-      const token = localStorage.getItem('adminToken');
-      if (!token) {
-        throw new Error('인증 토큰이 없습니다.');
-      }
-
-      // 사용자(MEMBER) 삭제
-      const response = await fetchWithTokenRefresh(getApiUrl(`/members/${user.id}`), {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.status === 401) {
-        logout(router);
-        return;
-      }
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || '사용자 삭제에 실패했습니다.');
-      }
-
-      toast.success('사용자가 성공적으로 삭제되었습니다.');
-      fetchUsers();
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message || '사용자 삭제에 실패했습니다.');
-      } else {
-        toast.error('사용자 삭제에 실패했습니다. 다시 시도해주세요.');
-      }
-    } finally {
-      setIsLoading(false);
+    
+    const success = await deleteUser(user.id);
+    if (success) {
+      setEditingUser(null);
     }
   };
 
-  interface UserFormData {
-    username: string;
-    password?: string;
-    role: 'USER' | 'MEMBER';
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-  }
-
   const handleSubmit = async (formData: UserFormData) => {
-    setIsSubmitting(true);
+    const isEditMode = !!(editingUser && editingUser.id && editingUser.id.trim() !== '');
+    
+    if (isEditMode && !editingUser?.id) {
+      return;
+    }
 
-    try {
-      const token = localStorage.getItem('adminToken');
-      if (!token) {
-        throw new Error('인증 토큰이 없습니다.');
-      }
+    let success = false;
+    if (isEditMode) {
+      success = await updateUser(editingUser!.id, formData);
+    } else {
+      success = await createUser(formData);
+    }
 
-      // 수정 모드 확인
-      const isEditMode = !!(editingUser && editingUser.id && editingUser.id.trim() !== '');
-      
-      if (isEditMode && !editingUser?.id) {
-        throw new Error('사용자 ID가 없습니다. 다시 시도해주세요.');
-      }
-
-      // 사용자(MEMBER)만 처리
-      if (isEditMode) {
-        // 수정
-        const response = await fetchWithTokenRefresh(getApiUrl(`/members/${editingUser.id}`), {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name || '',
-            email: formData.email || '',
-            phoneNumber: formData.phoneNumber || '',
-          }),
-        });
-
-        if (response.status === 401) {
-          logout(router);
-          return;
-        }
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(data.message || '사용자 수정에 실패했습니다.');
-        }
-
-        toast.success('사용자가 성공적으로 수정되었습니다.');
-      } else {
-        // 생성 - 사용자(MEMBER)만 생성
-        const response = await fetchWithTokenRefresh(getApiUrl('/members'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: formData.username,
-            password: formData.password,
-            name: formData.name || '',
-            email: formData.email || '',
-            phoneNumber: formData.phoneNumber || '',
-          }),
-        });
-
-        if (response.status === 401) {
-          logout(router);
-          return;
-        }
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(data.message || '사용자 생성에 실패했습니다.');
-        }
-
-        toast.success('사용자가 성공적으로 생성되었습니다.');
-      }
-
+    if (success) {
       setTimeout(() => {
         setEditingUser(null);
-        fetchUsers();
       }, 1500);
-    } catch (error) {
-      const isEditMode = editingUser && editingUser.id;
-      if (error instanceof Error) {
-        toast.error(error.message || `사용자 ${isEditMode ? '수정' : '생성'}에 실패했습니다.`);
-      } else {
-        toast.error(`사용자 ${isEditMode ? '수정' : '생성'}에 실패했습니다. 다시 시도해주세요.`);
-      }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

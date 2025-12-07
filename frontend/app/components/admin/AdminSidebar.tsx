@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { getApiUrl } from '../../utils/api';
@@ -131,14 +131,11 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
   const pathname = usePathname();
   const router = useRouter();
   const [, setIsLoggingOut] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [hoveredMenuItem, setHoveredMenuItem] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const [showSearch, setShowSearch] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [isLoadingMenus, setIsLoadingMenus] = useState(true);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // 메뉴 목록 가져오기
   useEffect(() => {
@@ -227,30 +224,6 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
     fetchMenus();
   }, [router]);
 
-  // ⌘K 단축키로 검색 열기
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        if (isCollapsed) {
-          setShowSearch(true);
-          setTimeout(() => searchInputRef.current?.focus(), 0);
-        } else {
-          searchInputRef.current?.focus();
-        }
-      }
-      if (e.key === 'Escape') {
-        setSearchQuery('');
-        if (isCollapsed) {
-          setShowSearch(false);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isCollapsed]);
-
   const handleLinkClick = () => {
     if (window.innerWidth < 1024) {
       onClose();
@@ -319,12 +292,6 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
     }
   };
 
-  // 검색 필터링
-  const filteredMenuItems = menuItems.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.subItems?.some((sub) => sub.name.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
   return (
     <>
       {/* Overlay for mobile */}
@@ -352,7 +319,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
         <div className="flex h-full flex-col overflow-hidden">
           {/* Header */}
           <div className="flex h-12 items-center justify-between border-b border-gray-200 px-3 dark:border-[#1f2435]">
-            <div className="flex items-center gap-1.5">
+            <Link href="/admin" className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity">
               <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-900 dark:bg-gray-100">
                 <svg className="h-3 w-3 text-white dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
@@ -364,7 +331,7 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                   <span className="block truncate whitespace-nowrap">Admin</span>
                 </span>
               )}
-            </div>
+            </Link>
             {!isCollapsed && (
               <button
                 onClick={onToggleCollapse}
@@ -383,40 +350,9 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
             )}
           </div>
 
-          {/* Search Bar */}
-          {!isCollapsed && (
-            <div className="border-b border-gray-200 px-3 py-2 dark:border-[#1f2435]">
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5">
-                  <svg className="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-1.5 pl-8 pr-14 text-xs text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:bg-white focus:outline-none dark:border-transparent dark:bg-[#1a1e2c] dark:text-white dark:placeholder-gray-500 dark:focus:border-[#303650] dark:focus:bg-[#1f2435]"
-                />
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5">
-                  <kbd className="hidden rounded border border-gray-300 bg-white px-1 py-0.5 text-[10px] font-semibold text-gray-500 sm:inline-block dark:border-[#303650] dark:bg-[#1a1e2c] dark:text-gray-400">
-                    ⌘K
-                  </kbd>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Collapsed: Toggle Button and Search Icon */}
+          {/* Collapsed: Toggle Button */}
           {isCollapsed && (
-            <div className="space-y-1.5 border-b border-gray-200 px-1.5 py-2 dark:border-[#1f2435]">
+            <div className="border-b border-gray-200 px-1.5 py-2 dark:border-[#1f2435]">
               <button
                 onClick={onToggleCollapse}
                 className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1a1e2c] dark:hover:text-white"
@@ -431,23 +367,6 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
                   />
                 </svg>
               </button>
-              <button
-                onClick={() => {
-                  setShowSearch(true);
-                  setTimeout(() => searchInputRef.current?.focus(), 0);
-                }}
-                className="flex w-full items-center justify-center rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-[#1a1e2c] dark:hover:text-white"
-                aria-label="Search"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </button>
             </div>
           )}
 
@@ -457,12 +376,12 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
               <div className="flex items-center justify-center py-8">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-gray-400"></div>
               </div>
-            ) : filteredMenuItems.length === 0 ? (
+            ) : menuItems.length === 0 ? (
               <div className="py-8 text-center text-xs text-gray-500 dark:text-gray-400">
                 메뉴가 없습니다.
               </div>
             ) : (
-              filteredMenuItems.map((item) => {
+              menuItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
               const hasSubItems = item.subItems && item.subItems.length > 0;
               const isExpanded = expandedMenus.includes(item.name);
@@ -623,88 +542,8 @@ export default function AdminSidebar({ isOpen, onClose, isCollapsed, onToggleCol
               })
             )}
           </nav>
-
-          {/* Support Section */}
-          {!isCollapsed && (
-            <div className="border-t border-gray-200 px-3 py-3 dark:border-[#1f2435]">
-              <div className="rounded-lg bg-gray-50 p-3 dark:bg-[#1a1e2c]">
-                <div className="mb-1.5 flex items-center gap-1.5">
-                  <svg className="h-3.5 w-3.5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </svg>
-                  <span className="text-xs font-semibold text-gray-900 dark:text-white">Need support?</span>
-                </div>
-                <p className="mb-2 text-[10px] text-gray-600 dark:text-gray-400">
-                  Get in touch with our agents
-                </p>
-                <button className="w-full rounded-lg bg-white px-2 py-1.5 text-[10px] font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-50 dark:bg-[#0f1119] dark:text-white dark:hover:bg-[#1f2435]">
-                  Contact us
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </aside>
-
-      {/* Search Modal (for collapsed mode) */}
-      {showSearch && isCollapsed && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300"
-            onClick={() => setShowSearch(false)}
-            aria-hidden="true"
-          />
-          <div className="fixed inset-0 z-50 flex items-start justify-center pt-20">
-            <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white shadow-2xl dark:border-[#1f2435] dark:bg-[#141827]">
-              <div className="relative p-4">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onBlur={() => setTimeout(() => setShowSearch(false), 200)}
-                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:bg-white focus:outline-none dark:border-transparent dark:bg-[#1a1e2c] dark:text-white dark:placeholder-gray-500 dark:focus:border-[#303650] dark:focus:bg-[#1f2435]"
-                  autoFocus
-                />
-              </div>
-              {searchQuery && (
-                <div className="max-h-64 overflow-y-auto border-t border-gray-200 p-2 dark:border-[#1f2435]">
-                  {filteredMenuItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => {
-                        setShowSearch(false);
-                        setSearchQuery('');
-                        handleLinkClick();
-                      }}
-                      className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-[#1a1e2c]"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </>
-      )}
     </>
   );
 }
