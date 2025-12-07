@@ -13,7 +13,7 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
       {/* 전체 화면 로딩 오버레이 */}
       {isMenuLoading && <PortalLoading />}
       
@@ -21,7 +21,7 @@ export default function AboutPage() {
       
       <main className="flex-1">
         {/* Hero Section - 다크모드 개선 */}
-        <section className="relative overflow-hidden bg-linear-to-br from-green-50 via-white to-gray-50 px-4 py-24 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 sm:px-6 lg:px-8 lg:py-32">
+        <section className="relative overflow-hidden bg-linear-to-br from-green-50 via-white to-gray-50 px-4 py-24 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 sm:px-6 lg:px-8 lg:py-32">
           <div className="absolute inset-0 opacity-5 dark:opacity-10">
             <div className="absolute inset-0" style={{
               backgroundImage: 'radial-gradient(circle, rgba(34, 197, 94, 0.1) 1px, transparent 1px)',
@@ -35,10 +35,10 @@ export default function AboutPage() {
               </svg>
               혁신적인 플랫폼
             </div>
-            <h1 className="text-5xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl lg:text-7xl">
+            <h1 className="text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-6xl lg:text-7xl">
               우리에 대해
             </h1>
-            <p className="mx-auto mt-6 max-w-3xl text-xl leading-8 text-gray-600 dark:text-white">
+            <p className="mx-auto mt-6 max-w-3xl text-xl leading-8 text-gray-600 dark:text-gray-300">
               혁신적인 솔루션으로 더 나은 디지털 경험을 제공합니다. 
               <span className="font-semibold text-green-600 dark:text-green-400"> 사용자 중심</span>의 접근으로 
               개인과 기업의 성장을 지원합니다.
@@ -47,27 +47,27 @@ export default function AboutPage() {
         </section>
 
         {/* Mission Section - 다크모드 개선 */}
-        <section className="bg-white px-4 py-20 dark:bg-gray-900 sm:px-6 lg:px-8">
+        <section className="bg-white px-4 py-20 dark:bg-gray-950 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
               <div>
                 <div className="mb-4 inline-block rounded-lg bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 shadow-sm dark:bg-green-900/40 dark:text-green-300 dark:ring-1 dark:ring-green-800/50">
                   우리의 미션
                 </div>
-                <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+                <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-5xl">
                   더 나은 디지털 경험을 만들어갑니다
                 </h2>
-                <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-white">
+                <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
                   우리는 사용자 중심의 혁신적인 플랫폼을 구축하여 개인과 기업이 디지털 환경에서 
                   더 효율적으로 작업하고 성장할 수 있도록 지원합니다.
                 </p>
-                <p className="mt-4 text-lg leading-8 text-gray-600 dark:text-white">
+                <p className="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-300">
                   최신 기술과 사용자 경험을 결합하여 실용적이고 확장 가능한 솔루션을 제공하며, 
                   지속적인 혁신을 통해 고객의 성공을 돕습니다.
                 </p>
               </div>
               <div className="relative">
-                <div className="rounded-2xl bg-linear-to-br from-green-100 to-green-50 p-8 shadow-xl ring-1 ring-green-200 dark:from-gray-800 dark:to-gray-800 dark:ring-gray-700">
+                <div className="rounded-2xl bg-linear-to-br from-green-100 to-green-50 p-8 shadow-xl ring-1 ring-green-200 dark:from-gray-900/50 dark:to-gray-900/50 dark:ring-gray-700/50">
                   <div className="space-y-4">
                     <div className="flex items-start gap-4">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-600 text-white shadow-md dark:bg-green-500">
@@ -76,8 +76,8 @@ export default function AboutPage() {
                         </svg>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">사용자 중심 설계</h3>
-                        <p className="mt-1 text-sm text-gray-600 dark:text-white">
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-50">사용자 중심 설계</h3>
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                           모든 결정은 사용자의 경험을 최우선으로 합니다.
                         </p>
                       </div>
@@ -89,8 +89,8 @@ export default function AboutPage() {
                         </svg>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">지속적인 혁신</h3>
-                        <p className="mt-1 text-sm text-gray-600 dark:text-white">
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-50">지속적인 혁신</h3>
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                           최신 기술 트렌드를 빠르게 적용합니다.
                         </p>
                       </div>
@@ -102,8 +102,8 @@ export default function AboutPage() {
                         </svg>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">신뢰할 수 있는 서비스</h3>
-                        <p className="mt-1 text-sm text-gray-600 dark:text-white">
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-50">신뢰할 수 있는 서비스</h3>
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                           안정성과 보안을 최우선으로 합니다.
                         </p>
                       </div>
@@ -122,10 +122,10 @@ export default function AboutPage() {
               <div className="mb-4 inline-block rounded-lg bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 shadow-sm dark:bg-green-900/40 dark:text-green-300 dark:ring-1 dark:ring-green-800/50">
                 핵심 가치
               </div>
-              <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+              <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-5xl">
                 우리의 가치
               </h2>
-              <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-white">
+              <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
                 우리가 추구하는 핵심 가치들로 더 나은 서비스를 만들어갑니다.
               </p>
             </div>
@@ -201,17 +201,17 @@ export default function AboutPage() {
               ].map((value, index) => (
                 <div
                   key={index}
-                  className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-gray-900 dark:ring-gray-800 dark:hover:ring-gray-700"
+                  className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-gray-900/50 dark:ring-gray-700/50 dark:hover:ring-gray-600/50"
                 >
                   <div className={`absolute top-0 right-0 h-32 w-32 rounded-full bg-linear-to-br ${value.color} ${value.darkColor} opacity-10 blur-2xl transition-opacity group-hover:opacity-20 dark:opacity-5 dark:group-hover:opacity-10`}></div>
                   <div className="relative">
                     <div className={`mb-4 inline-flex rounded-xl bg-linear-to-br ${value.color} ${value.darkColor} p-3 text-white shadow-lg transition-transform group-hover:scale-110`}>
                       {value.icon}
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-50">
                       {value.title}
                     </h3>
-                    <p className="mt-3 text-base leading-7 text-gray-600 dark:text-white">
+                    <p className="mt-3 text-base leading-7 text-gray-600 dark:text-gray-300">
                       {value.description}
                     </p>
                   </div>
@@ -222,16 +222,16 @@ export default function AboutPage() {
         </section>
 
         {/* Technology Section - 다크모드 개선 */}
-        <section className="bg-white px-4 py-20 dark:bg-gray-900 sm:px-6 lg:px-8">
+        <section className="bg-white px-4 py-20 dark:bg-gray-950 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="text-center">
               <div className="mb-4 inline-block rounded-lg bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 shadow-sm dark:bg-green-900/40 dark:text-green-300 dark:ring-1 dark:ring-green-800/50">
                 기술 스택
               </div>
-              <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+              <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-5xl">
                 최신 기술로 구축
               </h2>
-              <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-white">
+              <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
                 안정적이고 확장 가능한 플랫폼을 위한 검증된 기술들입니다.
               </p>
             </div>
@@ -269,15 +269,15 @@ export default function AboutPage() {
               ].map((tech, index) => (
                 <div
                   key={index}
-                  className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-green-300 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 dark:hover:border-green-600"
+                  className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-green-300 hover:shadow-lg dark:border-gray-700/50 dark:bg-gray-900/50 dark:hover:border-green-600/50"
                 >
                   <div className={`absolute inset-0 bg-linear-to-br ${tech.gradient} ${tech.darkGradient} opacity-0 transition-opacity group-hover:opacity-5 dark:group-hover:opacity-10`}></div>
                   <div className="relative">
                     <div className="mb-4 text-4xl">{tech.icon}</div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-50">
                       {tech.name}
                     </h3>
-                    <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-white">
+                    <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">
                       {tech.description}
                     </p>
                   </div>
@@ -288,7 +288,7 @@ export default function AboutPage() {
         </section>
 
         {/* Stats Section - 다크모드 개선 */}
-        <section className="bg-linear-to-br from-green-50 to-white px-4 py-20 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 sm:px-6 lg:px-8">
+        <section className="bg-linear-to-br from-green-50 to-white px-4 py-20 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {[
@@ -299,11 +299,11 @@ export default function AboutPage() {
               ].map((stat, index) => (
                 <div
                   key={index}
-                  className="rounded-xl bg-white p-6 text-center shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md dark:bg-gray-800 dark:ring-gray-700 dark:hover:ring-gray-600"
+                  className="rounded-xl bg-white p-6 text-center shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md dark:bg-gray-900/50 dark:ring-gray-700/50 dark:hover:ring-gray-600/50"
                 >
                   <div className="mb-3 text-3xl">{stat.icon}</div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
-                  <div className="mt-2 text-sm text-gray-600 dark:text-white">{stat.label}</div>
+                  <div className="text-3xl font-bold text-gray-900 dark:text-gray-50">{stat.value}</div>
+                  <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">{stat.label}</div>
                 </div>
               ))}
             </div>

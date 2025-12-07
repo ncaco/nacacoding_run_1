@@ -64,20 +64,29 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
       <Header />
-      <main className="flex flex-1 items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-900 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md">
-          <div className="rounded-xl bg-white p-8 shadow-lg dark:bg-gray-800 dark:shadow-gray-800/50">
+      <main className="flex flex-1 items-center justify-center relative overflow-hidden bg-gray-50 dark:bg-gray-950">
+        {/* 배경 그라데이션 및 장식 요소 */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-gray-100/50 to-transparent blur-3xl dark:from-gray-900/30"></div>
+          <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-tr from-gray-100/50 to-transparent blur-3xl dark:from-gray-900/30"></div>
+        </div>
+
+        <div className="relative w-full max-w-md px-4 py-12 sm:px-6 lg:px-8">
+          <div className="rounded-2xl bg-white p-8 shadow-xl border border-gray-200 dark:bg-gray-900/50 dark:border-gray-700/50">
             <div className="mb-8 text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 shadow-md dark:from-gray-100 dark:to-gray-200">
+                <span className="text-xl font-bold text-white dark:text-gray-900">P</span>
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50">
                 회원가입
               </h2>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                 이미 계정이 있으신가요?{' '}
                 <Link
                   href="/login"
-                  className="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300"
+                  className="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300 transition-colors"
                 >
                   로그인
                 </Link>
@@ -114,7 +123,7 @@ export default function SignupPage() {
                   <div className="mt-1 relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <svg
-                        className="h-5 w-5 text-gray-400"
+                        className="h-5 w-5 text-gray-400 dark:text-gray-500"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -135,20 +144,20 @@ export default function SignupPage() {
                       required
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 sm:text-sm"
+                      className="block w-full pl-10 pr-3 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:border-gray-700/50 dark:bg-gray-800/50 dark:text-gray-50 dark:placeholder-gray-400 transition-all sm:text-sm"
                       placeholder="아이디를 입력하세요"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     이름
                   </label>
                   <div className="mt-1 relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <svg
-                        className="h-5 w-5 text-gray-400"
+                        className="h-5 w-5 text-gray-400 dark:text-gray-500"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -169,20 +178,20 @@ export default function SignupPage() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 sm:text-sm"
+                      className="block w-full pl-10 pr-3 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:border-gray-700/50 dark:bg-gray-800/50 dark:text-gray-50 dark:placeholder-gray-400 transition-all sm:text-sm"
                       placeholder="이름을 입력하세요"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     비밀번호
                   </label>
                   <div className="mt-1 relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <svg
-                        className="h-5 w-5 text-gray-400"
+                        className="h-5 w-5 text-gray-400 dark:text-gray-500"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -203,7 +212,7 @@ export default function SignupPage() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="block w-full pl-10 pr-10 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 sm:text-sm"
+                      className="block w-full pl-10 pr-10 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:border-gray-700/50 dark:bg-gray-800/50 dark:text-gray-50 dark:placeholder-gray-400 transition-all sm:text-sm"
                       placeholder="비밀번호를 입력하세요"
                     />
                     <button
@@ -213,7 +222,7 @@ export default function SignupPage() {
                     >
                       {showPassword ? (
                         <svg
-                          className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -227,7 +236,7 @@ export default function SignupPage() {
                         </svg>
                       ) : (
                         <svg
-                          className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -260,7 +269,7 @@ export default function SignupPage() {
                           {passwordStrength.label}
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                      <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700/50">
                         <div
                           className={`h-2 rounded-full transition-all ${passwordStrength.color}`}
                           style={{ width: `${(passwordStrength.strength / 3) * 100}%` }}
@@ -271,13 +280,13 @@ export default function SignupPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label htmlFor="confirm-password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     비밀번호 확인
                   </label>
                   <div className="mt-1 relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <svg
-                        className="h-5 w-5 text-gray-400"
+                        className="h-5 w-5 text-gray-400 dark:text-gray-500"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -298,12 +307,12 @@ export default function SignupPage() {
                       required
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={`block w-full pl-10 pr-10 py-3 rounded-lg border bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 sm:text-sm ${
+                      className={`block w-full pl-10 pr-10 py-3 rounded-xl border bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-800/50 dark:text-gray-50 dark:placeholder-gray-400 transition-all sm:text-sm ${
                         confirmPassword && password !== confirmPassword
-                          ? 'border-red-300 dark:border-red-700'
+                          ? 'border-red-300 dark:border-red-700/50'
                           : confirmPassword && password === confirmPassword
-                          ? 'border-green-300 dark:border-green-700'
-                          : 'border-gray-300 dark:border-gray-700'
+                          ? 'border-green-300 dark:border-green-700/50'
+                          : 'border-gray-300 dark:border-gray-700/50'
                       }`}
                       placeholder="비밀번호를 다시 입력하세요"
                     />
@@ -314,7 +323,7 @@ export default function SignupPage() {
                     >
                       {showConfirmPassword ? (
                         <svg
-                          className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -328,7 +337,7 @@ export default function SignupPage() {
                         </svg>
                       ) : (
                         <svg
-                          className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -366,12 +375,12 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={isLoading || password !== confirmPassword || password.length < 6 || !name.trim()}
-                  className="group relative flex w-full justify-center rounded-lg border border-transparent bg-gradient-to-r from-green-400 to-green-600 px-4 py-3 text-base font-semibold text-white transition-all hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="group relative flex w-full justify-center rounded-xl border border-transparent bg-gray-900 px-4 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-gray-800 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 dark:focus:ring-offset-gray-900"
                 >
                   {isLoading ? (
                     <span className="flex items-center">
                       <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white dark:text-gray-900"
                         fill="none"
                         viewBox="0 0 24 24"
                       >

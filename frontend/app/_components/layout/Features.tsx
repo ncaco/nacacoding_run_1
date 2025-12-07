@@ -87,13 +87,13 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="bg-gray-50 px-4 py-20 dark:bg-gray-800 sm:px-6 lg:px-8">
+    <section className="bg-white px-4 py-24 dark:bg-gray-950 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl lg:text-5xl">
             구축에 필요한 모든 것
           </h2>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
             하나 또는 모두 사용하세요. 최고의 제품들. 플랫폼으로 통합되었습니다.
           </p>
         </div>
@@ -101,13 +101,18 @@ export default function Features() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="rounded-xl bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-gray-900 dark:shadow-gray-800/50"
+              className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-all duration-300 hover:border-gray-300 hover:shadow-xl dark:border-gray-700/50 dark:bg-gray-900/50 dark:hover:border-gray-600/50 dark:hover:shadow-gray-900/50"
             >
-              <div className="mb-4 inline-flex rounded-lg bg-green-100 p-3 text-green-600 dark:bg-green-900/30 dark:text-green-400">
-                {feature.icon}
+              {/* 호버 시 배경 그라데이션 */}
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-gray-800/30"></div>
+              
+              <div className="relative">
+                <div className="mb-6 inline-flex rounded-xl border border-gray-200 bg-gray-50 p-3 text-gray-900 transition-all group-hover:border-gray-300 group-hover:bg-gray-100 group-hover:scale-110 dark:border-gray-700/50 dark:bg-gray-800/50 dark:text-gray-100 dark:group-hover:border-gray-600/50 dark:group-hover:bg-gray-700/50">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-50">{feature.title}</h3>
+                <p className="mt-3 leading-relaxed text-gray-600 dark:text-gray-300">{feature.description}</p>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{feature.title}</h3>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">{feature.description}</p>
             </div>
           ))}
         </div>

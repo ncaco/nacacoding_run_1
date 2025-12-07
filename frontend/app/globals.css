@@ -234,9 +234,10 @@ html.dark a.sidebar-menu-item-selected.bg-gray-100 {
 
 /* 헤더 다크모드 스타일 강제 적용 */
 html.dark header.dark\:bg-gray-900\/80,
-html.dark header.dark\:bg-gray-950\/90 {
-  background-color: rgba(3 7 18 / 0.9) !important; /* gray-950 with 90% opacity */
-  border-color: rgba(17 24 39 / 0.5) !important; /* gray-900 with 50% opacity */
+html.dark header.dark\:bg-gray-950\/90,
+html.dark header.dark\:bg-gray-950\/95 {
+  background-color: rgba(3 7 18 / 0.95) !important; /* gray-950 with 95% opacity */
+  border-color: rgba(55 65 81 / 0.5) !important; /* gray-700 with 50% opacity */
 }
 
 html.dark div.dark\:bg-gray-900 {

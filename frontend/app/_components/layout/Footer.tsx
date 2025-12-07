@@ -20,31 +20,31 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+    <footer className="border-t border-gray-200 bg-white dark:border-gray-700/50 dark:bg-gray-950">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-12 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-400 to-green-600">
-                <span className="text-xl font-bold text-white">P</span>
+            <Link href="/" className="group flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 shadow-md transition-transform group-hover:scale-105 dark:from-gray-100 dark:to-gray-200">
+                <span className="text-xl font-bold text-white dark:text-gray-900">P</span>
               </div>
-              <span className="text-xl font-semibold text-gray-900 dark:text-white">Portal</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-gray-50">Portal</span>
             </Link>
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-4 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
               주말에 구축하고, 수백만으로 확장하세요.
             </p>
           </div>
 
           {/* Product */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">제품</h3>
-            <ul className="mt-4 space-y-3">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-50">제품</h3>
+            <ul className="mt-5 space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                    className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                   >
                     {link.name}
                   </Link>
@@ -55,13 +55,13 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">리소스</h3>
-            <ul className="mt-4 space-y-3">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-50">리소스</h3>
+            <ul className="mt-5 space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                    className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                   >
                     {link.name}
                   </Link>
@@ -72,13 +72,13 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">회사</h3>
-            <ul className="mt-4 space-y-3">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-50">회사</h3>
+            <ul className="mt-5 space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                    className="text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                   >
                     {link.name}
                   </Link>
@@ -88,17 +88,17 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-gray-200 pt-8 dark:border-gray-800">
-          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+        <div className="mt-16 border-t border-gray-200 pt-10 dark:border-gray-700/50">
+          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               © {new Date().getFullYear()} 포털. 모든 권리 보유.
             </p>
-            <div className="flex gap-6">
+            <div className="flex gap-5">
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-50"
                 aria-label="GitHub"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -113,7 +113,7 @@ export default function Footer() {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-50"
                 aria-label="Twitter"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

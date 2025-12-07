@@ -248,22 +248,22 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
 
       {/* Mobile Menu - 헤더 밖으로 이동하여 레이아웃 문제 해결 */}
       <div
-        className={`fixed top-0 right-0 z-[70] h-screen w-72 max-w-[80vw] transform border-l border-gray-200 bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-950 md:hidden ${
+        className={`fixed top-0 right-0 z-[70] h-screen w-72 max-w-[80vw] transform border-l border-gray-200 bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:border-gray-700/50 dark:bg-gray-950 md:hidden ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex h-full flex-col">
           {/* Mobile Menu Header */}
-          <div className="flex h-16 items-center justify-between border-b border-gray-200 bg-gradient-to-r from-green-50 to-white px-5 dark:border-gray-800 dark:bg-gradient-to-r dark:from-gray-900 dark:to-gray-950 dark:!from-gray-900 dark:!to-gray-950">
+          <div className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-5 dark:border-gray-700/50 dark:bg-gray-950">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-400 to-green-600">
-                <span className="text-xl font-bold text-white">P</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-100 dark:to-gray-200">
+                <span className="text-xl font-bold text-white dark:text-gray-900">P</span>
               </div>
-              <span className="text-xl font-semibold text-gray-900 dark:text-white">메뉴</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-gray-50">메뉴</span>
             </div>
             <button
               onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg p-2 text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+              className="rounded-lg p-2 text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-gray-50"
               aria-label="Close menu"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -281,10 +281,10 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                     <Link
                       key={menu.id}
                       href={menu.url || '#'}
-                      className="group flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium text-gray-700 transition-all hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
+                      className="group flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium text-gray-700 transition-all hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-gray-50"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <svg className="h-5 w-5 flex-shrink-0 text-gray-400 transition-colors group-hover:text-green-600 dark:text-gray-500 dark:group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-5 w-5 flex-shrink-0 text-gray-400 transition-colors group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <span>{menu.name}</span>
@@ -299,20 +299,20 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
             </div>
 
             {/* Mobile Menu Footer */}
-            <div className="mt-auto border-t border-gray-200 bg-gray-50 px-3 py-4 dark:border-gray-800 dark:bg-gray-900/50">
+            <div className="mt-auto border-t border-gray-200 bg-gray-50 px-3 py-4 dark:border-gray-700/50 dark:bg-gray-900/50">
               <div className="flex flex-col gap-2.5">
-                <div className="flex items-center justify-between rounded-lg bg-white px-4 py-2.5 shadow-sm dark:bg-gray-800">
+                <div className="flex items-center justify-between rounded-lg bg-white px-4 py-2.5 shadow-sm dark:bg-gray-800/50">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">다크 모드</span>
                   <ThemeToggle />
                 </div>
                 {loggedInUsername ? (
-                  <div className="flex items-center justify-between rounded-lg bg-white px-4 py-3 shadow-sm dark:bg-gray-800">
+                  <div className="flex items-center justify-between rounded-lg bg-white px-4 py-3 shadow-sm dark:bg-gray-800/50">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-sm font-semibold text-white">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-gray-900 to-gray-800 text-sm font-semibold text-white dark:from-gray-100 dark:to-gray-200 dark:text-gray-900">
                         {profileInitial}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-50">
                           @{loggedInUsername}
                         </span>
                       </div>
@@ -322,7 +322,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                         setIsMenuOpen(false);
                         handleLogout();
                       }}
-                      className="ml-3 rounded-md px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700"
+                      className="ml-3 rounded-md px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-gray-50"
                     >
                       로그아웃
                     </button>
@@ -331,7 +331,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                   <>
                     <Link
                       href="/login"
-                      className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                      className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-gray-50"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,7 +341,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                     </Link>
                     <Link
                       href="/signup"
-                      className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-md transition-all hover:from-green-500 hover:to-green-700 hover:shadow-lg"
+                      className="flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-md transition-all hover:bg-gray-800 hover:shadow-lg dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,31 +357,31 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
         </div>
       </div>
 
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-900/50 dark:bg-gray-950/90 dark:backdrop-blur-md md:z-50">
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/80 backdrop-blur-md dark:border-gray-800/50 dark:bg-gray-950/95 md:z-50">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-400 to-green-600">
-              <span className="text-xl font-bold text-white">P</span>
+          <Link href="/" className="group flex items-center gap-2.5" onClick={() => setIsMenuOpen(false)}>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 shadow-lg transition-transform group-hover:scale-105 dark:from-gray-100 dark:to-gray-200 dark:shadow-gray-800/50">
+              <span className="text-xl font-bold text-white dark:text-gray-900">P</span>
             </div>
-            <span className="text-xl font-semibold text-gray-900 dark:text-white">Portal</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-gray-50">Portal</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-1 md:flex">
             {menuItems.length > 0 ? (
               menuItems.map((menu) => (
                 <Link
                   key={menu.id}
                   href={menu.url || '#'}
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-gray-50"
                 >
                   {menu.name}
                 </Link>
               ))
             ) : isLoadingMenus ? (
               <div className="flex items-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-600 dark:border-t-gray-300"></div>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-700 dark:border-t-gray-400"></div>
               </div>
             ) : null}
           </div>
@@ -393,7 +393,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-sm font-semibold text-white shadow-sm hover:shadow-md transition-all"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-gray-900 to-gray-800 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:shadow-lg dark:from-gray-100 dark:to-gray-200 dark:text-gray-900 dark:shadow-gray-800/50"
                   aria-label="Profile menu"
                   aria-expanded={isProfileOpen}
                 >
@@ -401,14 +401,14 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900/95">
-                    <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+                  <div className="absolute right-0 mt-2 w-56 rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700/50 dark:bg-gray-900/95 backdrop-blur-md">
+                    <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700/50">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-sm font-semibold text-white">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-gray-900 to-gray-800 text-sm font-semibold text-white dark:from-gray-100 dark:to-gray-200 dark:text-gray-900">
                           {profileInitial}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-50">
                             @{loggedInUsername}
                           </p>
                         </div>
@@ -419,10 +419,10 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                       <Link
                         href="/profile"
                         onClick={() => setIsProfileOpen(false)}
-                        className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-gray-50"
                       >
                         <svg
-                          className="h-4 w-4 text-gray-400"
+                          className="h-4 w-4 text-gray-400 dark:text-gray-500"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -438,10 +438,10 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
                       </Link>
                     </div>
 
-                    <div className="border-t border-gray-200 px-4 py-2.5 dark:border-gray-700">
+                    <div className="border-t border-gray-200 px-4 py-2.5 dark:border-gray-700/50">
                       <button
                         onClick={handleLogout}
-                        className="flex w-full items-center justify-center rounded-md bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/40"
+                        className="flex w-full items-center justify-center rounded-lg bg-gray-50 px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:bg-gray-800/50 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-gray-50"
                       >
                         로그아웃
                       </button>
@@ -453,13 +453,13 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
               <>
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-gray-50"
                 >
                   로그인
                 </Link>
                 <Link
                   href="/signup"
-                  className="rounded-lg bg-gradient-to-r from-green-400 to-green-600 px-4 py-2 text-sm font-medium text-white transition-all hover:from-green-500 hover:to-green-700"
+                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:bg-gray-800 hover:shadow-lg dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                 >
                   시작하기
                 </Link>
@@ -469,7 +469,7 @@ export default function Header({ onMenuLoadComplete }: HeaderProps = {} as Heade
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden rounded-lg p-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100 transition-colors"
+            className="md:hidden rounded-lg p-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-gray-50 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
